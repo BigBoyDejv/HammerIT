@@ -1,14 +1,17 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import type { Database } from '../lib/database.types';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+type Profile = {
+  id: string;
+  role: 'client' | 'craftsman';
+  full_name: string;
+  created_at: string;
+};
 
 interface AuthContextType {
   user: User | null;
   profile: Profile | null;
-  session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, role: 'client' | 'craftsman') => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
@@ -21,121 +24,159 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadProfile(session.user.id);
-      } else {
+    console.log('AuthProvider: START');
+
+    const checkUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log('AuthProvider: user =', user);
+
+        if (user) {
+          setUser(user);
+          setProfile({
+            id: user.id,
+            full_name: user.email?.split('@')[0] || 'User',
+            role: 'client',
+            created_at: new Date().toISOString()
+          });
+        }
+      } catch (error) {
+        console.error('Auth error:', error);
+      } finally {
+        console.log('AuthProvider: setting loading to false');
         setLoading(false);
+      }
+    };
+
+    checkUser();
+  }, []);
+
+  const signUp = async (email: string, password: string, fullName: string, role: 'client' | 'craftsman') => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: role
+        }
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      (async () => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await loadProfile(session.user.id);
-        } else {
-          setProfile(null);
-          setLoading(false);
-        }
-      })();
-    });
+    if (error) throw error;
 
-    return () => subscription.unsubscribe();
-  }, []);
+    if (data.user) {
+      // Vytvoriť profil v databáze
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: data.user.id,
+          full_name: fullName,
+          role: role,
+          created_at: new Date().toISOString()
+        });
 
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+        throw profileError;
+      }
+
+      if (role === 'craftsman') {
+        await supabase
+          .from('craftsman_profiles')
+          .insert({
+            user_id: data.user.id,
+            specialization: [],
+            hourly_rate: null,
+            years_experience: 0,
+            verified: false,
+            rating_avg: 0,
+            total_jobs: 0
+          });
+      }
+
+      setUser(data.user);
+      setProfile({
+        id: data.user.id,
+        full_name: fullName,
+        role: role,
+        created_at: new Date().toISOString()
+      });
+    }
+  };
+
+  // FUNKCIA NA NAČÍTANIE PROFILU - PRIDAJ TÚTO
   const loadProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .maybeSingle();
+        .single();
 
-      if (error) throw error;
-      setProfile(data);
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      if (data) {
+        setProfile(data as Profile);
+      }
     } catch (error) {
       console.error('Error loading profile:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string, role: 'client' | 'craftsman') => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) throw error;
-    if (!data.user) throw new Error('User creation failed');
-
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: data.user.id,
-        full_name: fullName,
-        role,
-      });
-
-    if (profileError) throw profileError;
-
-    if (role === 'craftsman') {
-      const { error: craftsmanError } = await supabase
-        .from('craftsman_profiles')
-        .insert({
-          user_id: data.user.id,
-        });
-
-      if (craftsmanError) throw craftsmanError;
-    }
-  };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    if (data.user) {
+      setUser(data.user);
+      setProfile({
+        id: data.user.id,
+        full_name: data.user.email?.split('@')[0] || 'User',
+        role: 'client',
+        created_at: new Date().toISOString()
+      });
+    }
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
   };
 
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) throw new Error('No user logged in');
+
+    console.log('Updating profile:', updates); // Debug log
 
     const { error } = await supabase
       .from('profiles')
       .update(updates)
       .eq('id', user.id);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Update error:', error);
+      throw error;
+    }
 
+    console.log('Profile updated successfully');
+
+    // Znovu načítať profil
     await loadProfile(user.id);
   };
 
+  console.log('AuthProvider: loading =', loading);
+  console.log('AuthProvider: user =', user);
+
   return (
-    <AuthContext.Provider value={{
-      user,
-      profile,
-      session,
-      loading,
-      signUp,
-      signIn,
-      signOut,
-      updateProfile
-    }}>
+    <AuthContext.Provider value={{ user, profile, loading, signUp, signIn, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

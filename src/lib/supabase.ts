@@ -10,6 +10,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+console.log("URL:", import.meta.env.VITE_SUPABASE_URL);
+console.log("KEY existuje:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+
 // Typy pre databázu
 export type Profile = {
   id: string;

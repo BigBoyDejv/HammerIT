@@ -6,6 +6,8 @@ type Profile = {
   id: string;
   role: 'client' | 'craftsman';
   full_name: string;
+  phone: string | null;
+  bio: string | null;
   created_at: string;
 };
 
@@ -32,21 +34,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkUser = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        console.log('AuthProvider: user =', user);
-
         if (user) {
           setUser(user);
-          setProfile({
-            id: user.id,
-            full_name: user.email?.split('@')[0] || 'User',
-            role: 'client',
-            created_at: new Date().toISOString()
-          });
+          await loadProfile(user.id); // ← reálny profil namiesto hardcoded 'client'
         }
       } catch (error) {
         console.error('Auth error:', error);
       } finally {
-        console.log('AuthProvider: setting loading to false');
         setLoading(false);
       }
     };
@@ -75,6 +69,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .insert({
           id: data.user.id,
           full_name: fullName,
+          phone: null,
+          bio: null,
           role: role,
           created_at: new Date().toISOString()
         });
@@ -136,12 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
     if (data.user) {
       setUser(data.user);
-      setProfile({
-        id: data.user.id,
-        full_name: data.user.email?.split('@')[0] || 'User',
-        role: 'client',
-        created_at: new Date().toISOString()
-      });
+      await loadProfile(data.user.id); // ← načítaj reálny profil z DB
     }
   };
 

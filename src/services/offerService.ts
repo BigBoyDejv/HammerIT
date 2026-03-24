@@ -59,7 +59,6 @@ export const offerService = {
         return data;
     },
 
-    // Aktualizovať stav ponuky
     async updateOfferStatus(id: string, status: 'pending' | 'accepted' | 'rejected') {
         const { data, error } = await supabase
             .from('job_offers')

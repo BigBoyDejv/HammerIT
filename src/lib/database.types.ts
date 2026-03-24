@@ -350,35 +350,36 @@ export type Database = {
       }
       profiles: {
         Row: {
-          id: string
-          role: 'client' | 'craftsman'
-          full_name: string
           avatar_url: string | null
-          phone: string | null
           bio: string | null
-          created_at: string
+          created_at: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          role: 'client' | 'craftsman'  // <-- ZMENIŤ na union typ
           updated_at: string | null
         }
         Insert: {
-          id: string
-          role: 'client' | 'craftsman'
-          full_name: string
           avatar_url?: string | null
-          phone?: string | null
           bio?: string | null
-          created_at?: string
+          created_at?: string | null
+          full_name: string
+          id: string
+          phone?: string | null
+          role: 'client' | 'craftsman'  // <-- ZMENIŤ na union typ
           updated_at?: string | null
         }
         Update: {
-          id?: string
-          role?: 'client' | 'craftsman'
-          full_name?: string
           avatar_url?: string | null
-          phone?: string | null
           bio?: string | null
-          created_at?: string
+          created_at?: string | null
+          full_name?: string
+          id?: string
+          phone?: string | null
+          role?: 'client' | 'craftsman'  // <-- ZMENIŤ na union typ
           updated_at?: string | null
         }
+        Relationships: []
       }
       reviews: {
         Row: {

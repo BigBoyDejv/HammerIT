@@ -4,6 +4,11 @@ import type { Database } from '../lib/database.types';
 type Contract = Database['public']['Tables']['contracts']['Row'];
 type ContractInsert = Database['public']['Tables']['contracts']['Insert'];
 
+export { craftsmanService } from './craftsmanService';
+export { jobService } from './jobService';
+export { offerService } from './offerService';
+export { messageService } from './messageService';
+
 export const contractService = {
     // Vytvoriť kontrakt z ponuky
     async createContractFromOffer(jobRequestId: string, offerId: string) {

@@ -1,15 +1,15 @@
+// src/pages/Login.tsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Input } from '../components/Input';
-import { Button } from '../components/Button';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Wrench } from 'lucide-react';
 
 export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, profile } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +19,14 @@ export function Login() {
 
     try {
       await signIn(email, password);
-      navigate('/dashboard');
+      // Presmerovanie podľa roly po prihlásení
+      if (profile?.role === 'client') {
+        navigate('/dashboard');
+      } else if (profile?.role === 'craftsman') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError('Nesprávny email alebo heslo');
     } finally {
@@ -28,50 +35,66 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
-        <div>
-          <h2 className="text-center text-3xl font-bold text-gray-900">
-            Prihlásenie
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Nemáte účet?{' '}
-            <a href="/auth/register" className="font-medium text-[#191970] hover:underline">
-              Zaregistrujte sa
-            </a>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        {/* Logo */}
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <Wrench className="h-12 w-12 text-[#191970]" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900">HammerIt</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Prihláste sa do vášho účtu
           </p>
         </div>
 
+        {/* Formulár */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           <div className="space-y-4">
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="vas@email.sk"
-            />
+            <div>
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                required
+                className="form-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vas@email.sk"
+              />
+            </div>
 
-            <Input
-              label="Heslo"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
+            <div>
+              <label className="form-label">Heslo</label>
+              <input
+                type="password"
+                required
+                className="form-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
           </div>
 
-          <Button type="submit" fullWidth disabled={loading}>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full py-3"
+          >
             {loading ? 'Prihlasovanie...' : 'Prihlásiť sa'}
-          </Button>
+          </button>
+
+          <div className="text-center">
+            <Link to="/auth/register" className="text-sm text-[#191970] hover:underline">
+              Nemáte účet? Zaregistrujte sa
+            </Link>
+          </div>
         </form>
       </div>
     </div>

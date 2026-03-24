@@ -1,14 +1,26 @@
+// src/lib/supabase.ts
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from './database.types';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    // ODSTRÁNENÝ storageKey — nechaj default
-  },
-});
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Typy pre databázu
+export type Profile = {
+  id: string;
+  full_name: string;
+  role: 'client' | 'craftsman';
+  avatar_url: string | null;
+  bio: string | null;
+  location: string | null;
+  specializations: string[] | null;
+  rating: number;
+  review_count: number;
+  created_at: string;
+  updated_at: string;
+};

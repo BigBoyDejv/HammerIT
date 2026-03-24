@@ -1,13 +1,21 @@
+// src/services/messageService.ts
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
 
 type Message = Database['public']['Tables']['messages']['Row'];
 type Conversation = Database['public']['Tables']['conversations']['Row'];
 
+// Rozšírený typ pre správu so senderom
+export type MessageWithSender = Message & {
+    sender?: {
+        full_name: string;
+        avatar_url: string | null;
+    };
+};
+
 export const messageService = {
     // Získať alebo vytvoriť konverzáciu
     async getOrCreateConversation(user1Id: string, user2Id: string) {
-        // Uistiť sa, že user1Id < user2Id pre unikátnosť
         const [participant_1, participant_2] = [user1Id, user2Id].sort();
 
         let { data: conversation, error } = await supabase
@@ -20,10 +28,9 @@ export const messageService = {
         if (error) throw error;
 
         if (!conversation) {
-            // Vytvoriť novú konverzáciu
             const { data: newConversation, error: createError } = await supabase
                 .from('conversations')
-                .insert({ participant_1, participant_2 })
+                .insert({ participant_1, participant_2, last_message_at: new Date().toISOString() })
                 .select()
                 .single();
 
@@ -48,31 +55,30 @@ export const messageService = {
 
         if (error) throw error;
 
-        // Aktualizovať last_message_at v konverzácii
         await supabase
             .from('conversations')
             .update({ last_message_at: new Date().toISOString() })
             .eq('id', conversationId);
 
-        return data;
+        return data as Message;
     },
 
     // Získať správy v konverzácii
-    async getMessages(conversationId: string) {
+    async getMessages(conversationId: string): Promise<MessageWithSender[]> {
         const { data, error } = await supabase
             .from('messages')
             .select(`
-        *,
-        sender:profiles!sender_id (
-          full_name,
-          avatar_url
-        )
-      `)
+                *,
+                sender:profiles!sender_id (
+                    full_name,
+                    avatar_url
+                )
+            `)
             .eq('conversation_id', conversationId)
             .order('created_at', { ascending: true });
 
         if (error) throw error;
-        return data;
+        return data as unknown as MessageWithSender[];
     },
 
     // Získať všetky konverzácie pre používateľa
@@ -80,24 +86,23 @@ export const messageService = {
         const { data, error } = await supabase
             .from('conversations')
             .select(`
-        *,
-        participant1:profiles!participant_1 (
-          id,
-          full_name,
-          avatar_url
-        ),
-        participant2:profiles!participant_2 (
-          id,
-          full_name,
-          avatar_url
-        )
-      `)
+                *,
+                participant1:profiles!participant_1 (
+                    id,
+                    full_name,
+                    avatar_url
+                ),
+                participant2:profiles!participant_2 (
+                    id,
+                    full_name,
+                    avatar_url
+                )
+            `)
             .or(`participant_1.eq.${userId},participant_2.eq.${userId}`)
             .order('last_message_at', { ascending: false });
 
         if (error) throw error;
 
-        // Pre každú konverzáciu získať poslednú správu
         const conversationsWithLastMessage = await Promise.all(
             (data || []).map(async (conversation) => {
                 const { data: lastMessage } = await supabase
@@ -106,7 +111,7 @@ export const messageService = {
                     .eq('conversation_id', conversation.id)
                     .order('created_at', { ascending: false })
                     .limit(1)
-                    .single();
+                    .maybeSingle();
 
                 return {
                     ...conversation,
@@ -132,7 +137,6 @@ export const messageService = {
 
     // Získať počet neprečítaných správ
     async getUnreadCount(userId: string) {
-        // Získať všetky konverzácie používateľa
         const { data: conversations, error: convError } = await supabase
             .from('conversations')
             .select('id')
@@ -143,7 +147,6 @@ export const messageService = {
 
         const conversationIds = conversations.map(c => c.id);
 
-        // Spočítať neprečítané správy
         const { count, error } = await supabase
             .from('messages')
             .select('*', { count: 'exact', head: true })
@@ -156,7 +159,7 @@ export const messageService = {
     },
 
     // Real-time subscription na nové správy
-    subscribeToMessages(conversationId: string, onNewMessage: (message: Message) => void) {
+    subscribeToMessages(conversationId: string, onNewMessage: (message: MessageWithSender) => void) {
         const subscription = supabase
             .channel(`messages:${conversationId}`)
             .on(
@@ -167,8 +170,21 @@ export const messageService = {
                     table: 'messages',
                     filter: `conversation_id=eq.${conversationId}`
                 },
-                (payload) => {
-                    onNewMessage(payload.new as Message);
+                async (payload) => {
+                    // Načítať správy aj s informáciami o odosielateľovi
+                    const { data: fullMessage } = await supabase
+                        .from('messages')
+                        .select(`
+                            *,
+                            sender:profiles!sender_id (
+                                full_name,
+                                avatar_url
+                            )
+                        `)
+                        .eq('id', payload.new.id)
+                        .single();
+
+                    onNewMessage(fullMessage as unknown as MessageWithSender);
                 }
             )
             .subscribe();

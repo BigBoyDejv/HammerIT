@@ -99,6 +99,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id,
         full_name: fullName,
         role: role,
+        phone: null,
+        bio: null,
         created_at: new Date().toISOString()
       });
     }

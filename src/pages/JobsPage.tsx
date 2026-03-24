@@ -1,28 +1,12 @@
+// src/pages/JobsPage.tsx (pridaj craftsmanId do volania)
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { jobService } from '../services';
 import JobCard from '../components/JobCard';
 
-interface Job {
-    id: string;
-    client_id: string;
-    title: string;
-    description: string;
-    category: string;
-    location: string;
-    budget_min: number | null;
-    budget_max: number | null;
-    status: string;
-    created_at: string | null;
-    client?: {
-        full_name: string;
-        avatar_url: string | null;
-    };
-}
-
 export function JobsPage() {
-    const { user } = useAuth();
-    const [jobs, setJobs] = useState<Job[]>([]);
+    const { user, profile } = useAuth();
+    const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({
         category: '',
@@ -39,7 +23,16 @@ export function JobsPage() {
     const fetchJobs = async () => {
         setLoading(true);
         try {
-            const data = await jobService.getAllJobs({ status: 'open' });
+            // Pre remeselníka posielame jeho ID na filtrovanie prác, na ktoré už reagoval
+            const craftsmanId = profile?.role === 'craftsman' ? user?.id : undefined;
+            const data = await jobService.getAllJobs({
+                status: 'open',
+                category: filters.category || undefined,
+                location: filters.location || undefined,
+                minBudget: filters.minBudget ? Number(filters.minBudget) : undefined,
+                maxBudget: filters.maxBudget ? Number(filters.maxBudget) : undefined,
+                craftsmanId  // <-- PRIDANÉ
+            });
             setJobs(data || []);
         } catch (error) {
             console.error('Chyba pri načítaní prác:', error);
@@ -51,12 +44,14 @@ export function JobsPage() {
     const handleFilter = async () => {
         setLoading(true);
         try {
+            const craftsmanId = profile?.role === 'craftsman' ? user?.id : undefined;
             const data = await jobService.getAllJobs({
                 status: 'open',
                 category: filters.category || undefined,
                 location: filters.location || undefined,
                 minBudget: filters.minBudget ? Number(filters.minBudget) : undefined,
                 maxBudget: filters.maxBudget ? Number(filters.maxBudget) : undefined,
+                craftsmanId  // <-- PRIDANÉ
             });
             setJobs(data || []);
         } catch (error) {
@@ -70,6 +65,7 @@ export function JobsPage() {
         setFilters({ category: '', location: '', minBudget: '', maxBudget: '' });
         fetchJobs();
     };
+
 
     if (loading) {
         return (

@@ -4,14 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+console.log("Inicializácia Supabase URL:", supabaseUrl);
+
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-console.log("URL:", import.meta.env.VITE_SUPABASE_URL);
-console.log("KEY existuje:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 // Typy pre databázu
 export type Profile = {

@@ -6,6 +6,7 @@ type Profile = {
   id: string;
   role: 'client' | 'craftsman';
   full_name: string;
+  email: string;  // <-- PRIDAJ EMAIL DO TYPU
   phone: string | null;
   bio: string | null;
   created_at: string;
@@ -36,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUser(user);
-          await loadProfile(user.id); // ← reálny profil namiesto hardcoded 'client'
+          await loadProfile(user.id);
         }
       } catch (error) {
         console.error('Auth error:', error);
@@ -63,11 +64,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
 
     if (data.user) {
-      // Vytvoriť profil v databáze
+      // Vytvoriť profil v databáze - PRIDAJ EMAIL
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: data.user.id,
+          email: email,  // <-- PRIDAJ TENTO RIADOK
           full_name: fullName,
           phone: null,
           bio: null,
@@ -97,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       setProfile({
         id: data.user.id,
+        email: email,  // <-- PRIDAJ AJ TU
         full_name: fullName,
         role: role,
         phone: null,
@@ -106,7 +109,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // FUNKCIA NA NAČÍTANIE PROFILU - PRIDAJ TÚTO
   const loadProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -128,13 +130,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     if (data.user) {
       setUser(data.user);
-      await loadProfile(data.user.id); // ← načítaj reálny profil z DB
+      await loadProfile(data.user.id);
     }
   };
 
@@ -147,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) throw new Error('No user logged in');
 
-    console.log('Updating profile:', updates); // Debug log
+    console.log('Updating profile:', updates);
 
     const { error } = await supabase
       .from('profiles')
@@ -161,7 +162,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     console.log('Profile updated successfully');
 
-    // Znovu načítať profil
     await loadProfile(user.id);
   };
 

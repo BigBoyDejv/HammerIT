@@ -64,6 +64,31 @@ export function Navbar() {
     }
   };
 
+  useEffect(() => {
+    // Pridaj podmienku
+    if (!user || profile?.role !== 'craftsman') return;
+
+    const offerSubscription = supabase
+      .channel('navbar-offers')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'job_offers',
+          filter: `craftsman_id=eq.${user.id}`
+        },
+        () => {
+          fetchPendingOffersCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      offerSubscription.unsubscribe();
+    };
+  }, [user, profile]);
+
   // Načítať počiatočné hodnoty
   useEffect(() => {
     fetchUnreadCount();

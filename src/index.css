@@ -859,4 +859,201 @@ h6 {
     .input-modern {
         @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all duration-200;
     }
+
+    .badge-warning {
+        @apply bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs font-medium;
+    }
+
+    /* src/index.css - pridaj na koniec súboru */
+
+    /* ═══════════════════════════════════════
+   MOBILE RESPONSIVITY FIXES
+═══════════════════════════════════════ */
+
+    /* Základné mobilné nastavenia */
+    @media (max-width: 768px) {
+
+        /* Zmenšenie paddingov */
+        .container-wide {
+            padding: 0 1rem;
+        }
+
+        /* Menšie nadpisy */
+        h1 {
+            font-size: 1.75rem !important;
+        }
+
+        h2 {
+            font-size: 1.5rem !important;
+        }
+
+        h3 {
+            font-size: 1.25rem !important;
+        }
+
+        /* Karty na celú šírku */
+        .card,
+        .glass-card,
+        .job-card,
+        .dashboard-card {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        /* Tlačidlá na celú šírku na mobile */
+        .btn-primary,
+        .btn-secondary,
+        .btn-outline,
+        .btn-gradient {
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+
+        /* Gridy na jeden stĺpec */
+        .grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Formuláre */
+        .form-input,
+        .form-textarea,
+        .form-select {
+            font-size: 16px;
+            /* Zabráni zoomu pri focus */
+        }
+
+        /* Dashboard karty */
+        .dashboard-card-number {
+            font-size: 1.75rem;
+        }
+
+        /* Stats čísla */
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        /* Hero sekcia */
+        .hero-bg {
+            min-height: 80vh;
+        }
+
+        /* Padding pre fixed navbar */
+        .pt-20 {
+            padding-top: 4rem !important;
+        }
+    }
+
+    /* Extra malé zariadenia (do 480px) */
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 1.5rem !important;
+        }
+
+        .btn-primary,
+        .btn-secondary,
+        .btn-outline {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .card,
+        .glass-card {
+            padding: 1rem;
+        }
+
+        .dashboard-card-number {
+            font-size: 1.5rem;
+        }
+
+        /* Skryť niektoré dekoračné prvky */
+        .floating-card {
+            display: none;
+        }
+    }
+
+    /* Mobilná navigácia */
+    @media (max-width: 768px) {
+        .bottom-nav {
+            padding: 0.5rem 0.5rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+        }
+
+        .nav-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Chat na mobile */
+        .chat-window {
+            height: calc(100vh - 120px);
+        }
+
+        .conversation-list {
+            width: 100% !important;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 50;
+            background: white;
+            height: 100%;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .conversation-list.open {
+            transform: translateX(0);
+        }
+
+        /* Jobs page filter */
+        .filter-section .grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Modálne okná */
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+            max-height: 90vh;
+        }
+    }
+
+    /* Utility triedy */
+    .section-padding {
+        padding: 4rem 0;
+    }
+
+    @media (max-width: 768px) {
+        .section-padding {
+            padding: 2.5rem 0;
+        }
+    }
+
+    /* Gradient text static (bez animácie) */
+    .gradient-text-static {
+        background: linear-gradient(135deg, #ff4d1a 0%, #ff6b3d 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Pre Home page sekcie */
+    .bg-card {
+        background-color: #f8f9ff;
+    }
+
+    .text-foreground {
+        color: #0a0a1a;
+    }
+
+    .text-muted-foreground {
+        color: #6b7280;
+    }
+
+    .border-border {
+        border-color: rgba(25, 25, 112, 0.1);
+    }
 }

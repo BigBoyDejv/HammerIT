@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { jobService, contractService } from '../services';
-import { Briefcase, TrendingUp, CheckCircle, Sparkles, ArrowRight, Wrench, MessageSquare, Star, Clock, MapPin, Euro } from 'lucide-react';
+import { Briefcase, TrendingUp, CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
 import { JobCardModern } from '../components/JobCardModern';
 
 export function Dashboard() {

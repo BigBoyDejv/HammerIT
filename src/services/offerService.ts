@@ -1,7 +1,7 @@
 // src/services/offerService.ts
 import { supabase } from '../lib/supabase';
 import { notificationService } from './notificationService';
-import { messageService } from './messageService';
+// import { messageService } from './messageService';
 
 export type Offer = {
     id: string;

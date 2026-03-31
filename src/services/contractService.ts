@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
 
-type Contract = Database['public']['Tables']['contracts']['Row'];
+// type Contract = Database['public']['Tables']['contracts']['Row'];
 type ContractInsert = Database['public']['Tables']['contracts']['Insert'];
 
 export { craftsmanService } from './craftsmanService';

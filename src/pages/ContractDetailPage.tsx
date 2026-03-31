@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { contractService, jobService, offerService } from '../services';
-import { MapPin, Euro, Calendar, Briefcase, User, ArrowLeft, CheckCircle, XCircle, Clock, MessageCircle, Star } from 'lucide-react';
+import { contractService } from '../services';
+import { MapPin, Euro, Calendar, User, ArrowLeft, CheckCircle, Clock, MessageCircle, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export function ContractDetailPage() {

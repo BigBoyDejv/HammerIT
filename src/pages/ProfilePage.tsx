@@ -38,7 +38,6 @@ export function ProfilePage() {
     // Verification states
     const [verificationFile, setVerificationFile] = useState<File | null>(null);
     const [verificationLoading, setVerificationLoading] = useState(false);
-    const [verificationDoc, setVerificationDoc] = useState<any>(null);
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -153,8 +152,8 @@ export function ProfilePage() {
     // Verification
     const loadVerification = async () => {
         try {
-            const doc = await verificationService.getVerificationStatus(user!.id);
-            setVerificationDoc(doc);
+            await verificationService.getVerificationStatus(user!.id);
+            // We reload the page on upload to sync everything, so we don't need to store this status locally for now
         } catch (err) {
             console.error('Error loading verification:', err);
         }

@@ -1,0 +1,21 @@
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+
+src/components/DashboardModern.tsx(5,68): error TS6133: 'Wrench' is declared but its value is never read.
+src/components/DashboardModern.tsx(5,76): error TS6133: 'MessageSquare' is declared but its value is never read.
+src/components/DashboardModern.tsx(5,91): error TS6133: 'Star' is declared but its value is never read.
+src/pages/ContractDetailPage.tsx(4,27): error TS6133: 'jobService' is declared but its value is never read.
+src/pages/ContractDetailPage.tsx(4,39): error TS6133: 'offerService' is declared but its value is never read.
+src/pages/ContractDetailPage.tsx(5,34): error TS6133: 'Briefcase' is declared but its value is never read.
+src/pages/ContractDetailPage.tsx(5,45): error TS6133: 'User' is declared but its value is never read.
+src/pages/ContractDetailPage.tsx(5,75): error TS6133: 'XCircle' is declared but its value is never read.
+src/pages/Dashboard.tsx(6,68): error TS6133: 'Wrench' is declared but its value is never read.
+src/pages/Dashboard.tsx(6,76): error TS6133: 'MessageSquare' is declared but its value is never read.
+src/pages/Dashboard.tsx(6,91): error TS6133: 'Star' is declared but its value is never read.
+src/pages/Dashboard.tsx(6,97): error TS6133: 'Clock' is declared but its value is never read.
+src/pages/Dashboard.tsx(6,104): error TS6133: 'MapPin' is declared but its value is never read.
+src/pages/Dashboard.tsx(6,112): error TS6133: 'Euro' is declared but its value is never read.
+src/pages/ProfilePage.tsx(41,12): error TS6133: 'verificationDoc' is declared but its value is never read.
+src/services/contractService.ts(4,6): error TS6196: 'Contract' is declared but never used.
+src/services/offerService.ts(4,1): error TS6133: 'messageService' is declared but its value is never read.

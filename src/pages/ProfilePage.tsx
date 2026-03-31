@@ -199,10 +199,10 @@ export function ProfilePage() {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8">
-                {/* ─── LOCAL SIDEBAR ─── */}
+                {/* ─── LOCAL SIDEBAR / MOBILE TABS ─── */}
                 <div className="w-full lg:w-64 flex-shrink-0 px-4 sm:px-0">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden sticky top-24">
-                        <nav className="p-2 space-y-1">
+                    <div className="bg-white dark:bg-gray-800 lg:rounded-2xl shadow-sm border-b lg:border border-gray-100 dark:border-gray-700 overflow-hidden lg:sticky lg:top-24 -mx-4 sm:mx-0 rounded-none sm:rounded-2xl">
+                        <nav className="flex lg:flex-col overflow-x-auto hide-scrollbar p-3 lg:p-2 gap-2 lg:gap-0 lg:space-y-1">
                             <SidebarItem
                                 icon={User}
                                 label="Môj profil"
@@ -238,7 +238,7 @@ export function ProfilePage() {
                             />
                             <SidebarItem icon={HelpCircle} label="Podpora" onClick={() => { }} />
                         </nav>
-                        <div className="p-4 border-t border-gray-50 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+                        <div className="hidden lg:block p-4 border-t border-gray-50 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                             <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-widest pl-2 mb-2">Verzia</p>
                             <div className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400 font-medium">HammerIT v1.4.2</div>
                         </div>
@@ -743,17 +743,17 @@ function SidebarItem({ icon: Icon, label, active = false, onClick, badge }: { ic
     return (
         <button
             onClick={onClick}
-            className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200 group ${active
-                ? 'bg-coral-50 dark:bg-coral-900/20 text-coral-600 dark:text-coral-400 font-bold'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium'
+            className={`flex-shrink-0 lg:w-full flex items-center justify-between p-3 px-4 lg:px-3 rounded-xl lg:rounded-xl rounded-full transition-all duration-200 group ${active
+                ? 'bg-coral-50 dark:bg-coral-900/20 text-coral-600 dark:text-coral-400 font-bold border-coral-200 dark:border-coral-800'
+                : 'bg-gray-50 lg:bg-transparent dark:bg-gray-800 lg:dark:bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium'
                 }`}
         >
             <div className="flex items-center gap-3">
                 <Icon className={`w-5 h-5 ${active ? 'text-coral-500' : 'text-gray-400 group-hover:text-coral-400'}`} />
-                <span className="text-sm">{label}</span>
+                <span className="text-sm whitespace-nowrap">{label}</span>
                 {badge && <span className="text-xs">{badge}</span>}
             </div>
-            {active && <ChevronRight className="w-4 h-4" />}
+            {active && <ChevronRight className="w-4 h-4 hidden lg:block" />}
         </button>
     );
 }

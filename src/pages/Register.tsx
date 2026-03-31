@@ -30,8 +30,8 @@ export function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="fixed inset-0 top-16 md:static z-[40] md:z-auto md:min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6 lg:px-8 pb-4">
+      <div className="max-w-md w-full h-full md:h-auto overflow-y-auto hide-scrollbar md:overflow-visible flex flex-col justify-center py-4 space-y-4 md:space-y-8">
         {/* Logo */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
@@ -104,8 +104,8 @@ export function Register() {
                   type="button"
                   onClick={() => setRole('client')}
                   className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${role === 'client'
-                      ? 'border-coral-500 dark:border-coral-400 bg-coral-50 dark:bg-coral-900/20 text-coral-600 dark:text-coral-400'
-                      : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
+                    ? 'border-coral-500 dark:border-coral-400 bg-coral-50 dark:bg-coral-900/20 text-coral-600 dark:text-coral-400'
+                    : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                 >
                   <User className="w-5 h-5" />
@@ -115,8 +115,8 @@ export function Register() {
                   type="button"
                   onClick={() => setRole('craftsman')}
                   className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${role === 'craftsman'
-                      ? 'border-coral-500 dark:border-coral-400 bg-coral-50 dark:bg-coral-900/20 text-coral-600 dark:text-coral-400'
-                      : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
+                    ? 'border-coral-500 dark:border-coral-400 bg-coral-50 dark:bg-coral-900/20 text-coral-600 dark:text-coral-400'
+                    : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                 >
                   <Hammer className="w-5 h-5" />

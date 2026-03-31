@@ -4,7 +4,7 @@ import { Wrench, Mail, Phone, MapPin, Facebook, Instagram, Twitter } from 'lucid
 
 const Footer = () => {
     return (
-        <footer className="bg-[#191970] dark:bg-slate-950 text-white mt-auto border-t border-white/5 transition-colors duration-300">
+        <footer className="hidden md:block bg-[#191970] dark:bg-slate-950 text-white mt-auto border-t border-white/5 transition-colors duration-300">
             <div className="container mx-auto px-4 py-12 md:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                     {/* Brand */}

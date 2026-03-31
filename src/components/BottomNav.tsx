@@ -4,11 +4,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
+import { motion } from 'framer-motion';
+
 export function BottomNav() {
     const location = useLocation();
     const { user, profile } = useAuth();
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [pendingOffers, setPendingOffers] = useState(0);
+
+    // Hide on auth pages
+    const isAuthPage = location.pathname.includes('/auth/login') || location.pathname.includes('/auth/register');
+    if (isAuthPage) return null;
 
     useEffect(() => {
         if (!user) return;
@@ -72,7 +78,7 @@ export function BottomNav() {
     const items = profile?.role === 'craftsman' ? craftsmanItems : clientItems;
 
     return (
-        <div className="bottom-nav md:hidden safe-area-pb">
+        <div className="bottom-nav md:hidden px-2">
             <div className="flex justify-around items-center">
                 {items.map((item) => {
                     const isActive =
@@ -84,22 +90,54 @@ export function BottomNav() {
                         <Link
                             key={item.path}
                             to={item.path}
-                            className={`nav-item tap-scale relative flex-1 flex flex-col items-center py-1 ${isActive ? 'active' : ''}`}
+                            className="relative flex-1 flex flex-col items-center py-2 z-10 outline-none"
                         >
-                            <div className="relative">
-                                <Icon className={`nav-icon transition-colors ${isActive ? 'text-coral-500' : 'text-gray-400 dark:text-gray-500'}`} strokeWidth={isActive ? 2.5 : 1.75} />
+                            {/* Animated Floating Circle Background */}
+                            {isActive && (
+                                <motion.div
+                                    layoutId="bottom-nav-indicator"
+                                    className="absolute -top-4 w-12 h-12 bg-gradient-to-tr from-coral-500 to-coral-400 rounded-full shadow-lg shadow-coral-500/40 border-[4px] border-white dark:border-gray-900 z-0"
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 400,
+                                        damping: 25
+                                    }}
+                                />
+                            )}
+                            
+                            {/* Animated Icon Container */}
+                            <motion.div 
+                                className="relative flex items-center justify-center w-12 h-10 z-10"
+                                animate={{ 
+                                    y: isActive ? -20 : 0,
+                                    scale: isActive ? 1.1 : 1
+                                }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            >
+                                <Icon 
+                                    className={`transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-400 dark:text-gray-500'}`} 
+                                    strokeWidth={isActive ? 2.5 : 2} 
+                                    size={24}
+                                />
                                 {item.badge > 0 && (
-                                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-coral-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 shadow-sm border border-white dark:border-gray-900">
+                                    <span className={`absolute ${isActive ? '-top-1 -right-1' : 'top-1 right-2'} min-w-[16px] h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 shadow-sm transition-all duration-300 ${isActive ? 'bg-amber-400 border-2 border-coral-500' : 'bg-coral-500 border-2 border-white dark:border-gray-900'}`}>
                                         {item.badge > 9 ? '9+' : item.badge}
                                     </span>
                                 )}
-                            </div>
-                            <span className={`nav-label transition-colors ${isActive ? 'text-coral-500 font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>{item.label}</span>
-
-                            {/* Active indicator dot */}
-                            {isActive && (
-                                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-coral-500 rounded-full" />
-                            )}
+                            </motion.div>
+                            
+                            {/* Label */}
+                            <motion.span 
+                                animate={{
+                                    y: isActive ? 4 : 0,
+                                    opacity: isActive ? 1 : 0.7,
+                                    scale: isActive ? 1 : 0.95
+                                }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                className={`text-[10px] sm:text-xs origin-top transition-colors duration-300 ${isActive ? 'text-coral-500 font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}
+                            >
+                                {item.label}
+                            </motion.span>
                         </Link>
                     );
                 })}

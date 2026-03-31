@@ -290,7 +290,7 @@ export function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`md:hidden transition-all duration-300 ${isOpen ? 'max-h-[calc(100vh-5rem)] overflow-y-auto opacity-100' : 'max-h-0 overflow-hidden opacity-0'}`}>
         <div className="px-4 py-4 space-y-1 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-white/5">
           {user ? (
             <>
@@ -349,6 +349,14 @@ export function Navbar() {
                 <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${resolvedTheme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
               </div>
             </button>
+          </div>
+
+          {/* Mobile Footer Links */}
+          <div className="pt-6 pb-2 flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs text-gray-400 dark:text-gray-500 font-medium">
+            <Link to="/about" onClick={() => setIsOpen(false)} className="hover:text-coral-500 transition-colors">O nás</Link>
+            <Link to="/terms" onClick={() => setIsOpen(false)} className="hover:text-coral-500 transition-colors">Podmienky</Link>
+            <Link to="/privacy" onClick={() => setIsOpen(false)} className="hover:text-coral-500 transition-colors">Súkromie</Link>
+            <a href="mailto:info@hammerit.sk" className="hover:text-coral-500 transition-colors">Kontakt</a>
           </div>
         </div>
       </div>

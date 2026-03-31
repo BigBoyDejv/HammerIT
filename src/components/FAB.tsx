@@ -11,7 +11,7 @@ export function FAB() {
     const link = profile.role === 'client' ? '/jobs/new' : '/jobs';
 
     return (
-        <Link to={link} className="fab tap-scale">
+        <Link to={link} className="fab tap-scale hidden md:flex items-center justify-center cursor-pointer">
             <Plus className="w-6 h-6" />
         </Link>
     );

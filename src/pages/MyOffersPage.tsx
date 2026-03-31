@@ -170,34 +170,25 @@ export function MyOffersPage() {
                 ))}
             </div>
 
-            {filteredOffers.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-xl shadow-sm">
-                    <Briefcase className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-1">Žiadne ponuky</h3>
-                    <p className="text-gray-500">
-                        {filter === 'all'
-                            ? 'Zatiaľ ste neodoslali žiadnu ponuku.'
-                            : filter === 'pending'
-                                ? 'Nemáte žiadne čakajúce ponuky.'
-                                : filter === 'accepted'
-                                    ? 'Nemáte žiadne prijaté ponuky.'
-                                    : 'Nemáte žiadne zamietnuté ponuky.'}
-                    </p>
-                    <Link to="/jobs" className="btn-gradient inline-flex mt-6">
-                        Prehliadať práce
-                    </Link>
+            {offers.length === 0 ? (
+                <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div className="w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Clock className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Zatiaľ žiadne ponuky</h3>
+                    <p className="text-gray-500 dark:text-gray-400">Keď zareagujete na nejakú prácu, uvidíte ju tu.</p>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {filteredOffers.map((offer) => {
                         const status = getStatusText(offer.status);
                         return (
-                            <div key={offer.id} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden">
+                            <div key={offer.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 dark:border-gray-700">
                                 <div className="p-5">
                                     <div className="flex flex-wrap items-start justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                <h2 className="text-xl font-semibold text-gray-900">
+                                                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                                                     {offer.job?.title}
                                                 </h2>
                                                 <span className={`text-xs px-2 py-1 rounded-full ${status.class} flex items-center gap-1`}>
@@ -206,11 +197,11 @@ export function MyOffersPage() {
                                                 </span>
                                             </div>
 
-                                            <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
                                                 {offer.job?.description}
                                             </p>
 
-                                            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
+                                            <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
                                                 <span className="flex items-center gap-1">
                                                     <Briefcase className="w-4 h-4" /> {offer.job?.category}
                                                 </span>
@@ -222,27 +213,22 @@ export function MyOffersPage() {
                                                 </span>
                                             </div>
 
-                                            {/* Tvoja ponuka */}
-                                            <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                                                <p className="text-sm font-medium text-gray-700 mb-1">Tvoja ponuka:</p>
+                                            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 mb-3">
+                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tvoja ponuka:</p>
                                                 <div className="flex items-center gap-4">
                                                     <span className="text-xl font-bold text-coral-500">{offer.price}€</span>
-                                                    <span className="text-sm text-gray-500">⏱️ {offer.estimated_duration}</span>
+                                                    <span className="text-sm text-gray-500 dark:text-gray-400">⏱️ {offer.estimated_duration}</span>
                                                 </div>
-                                                <p className="text-sm text-gray-600 mt-1">"{offer.message}"</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">"{offer.message}"</p>
                                             </div>
 
-                                            <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
-                                                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium">
+                                            <div className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                                                <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300">
                                                     {offer.job?.client?.full_name?.charAt(0) || 'K'}
                                                 </div>
-                                                <span className="text-sm text-gray-500">Klient: {offer.job?.client?.full_name}</span>
-                                                <span className="text-xs text-gray-400">
-                                                    {new Date(offer.created_at).toLocaleDateString('sk-SK')}
-                                                </span>
+                                                <span className="text-sm text-gray-500 dark:text-gray-400">Klient: {offer.job?.client?.full_name}</span>
                                             </div>
                                         </div>
-
                                         <div className="flex flex-col gap-2 min-w-[100px]">
                                             <Link
                                                 to={`/jobs/${offer.job_request_id}`}
@@ -253,7 +239,7 @@ export function MyOffersPage() {
                                             {offer.status === 'accepted' && (
                                                 <Link
                                                     to="/messages"
-                                                    className="btn-outline text-sm py-2 px-3 flex items-center justify-center gap-1"
+                                                    className="btn-outline dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 text-sm py-2 px-3 flex items-center justify-center gap-1"
                                                 >
                                                     💬 Správa
                                                 </Link>
@@ -261,7 +247,7 @@ export function MyOffersPage() {
                                             {offer.status === 'rejected' && (
                                                 <Link
                                                     to={`/jobs/${offer.job_request_id}`}
-                                                    className="btn-outline text-sm py-2 px-3 flex items-center justify-center gap-1"
+                                                    className="btn-outline dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 text-sm py-2 px-3 flex items-center justify-center gap-1"
                                                 >
                                                     🔄 Poslať novú ponuku
                                                 </Link>

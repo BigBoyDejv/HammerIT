@@ -11,12 +11,12 @@ interface CardProps {
 }
 
 const variantStyles: Record<CardVariant, string> = {
-  default: 'bg-white border border-gray-100 shadow-sm',
-  glass: 'bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl',
-  coral: 'bg-gradient-to-br from-coral-50 to-coral-100 border border-coral-200/60',
-  navy: 'bg-gradient-to-br from-navy-50 to-navy-100 border border-navy-200/60',
-  emerald: 'bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/60',
-  amber: 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60',
+  default: 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm',
+  glass: 'bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 shadow-xl',
+  coral: 'bg-gradient-to-br from-coral-50 to-coral-100 dark:from-coral-900/40 dark:to-coral-800/40 border border-coral-200/60 dark:border-coral-800/50',
+  navy: 'bg-gradient-to-br from-navy-50 to-navy-100 dark:from-navy-900/40 dark:to-navy-800/40 border border-navy-200/60 dark:border-navy-800/50',
+  emerald: 'bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-emerald-800/40 border border-emerald-200/60 dark:border-emerald-800/50',
+  amber: 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/40 dark:to-amber-800/40 border border-amber-200/60 dark:border-amber-800/50',
   dark: 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/60 text-white',
 };
 

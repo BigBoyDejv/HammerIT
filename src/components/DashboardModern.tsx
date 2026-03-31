@@ -72,19 +72,19 @@ export function DashboardModern() {
             {/* Stats Cards */}
             <div className="grid grid-cols-3 gap-3">
                 {statsCards.map((card, idx) => (
-                    <div key={idx} className="glass-card p-4 text-center hover-lift">
-                        <div className={`w-10 h-10 bg-gradient-to-r ${card.color} rounded-xl flex items-center justify-center mb-2 mx-auto`}>
+                    <div key={idx} className="glass-card p-4 text-center hover-lift bg-card dark:bg-slate-800/40 border border-gray-100 dark:border-gray-700/50">
+                        <div className={`w-10 h-10 bg-gradient-to-r ${card.color} rounded-xl flex items-center justify-center mb-2 mx-auto shadow-sm`}>
                             <card.icon className="w-5 h-5 text-white" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">{card.value}</div>
-                        <div className="text-xs text-gray-500">{card.label}</div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white">{card.value}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{card.label}</div>
                     </div>
                 ))}
             </div>
 
             {/* Quick Actions */}
-            <div className="glass-card p-4">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <div className="glass-card p-4 bg-card dark:bg-slate-800/40 border border-gray-100 dark:border-gray-700/50">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-coral-500" />
                     Rýchle akcie
                 </h2>
@@ -98,7 +98,7 @@ export function DashboardModern() {
                             🔍 Prehliadať práce
                         </Link>
                     )}
-                    <Link to="/messages" className="flex-1 bg-gray-100 text-gray-700 text-center py-3 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors">
+                    <Link to="/messages" className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-center py-3 rounded-xl text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                         💬 Správy
                     </Link>
                 </div>
@@ -107,9 +107,9 @@ export function DashboardModern() {
             {/* Recent Jobs */}
             {recentJobs.length > 0 && (
                 <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center justify-between">
                         <span>📋 {profile?.role === 'client' ? 'Najnovšie práce' : 'Aktívne zákazky'}</span>
-                        <Link to={profile?.role === 'client' ? '/jobs' : '/contracts'} className="text-sm text-coral-500 hover:underline flex items-center gap-1">
+                        <Link to={profile?.role === 'client' ? '/jobs' : '/contracts'} className="text-sm text-coral-500 dark:text-coral-400 hover:underline flex items-center gap-1 font-medium">
                             Všetky <ArrowRight className="w-3 h-3" />
                         </Link>
                     </h2>

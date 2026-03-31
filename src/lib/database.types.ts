@@ -224,6 +224,8 @@ export type Database = {
           created_at: string | null
           description: string
           id: string
+          lat: number | null
+          lng: number | null
           location: string
           status: string
           title: string
@@ -237,6 +239,8 @@ export type Database = {
           created_at?: string | null
           description: string
           id?: string
+          lat?: number | null
+          lng?: number | null
           location: string
           status?: string
           title: string
@@ -250,6 +254,8 @@ export type Database = {
           created_at?: string | null
           description?: string
           id?: string
+          lat?: number | null
+          lng?: number | null
           location?: string
           status?: string
           title?: string
@@ -353,33 +359,89 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string | null
+          email: string | null
           full_name: string
           id: string
+          is_verified: boolean
           phone: string | null
-          role: 'client' | 'craftsman'  // <-- ZMENIŤ na union typ
+          role: 'client' | 'craftsman'
           updated_at: string | null
+          verification_status: 'none' | 'pending' | 'verified' | 'rejected'
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          email?: string | null
           full_name: string
           id: string
+          is_verified?: boolean
           phone?: string | null
-          role: 'client' | 'craftsman'  // <-- ZMENIŤ na union typ
+          role: 'client' | 'craftsman'
           updated_at?: string | null
+          verification_status?: 'none' | 'pending' | 'verified' | 'rejected'
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          email?: string | null
           full_name?: string
           id?: string
+          is_verified?: boolean
           phone?: string | null
-          role?: 'client' | 'craftsman'  // <-- ZMENIŤ na union typ
+          role?: 'client' | 'craftsman'
           updated_at?: string | null
+          verification_status?: 'none' | 'pending' | 'verified' | 'rejected'
         }
         Relationships: []
+      }
+      verification_documents: {
+        Row: {
+          id: string
+          user_id: string
+          document_url: string
+          document_type: string
+          status: 'pending' | 'approved' | 'rejected'
+          rejection_reason: string | null
+          submitted_at: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          document_url: string
+          document_type?: string
+          status?: 'pending' | 'approved' | 'rejected'
+          rejection_reason?: string | null
+          submitted_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          document_url?: string
+          document_type?: string
+          status?: 'pending' | 'approved' | 'rejected'
+          rejection_reason?: string | null
+          submitted_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {

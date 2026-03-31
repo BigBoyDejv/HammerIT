@@ -96,14 +96,14 @@ export function NotificationBell() {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-full hover:bg-gray-100 transition-all active:scale-95 group"
+                className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all active:scale-95 group"
                 aria-label="Notifikácie"
             >
-                <Bell className={`w-5 h-5 transition-colors ${unreadCount > 0 ? 'text-coral-500' : 'text-gray-600 group-hover:text-gray-900'}`} />
+                <Bell className={`w-5 h-5 transition-colors ${unreadCount > 0 ? 'text-coral-500' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`} />
                 {unreadCount > 0 && (
                     <>
                         <span className="absolute top-2 right-2 w-2 h-2 bg-coral-500 rounded-full animate-ping opacity-75" />
-                        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-coral-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm border-2 border-white">
+                        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-coral-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm border-2 border-white dark:border-gray-900">
                             {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
                     </>
@@ -119,14 +119,14 @@ export function NotificationBell() {
                     />
 
                     {/* Dropdown */}
-                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50 animate-fade-in">
+                    <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50 animate-fade-in">
                         {/* Hlavička */}
-                        <div className="p-3 border-b border-gray-100 flex justify-between items-center">
-                            <h3 className="font-semibold text-gray-900">Notifikácie</h3>
+                        <div className="p-3 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-gray-900 dark:text-white">
+                            <h3 className="font-semibold">Notifikácie</h3>
                             {notifications.length > 0 && (
                                 <button
                                     onClick={markAllAsRead}
-                                    className="text-xs text-coral-500 hover:text-coral-600 flex items-center gap-1"
+                                    className="text-xs text-coral-500 dark:text-coral-400 hover:text-coral-600 dark:hover:text-coral-300 flex items-center gap-1"
                                 >
                                     <CheckCheck className="w-3 h-3" />
                                     Označiť všetky
@@ -137,8 +137,8 @@ export function NotificationBell() {
                         {/* Zoznam notifikácií */}
                         <div className="max-h-96 overflow-y-auto">
                             {notifications.length === 0 ? (
-                                <div className="p-6 text-center text-gray-500 text-sm">
-                                    <Bell className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                                <div className="p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+                                    <Bell className="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
                                     <p>Žiadne notifikácie</p>
                                 </div>
                             ) : (
@@ -150,15 +150,15 @@ export function NotificationBell() {
                                             markAsRead(notif.id);
                                             setIsOpen(false);
                                         }}
-                                        className={`block p-3 hover:bg-gray-50 transition-colors border-b border-gray-50 ${!notif.read ? 'bg-coral-50/30 border-l-4 border-l-coral-500' : ''
+                                        className={`block p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-50 dark:border-gray-700/50 ${!notif.read ? 'bg-coral-50/30 dark:bg-coral-900/10 border-l-4 border-l-coral-500' : ''
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className="text-xl">{getIcon(notif.type)}</div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-sm text-gray-900">{notif.title}</p>
-                                                <p className="text-xs text-gray-500 mt-1 line-clamp-2">{notif.message}</p>
-                                                <p className="text-xs text-gray-400 mt-1">
+                                                <p className="font-medium text-sm text-gray-900 dark:text-white">{notif.title}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{notif.message}</p>
+                                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                                                     {new Date(notif.created_at).toLocaleDateString('sk-SK', {
                                                         hour: '2-digit',
                                                         minute: '2-digit'
@@ -176,10 +176,10 @@ export function NotificationBell() {
 
                         {/* Pätička */}
                         {notifications.length > 0 && (
-                            <div className="p-2 border-t border-gray-100">
+                            <div className="p-2 border-t border-gray-100 dark:border-gray-700">
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className="w-full text-center text-xs text-gray-400 hover:text-gray-500 py-1"
+                                    className="w-full text-center text-xs text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 py-1"
                                 >
                                     Zavrieť
                                 </button>

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, MessageSquare, User, ClipboardList } from 'lucide-react';
+import { Home, Search, MessageSquare, User, ClipboardList, Map } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
@@ -64,9 +64,9 @@ export function BottomNav() {
     const craftsmanItems = [
         { path: '/dashboard', icon: Home, label: 'Domov', badge: 0 },
         { path: '/jobs', icon: Search, label: 'Hľadať', badge: 0 },
+        { path: '/map', icon: Map, label: 'Mapa', badge: 0 },
         { path: '/my-offers', icon: ClipboardList, label: 'Ponuky', badge: pendingOffers },
         { path: '/messages', icon: MessageSquare, label: 'Správy', badge: unreadMessages },
-        { path: '/profile', icon: User, label: 'Profil', badge: 0 },
     ];
 
     const items = profile?.role === 'craftsman' ? craftsmanItems : clientItems;

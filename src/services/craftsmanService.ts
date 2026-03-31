@@ -14,7 +14,7 @@ export const craftsmanService = {
             .from('craftsman_profiles')
             .select(`
         *,
-        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio, nationality)
+        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio)
       `);
 
         if (filters?.specialization) {
@@ -40,7 +40,7 @@ export const craftsmanService = {
             .from('craftsman_profiles')
             .select(`
         *,
-        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio, nationality)
+        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio)
       `)
             .eq('user_id', userId)
             .single();

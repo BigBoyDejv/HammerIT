@@ -1,8 +1,9 @@
 // ─── Navbar.tsx ────────────────────────────────────────────────────────────────
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Hammer, ChevronDown, Bell } from 'lucide-react';
+import { Menu, X, Hammer, ChevronDown, Sun, Moon, Map } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { NotificationBell } from './NotificationBell';
 import { supabase } from '../lib/supabase';
 
@@ -12,6 +13,7 @@ export function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [pendingOffersCount, setPendingOffersCount] = useState(0);
   const { user, profile, signOut } = useAuth();
+  const { resolvedTheme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   // Funkcia pre domov link - po prihlásení na dashboard
@@ -164,10 +166,11 @@ export function Navbar() {
     }
   };
 
-  const navClass = `fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
-    ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100'
-    : 'bg-white/80 backdrop-blur-sm'
-    }`;
+  const navClass = `fixed top-0 w-full z-50 transition-all duration-300 ${
+    scrolled
+      ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-lg border-b border-gray-100 dark:border-white/5'
+      : 'bg-transparent'
+  }`;
 
   return (
     <nav className={navClass}>
@@ -179,7 +182,7 @@ export function Navbar() {
             <div className="w-8 h-8 bg-gradient-to-br from-coral-500 to-coral-600 rounded-lg flex items-center justify-center shadow-sm">
               <Hammer className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-gray-900">HammerIt</span>
+            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">HammerIt</span>
           </Link>
 
           {/* Desktop */}
@@ -198,6 +201,10 @@ export function Navbar() {
                   : (
                     <>
                       <NavLink to="/jobs">Prehliadať práce</NavLink>
+                      <NavLink to="/map">
+                        <Map className="w-4 h-4 inline mr-0.5" />
+                        Mapa
+                      </NavLink>
                       <NavLink to="/my-offers" pendingCount={pendingOffersCount}>
                         Moje ponuky
                       </NavLink>
@@ -205,12 +212,25 @@ export function Navbar() {
                   )
                 }
 
-                {/* Notification Bell - samostatne */}
+                {/* Theme toggle */}
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
+                  aria-label="Toggle theme"
+                >
+                  {resolvedTheme === 'dark' ? (
+                    <Sun className="w-5 h-5 text-amber-400" />
+                  ) : (
+                    <Moon className="w-5 h-5" />
+                  )}
+                </button>
+
+                {/* Notification Bell */}
                 <NotificationBell />
 
                 {/* Profil dropdown */}
                 <div className="relative group">
-                  <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors py-2">
+                  <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors py-2">
                     <div className="w-8 h-8 bg-gradient-to-br from-coral-500 to-coral-600 rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-sm">
                       {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
@@ -219,13 +239,13 @@ export function Navbar() {
                     </span>
                     <ChevronDown className="h-4 w-4" />
                   </button>
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100 z-50">
-                    <Link to="/profile" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100 dark:border-gray-700 z-50">
+                    <Link to="/profile" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-xl transition-colors">
                       Môj profil
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-b-xl transition-colors"
+                      className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-b-xl transition-colors"
                     >
                       Odhlásiť sa
                     </button>
@@ -233,7 +253,20 @@ export function Navbar() {
                 </div>
               </>
             ) : (
-              <>
+              <div className="flex items-center space-x-6">
+                {/* Theme toggle for guests */}
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
+                  aria-label="Toggle theme"
+                >
+                  {resolvedTheme === 'dark' ? (
+                    <Sun className="w-5 h-5 text-amber-400" />
+                  ) : (
+                    <Moon className="w-5 h-5" />
+                  )}
+                </button>
+
                 <NavLink to="/auth/login">Prihlásiť sa</NavLink>
                 <Link
                   to="/auth/register"
@@ -242,13 +275,13 @@ export function Navbar() {
                 >
                   Registrovať sa
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
             aria-label="Toggle menu"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -258,7 +291,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="px-4 py-4 space-y-1 bg-white border-t border-gray-100">
+        <div className="px-4 py-4 space-y-1 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-white/5">
           {user ? (
             <>
               <MobileNavLink to={getHomeLink()} onClick={() => setIsOpen(false)}>Domov</MobileNavLink>
@@ -283,7 +316,7 @@ export function Navbar() {
               <MobileNavLink to="/profile" onClick={() => setIsOpen(false)}>Môj profil</MobileNavLink>
               <button
                 onClick={() => { handleSignOut(); setIsOpen(false); }}
-                className="block w-full text-left py-2.5 px-2 text-red-600 font-medium text-sm rounded-lg hover:bg-red-50 transition-colors"
+                className="block w-full text-left py-2.5 px-2 text-red-600 dark:text-red-400 font-medium text-sm rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
               >
                 Odhlásiť sa
               </button>
@@ -318,7 +351,7 @@ const NavLink = ({
     to={to}
     className={`relative text-sm font-medium transition-colors duration-200 flex items-center gap-1 ${highlight
       ? 'text-coral-500 font-semibold hover:text-coral-600'
-      : 'text-gray-600 hover:text-gray-900'
+      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
       }`}
   >
     {children}
@@ -352,7 +385,7 @@ const MobileNavLink = ({
   <Link
     to={to}
     onClick={onClick}
-    className="flex items-center justify-between py-2.5 px-2 text-sm text-gray-600 hover:text-coral-500 hover:bg-coral-50 rounded-lg transition-colors font-medium"
+    className="flex items-center justify-between py-2.5 px-2 text-sm text-gray-600 dark:text-gray-400 hover:text-coral-500 dark:hover:text-coral-400 hover:bg-coral-50 dark:hover:bg-coral-900/20 rounded-lg transition-colors font-medium"
   >
     <span>{children}</span>
     {(unreadCount !== undefined && unreadCount > 0) && (

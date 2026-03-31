@@ -28,38 +28,38 @@ export function JobCardModern({ job, variant = 'default', onAccept }: JobCardMod
 
     if (variant === 'active') {
         return (
-            <div className="glass-card p-5 hover-lift">
+            <div className="glass-card p-5 hover-lift bg-card dark:bg-slate-800/50 border border-gray-100 dark:border-gray-700/50">
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-coral-100 to-coral-200 rounded-xl flex items-center justify-center">
-                            <Wrench className="w-5 h-5 text-coral-600" />
+                        <div className="w-10 h-10 bg-gradient-to-br from-coral-100 to-coral-200 dark:from-coral-900/40 dark:to-coral-800/40 rounded-xl flex items-center justify-center">
+                            <Wrench className="w-5 h-5 text-coral-600 dark:text-coral-400" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-gray-900 text-sm">{job.title}</h3>
-                            <p className="text-xs text-gray-500">{job.category}</p>
+                            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{job.title}</h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{job.category}</p>
                         </div>
                     </div>
-                    <span className="badge badge-info">Prebieha</span>
+                    <span className="badge badge-info shadow-sm">Prebieha</span>
                 </div>
 
                 <div className="mb-4">
-                    <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                         <span>Priebeh práce</span>
-                        <span className="font-semibold text-coral-500">{job.progress || 75}%</span>
+                        <span className="font-semibold text-coral-500 dark:text-coral-400">{job.progress || 75}%</span>
                     </div>
-                    <div className="progress-bar">
+                    <div className="progress-bar bg-gray-100 dark:bg-gray-700">
                         <div className="progress-fill" style={{ width: `${job.progress || 75}%` }} />
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-gray-400 mb-4">
+                <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 mb-4">
                     <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {job.location}</span>
                     <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {getTimeAgo(job.created_at)}</span>
                 </div>
 
                 <Link
                     to={`/jobs/${job.id}`}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 text-sm font-medium hover:bg-coral-50 hover:border-coral-200 hover:text-coral-600 transition-all duration-200"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-coral-50 dark:hover:bg-coral-950/30 hover:border-coral-200 dark:hover:border-coral-800 hover:text-coral-600 dark:hover:text-coral-400 transition-all duration-200"
                 >
                     Sledovať priebeh <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -68,15 +68,15 @@ export function JobCardModern({ job, variant = 'default', onAccept }: JobCardMod
     }
 
     return (
-        <div className="glass-card p-5 hover-lift animate-fade-in-up">
+        <div className="glass-card p-5 hover-lift animate-fade-in-up bg-card dark:bg-slate-800/40 border border-gray-100 dark:border-gray-700/50">
             <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-navy-50 to-navy-100 rounded-xl flex items-center justify-center text-xl border border-navy-100">
+                    <div className="w-10 h-10 bg-gradient-to-br from-navy-50 to-navy-100 dark:from-navy-900/30 dark:to-navy-800/30 rounded-xl flex items-center justify-center text-xl border border-navy-100 dark:border-navy-800/50">
                         {CATEGORY_EMOJI[job.category] ?? '🔧'}
                     </div>
                     <div>
-                        <h3 className="font-semibold text-gray-900 text-sm leading-snug">{job.title}</h3>
-                        <p className="text-xs text-gray-500 line-clamp-1">{job.description}</p>
+                        <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-snug">{job.title}</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{job.description}</p>
                     </div>
                 </div>
             </div>
@@ -86,25 +86,25 @@ export function JobCardModern({ job, variant = 'default', onAccept }: JobCardMod
                 <span className="badge badge-success">Otvorená</span>
             </div>
 
-            <div className="flex items-center gap-4 text-xs text-gray-400 mb-4">
-                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-coral-400" /> {job.location}</span>
+            <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500 mb-4">
+                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-coral-400 dark:text-coral-500" /> {job.location}</span>
                 <span className="flex items-center gap-1">
-                    <Euro className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-emerald-700 font-medium">{job.budget_min}€ – {job.budget_max}€</span>
+                    <Euro className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+                    <span className="text-emerald-700 dark:text-emerald-400 font-medium">{job.budget_min}€ – {job.budget_max}€</span>
                 </span>
                 <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {getTimeAgo(job.created_at)}</span>
             </div>
 
             {job.client && (
-                <div className="flex items-center gap-2 pt-3 border-t border-gray-100 mb-4">
+                <div className="flex items-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-700 mb-4">
                     <div className="w-7 h-7 bg-gradient-to-br from-coral-500 to-coral-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm">
                         {job.client.full_name?.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-gray-900 truncate">{job.client.full_name}</p>
+                        <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">{job.client.full_name}</p>
                         <div className="flex items-center gap-1">
                             <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                            <span className="text-xs text-gray-400">4.9 · 23 recenzií</span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500">4.9 · 23 recenzií</span>
                         </div>
                     </div>
                 </div>
@@ -113,7 +113,7 @@ export function JobCardModern({ job, variant = 'default', onAccept }: JobCardMod
             {onAccept ? (
                 <button
                     onClick={onAccept}
-                    className="w-full py-2.5 bg-gradient-to-r from-coral-500 to-coral-600 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all duration-300 tap-scale"
+                    className="w-full py-2.5 bg-gradient-to-r from-coral-500 to-coral-600 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all duration-300 tap-scale border-none"
                     style={{ boxShadow: '0 4px 14px rgba(255,77,26,0.3)' }}
                 >
                     Prijať ponuku
@@ -121,7 +121,7 @@ export function JobCardModern({ job, variant = 'default', onAccept }: JobCardMod
             ) : (
                 <Link
                     to={`/jobs/${job.id}`}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 border border-gray-200 rounded-xl text-gray-600 text-sm font-medium hover:border-coral-400 hover:text-coral-600 hover:bg-coral-50 transition-all duration-200"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-300 text-sm font-medium hover:border-coral-400 dark:hover:border-coral-800 hover:text-coral-600 dark:hover:text-coral-400 hover:bg-coral-50 dark:hover:bg-coral-950/30 transition-all duration-200"
                 >
                     Zobraziť detail <ArrowRight className="w-4 h-4" />
                 </Link>

@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { messageService } from '../services';
 import { supabase } from '../lib/supabase';
-import { Search, Send, ArrowLeft } from 'lucide-react';
+import { Search, Send, ArrowLeft, MoreVertical, Check, CheckCheck } from 'lucide-react';
 
 interface Conversation {
     id: string;
@@ -38,22 +38,35 @@ export function MessagesPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showNewChat, setShowNewChat] = useState(false);
     const [availableUsers, setAvailableUsers] = useState<any[]>([]);
+    const [typingUser, setTypingUser] = useState<string | null>(null);
+    const [showMobileChat, setShowMobileChat] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
     const subscriptionRef = useRef<any>(null);
+    const typingSubRef = useRef<any>(null);
+    const readReceiptSubRef = useRef<any>(null);
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastTypingSentRef = useRef<number>(0);
 
-    // Scroll na spodok
-    const scrollToBottom = () => {
+    // Smart scroll - only scroll if user is near bottom
+    const scrollToBottom = useCallback((force = false) => {
         setTimeout(() => {
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            const container = messagesContainerRef.current;
+            if (!container) return;
+            
+            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+            if (force || isNearBottom) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
         }, 100);
-    };
+    }, []);
 
-    // Načítať všetky konverzácie používateľa
     const loadConversations = async () => {
         try {
             const data = await messageService.getUserConversations(user!.id);
-
-            // Získať počet neprečítaných správ pre každú konverzáciu
             const conversationsWithUnread = await Promise.all(
                 (data || []).map(async (conv: Conversation) => {
                     const { count } = await supabase
@@ -62,11 +75,9 @@ export function MessagesPage() {
                         .eq('conversation_id', conv.id)
                         .neq('sender_id', user!.id)
                         .is('read_at', null);
-
                     return { ...conv, unread_count: count || 0 };
                 })
             );
-
             setConversations(conversationsWithUnread);
         } catch (error) {
             console.error('Error loading conversations:', error);
@@ -75,29 +86,27 @@ export function MessagesPage() {
         }
     };
 
-    // Načítať správy v konverzácii
     const loadMessages = async (conversationId: string) => {
         try {
             const data = await messageService.getMessages(conversationId);
             setMessages((data as Message[]) || []);
-
             await messageService.markAsRead(conversationId, user!.id);
             setConversations(prev => prev.map(c =>
                 c.id === conversationId ? { ...c, unread_count: 0 } : c
             ));
-
-            scrollToBottom();
+            scrollToBottom(true);
         } catch (error) {
             console.error('Error loading messages:', error);
         }
     };
 
-    // Real-time subskripcia na nové správy v aktuálnej konverzácii
     const subscribeToMessages = (conversationId: string) => {
-        if (subscriptionRef.current) {
-            subscriptionRef.current.unsubscribe();
-        }
+        // Cleanup previous subscriptions
+        if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
+        if (typingSubRef.current) typingSubRef.current.unsubscribe();
+        if (readReceiptSubRef.current) readReceiptSubRef.current.unsubscribe();
 
+        // Message subscription
         subscriptionRef.current = supabase
             .channel(`chat:${conversationId}`)
             .on(
@@ -109,100 +118,127 @@ export function MessagesPage() {
                     filter: `conversation_id=eq.${conversationId}`
                 },
                 async (payload) => {
-                    // Načítať kompletnú správu so senderom
                     const { data: fullMessage } = await supabase
                         .from('messages')
-                        .select(`
-                            *,
-                            sender:profiles!sender_id (
-                                full_name,
-                                avatar_url
-                            )
-                        `)
+                        .select(`*, sender:profiles!sender_id (full_name, avatar_url)`)
                         .eq('id', payload.new.id)
                         .single();
 
                     if (fullMessage) {
-                        // Pridať správu do zoznamu
-                        setMessages(prev => [...prev, fullMessage]);
-
-                        // Scroll na spodok
+                        setMessages(prev => {
+                            // Deduplicate
+                            if (prev.some(m => m.id === fullMessage.id)) return prev;
+                            return [...prev, fullMessage];
+                        });
                         scrollToBottom();
 
-                        // Označiť ako prečítané, ak správu poslal niekto iný
                         if (fullMessage.sender_id !== user!.id) {
                             await messageService.markAsRead(conversationId, user!.id);
-                            // Aktualizovať unread count
                             setConversations(prev => prev.map(c =>
                                 c.id === conversationId ? { ...c, unread_count: 0 } : c
                             ));
                         }
-
-                        // Aktualizovať zoznam konverzácií (posledná správa)
+                        // Clear typing indicator when message arrives
+                        setTypingUser(null);
                         loadConversations();
                     }
                 }
             )
             .subscribe();
+
+        // Typing indicator subscription
+        typingSubRef.current = messageService.subscribeToTyping(conversationId, (data) => {
+            if (data.userId !== user!.id) {
+                setTypingUser(data.userName);
+                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = setTimeout(() => setTypingUser(null), 3000);
+            }
+        });
+
+        // Read receipt subscription
+        readReceiptSubRef.current = messageService.subscribeToReadReceipts(conversationId, () => {
+            // Reload messages to get updated read_at
+            loadMessages(conversationId);
+        });
     };
 
-    // Počiatočné načítanie konverzácií
     useEffect(() => {
         loadConversations();
-
-        // Skontrolovať či je v URL parameter user (pre rýchly chat)
         const userId = searchParams.get('user');
         if (userId && userId !== user?.id) {
             startConversationWithUser(userId);
         }
-
         return () => {
             if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
+            if (typingSubRef.current) typingSubRef.current.unsubscribe();
+            if (readReceiptSubRef.current) readReceiptSubRef.current.unsubscribe();
         };
     }, []);
 
-    // Pri výbere konverzácie
     useEffect(() => {
         if (selectedConversation) {
             loadMessages(selectedConversation.id);
             subscribeToMessages(selectedConversation.id);
         }
-
         return () => {
-            if (subscriptionRef.current) {
-                subscriptionRef.current.unsubscribe();
-            }
+            if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
+            if (typingSubRef.current) typingSubRef.current.unsubscribe();
+            if (readReceiptSubRef.current) readReceiptSubRef.current.unsubscribe();
         };
     }, [selectedConversation]);
 
-    // Odoslať správu
+    // Handle typing indicator broadcast with throttle
+    const handleTyping = () => {
+        if (!selectedConversation || !profile) return;
+        const now = Date.now();
+        if (now - lastTypingSentRef.current > 2000) {
+            lastTypingSentRef.current = now;
+            messageService.broadcastTyping(selectedConversation.id, user!.id, profile.full_name);
+        }
+    };
+
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newMessage.trim() || !selectedConversation) return;
-
+        const content = newMessage.trim();
+        if (!content || !selectedConversation) return;
+        
+        setNewMessage('');
         setSending(true);
+        
+        // Optimistic UI update
+        const tempId = `temp-${Date.now()}`;
+        const optimisticMessage: Message = {
+            id: tempId,
+            content,
+            sender_id: user!.id,
+            created_at: new Date().toISOString(),
+            read_at: null,
+            sender: {
+                full_name: profile?.full_name || '',
+                avatar_url: profile?.avatar_url || null
+            }
+        };
+        
+        setMessages(prev => [...prev, optimisticMessage]);
+        scrollToBottom(true);
+        
         try {
-            await messageService.sendMessage(
-                selectedConversation.id,
-                user!.id,
-                newMessage.trim()
-            );
-            setNewMessage('');
-            // Aktualizovať konverzácie (posledná správa)
+            const newMsg = await messageService.sendMessage(selectedConversation.id, user!.id, content);
+            // Zameň temp správu za reálnu z DB
+            setMessages(prev => prev.map(m => m.id === tempId ? { ...newMsg, created_at: newMsg.created_at || new Date().toISOString(), sender: optimisticMessage.sender } : m));
             loadConversations();
         } catch (error) {
             console.error('Error sending message:', error);
-            alert('Nepodarilo sa odoslať správu');
+            // Revert na chybu
+            setMessages(prev => prev.filter(m => m.id !== tempId));
         } finally {
             setSending(false);
         }
     };
 
-    // Spustiť konverzáciu s používateľom
     const startConversationWithUser = async (otherUserId: string) => {
         try {
             const conversation = await messageService.getOrCreateConversation(user!.id, otherUserId);
-
             const { data: otherUser } = await supabase
                 .from('profiles')
                 .select('full_name, avatar_url')
@@ -223,77 +259,106 @@ export function MessagesPage() {
             };
 
             setSelectedConversation(newConv);
+            setShowMobileChat(true);
             loadConversations();
         } catch (error) {
             console.error('Error starting conversation:', error);
         }
     };
 
-    // Vyhľadať používateľov pre nový chat
     const searchUsers = async () => {
         if (!searchTerm.trim()) return;
-
         const { data } = await supabase
             .from('profiles')
             .select('id, full_name, avatar_url, role')
             .ilike('full_name', `%${searchTerm}%`)
             .neq('id', user!.id)
             .limit(10);
-
         setAvailableUsers(data || []);
     };
 
-    const getOtherParticipant = (conversation: Conversation): { full_name: string; avatar_url: string | null } | null => {
+    const getOtherParticipant = (conversation: Conversation) => {
         const isFirst = conversation.participant_1 === user!.id;
-        const participant = isFirst ? conversation.participant2 : conversation.participant1;
-        return participant || null;
+        return isFirst ? conversation.participant2 : conversation.participant1;
     };
 
-    // Filtrovať konverzácie podľa vyhľadávania
+    const getOtherId = (conversation: Conversation) => {
+        return conversation.participant_1 === user!.id
+            ? conversation.participant_2
+            : conversation.participant_1;
+    };
+
     const filteredConversations = conversations.filter(conv => {
+        if (!searchTerm || showNewChat) return true;
         const other = getOtherParticipant(conv);
         return other?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
+    // Group messages by date
+    const groupMessagesByDate = (msgs: Message[]) => {
+        const groups: { date: string; messages: Message[] }[] = [];
+        let currentDate = '';
+
+        msgs.forEach(msg => {
+            const msgDate = new Date(msg.created_at).toLocaleDateString('sk-SK');
+            if (msgDate !== currentDate) {
+                currentDate = msgDate;
+                groups.push({ date: msgDate, messages: [msg] });
+            } else {
+                groups[groups.length - 1].messages.push(msg);
+            }
+        });
+
+        return groups;
+    };
+
+    const getDateLabel = (dateStr: string) => {
+        const today = new Date().toLocaleDateString('sk-SK');
+        const yesterday = new Date(Date.now() - 86400000).toLocaleDateString('sk-SK');
+        if (dateStr === today) return 'Dnes';
+        if (dateStr === yesterday) return 'Včera';
+        return dateStr;
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#191970]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-coral-500"></div>
             </div>
         );
     }
 
     return (
         <div className="max-w-6xl mx-auto animate-fade-in">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Správy</h1>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Správy</h1>
                 <button
-                    onClick={() => setShowNewChat(!showNewChat)}
-                    className="btn-gradient text-sm py-2 px-4"
+                    onClick={() => { setShowNewChat(!showNewChat); setAvailableUsers([]); }}
+                    className="btn-gradient text-sm py-2 px-4 rounded-full"
                 >
                     {showNewChat ? 'Zavrieť' : '+ Nová správa'}
                 </button>
             </div>
 
-            {/* Nový chat formulár */}
+            {/* New chat search */}
             {showNewChat && (
-                <div className="bg-white rounded-xl shadow-md p-4 mb-6 animate-fade-in">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4 mb-4 animate-fade-in">
                     <div className="flex gap-2">
                         <input
                             type="text"
                             placeholder="Hľadať používateľa podľa mena..."
-                            className="form-input flex-1"
+                            className="form-input flex-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && searchUsers()}
                         />
-                        <button onClick={searchUsers} className="btn-primary">
+                        <button onClick={searchUsers} className="btn-gradient px-4 rounded-xl">
                             <Search className="w-4 h-4" />
                         </button>
                     </div>
-
                     {availableUsers.length > 0 && (
-                        <div className="mt-4 space-y-2">
+                        <div className="mt-3 space-y-1 max-h-60 overflow-y-auto">
                             {availableUsers.map(userItem => (
                                 <button
                                     key={userItem.id}
@@ -303,15 +368,15 @@ export function MessagesPage() {
                                         setSearchTerm('');
                                         setAvailableUsers([]);
                                     }}
-                                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-200"
                                 >
-                                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                        {userItem.full_name?.charAt(0) || 'U'}
+                                    <div className="w-10 h-10 bg-gradient-to-br from-coral-400 to-coral-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                                        {userItem.full_name?.charAt(0)?.toUpperCase() || 'U'}
                                     </div>
                                     <div className="flex-1 text-left">
-                                        <p className="font-medium text-gray-900">{userItem.full_name}</p>
-                                        <p className="text-xs text-gray-500">
-                                            {userItem.role === 'craftsman' ? 'Remeselník' : 'Zákazník'}
+                                        <p className="font-medium text-gray-900 dark:text-white">{userItem.full_name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {userItem.role === 'craftsman' ? '🔧 Remeselník' : '👤 Zákazník'}
                                         </p>
                                     </div>
                                     <Send className="w-4 h-4 text-gray-400" />
@@ -322,165 +387,237 @@ export function MessagesPage() {
                 </div>
             )}
 
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="flex h-[600px]">
-                    {/* Zoznam konverzácií */}
-                    <div className="w-1/3 border-r border-gray-200 overflow-y-auto">
-                        <div className="p-3 border-b border-gray-100">
+            {/* Main chat container */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div className="flex h-[calc(100vh-220px)] min-h-[500px] max-h-[700px]">
+                    {/* Conversation List */}
+                    <div className={`w-full md:w-96 border-r border-gray-100 dark:border-gray-700 flex flex-col ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
+                        {/* Search bar */}
+                        <div className="p-3 border-b border-gray-100 dark:border-gray-700">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <input
                                     type="text"
                                     placeholder="Hľadať v konverzáciách..."
-                                    className="form-input pl-9 py-2 text-sm"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full pl-9 pr-3 py-2.5 bg-gray-50 dark:bg-gray-700 border-0 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-coral-500/30 transition-all"
+                                    value={showNewChat ? '' : searchTerm}
+                                    onChange={(e) => { setSearchTerm(e.target.value); setShowNewChat(false); }}
                                 />
                             </div>
                         </div>
 
-                        {filteredConversations.length === 0 ? (
-                            <div className="p-6 text-center text-gray-500">
-                                {searchTerm ? 'Žiadne konverzácie nevyhovujú' : 'Žiadne konverzácie'}
-                            </div>
-                        ) : (
-                            filteredConversations.map((conv) => {
-                                const other = getOtherParticipant(conv);
-                                const hasUnread = (conv.unread_count || 0) > 0;
-                                return (
-                                    <button
-                                        key={conv.id}
-                                        onClick={() => setSelectedConversation(conv)}
-                                        className={`w-full p-4 text-left hover:bg-gray-50 transition-colors border-l-4 ${selectedConversation?.id === conv.id
-                                            ? 'border-l-coral-500 bg-gray-50'
-                                            : 'border-l-transparent'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gradient-to-r from-coral-500 to-coral-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                                {other?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between">
-                                                    <p className={`font-medium ${hasUnread ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
-                                                        {other?.full_name}
-                                                    </p>
-                                                    {conv.last_message && (
-                                                        <span className="text-xs text-gray-400">
-                                                            {new Date(conv.last_message.created_at).toLocaleTimeString('sk-SK', {
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            })}
+                        {/* Conversation items */}
+                        <div className="flex-1 overflow-y-auto">
+                            {filteredConversations.length === 0 ? (
+                                <div className="p-8 text-center">
+                                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <MessageIcon className="w-8 h-8 text-gray-300 dark:text-gray-500" />
+                                    </div>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                                        {searchTerm ? 'Žiadne výsledky' : 'Žiadne konverzácie'}
+                                    </p>
+                                </div>
+                            ) : (
+                                filteredConversations.map((conv) => {
+                                    const other = getOtherParticipant(conv);
+                                    const hasUnread = (conv.unread_count || 0) > 0;
+                                    const isSelected = selectedConversation?.id === conv.id;
+                                    return (
+                                        <button
+                                            key={conv.id}
+                                            onClick={() => { setSelectedConversation(conv); setShowMobileChat(true); }}
+                                            className={`w-full p-3.5 text-left transition-all duration-200 border-b border-gray-50 dark:border-gray-700/50 ${isSelected
+                                                ? 'bg-coral-50 dark:bg-coral-900/20 border-l-4 border-l-coral-500'
+                                                : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border-l-4 border-l-transparent'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="relative">
+                                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold shadow-md ${isSelected ? 'bg-gradient-to-br from-coral-400 to-coral-600' : 'bg-gradient-to-br from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600'}`}>
+                                                        {other?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                                    </div>
+                                                    {hasUnread && (
+                                                        <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-coral-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                                                            <span className="text-[10px] text-white font-bold">{conv.unread_count}</span>
                                                         </span>
                                                     )}
                                                 </div>
-                                                {conv.last_message && (
-                                                    <p className={`text-sm truncate ${hasUnread ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                                                        {conv.last_message.content}
-                                                    </p>
-                                                )}
-                                                {hasUnread && (
-                                                    <span className="inline-block mt-1 w-2 h-2 bg-coral-500 rounded-full" />
-                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className={`text-sm truncate ${hasUnread ? 'font-bold text-gray-900 dark:text-white' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
+                                                            {other?.full_name || 'Neznámy'}
+                                                        </p>
+                                                        {conv.last_message && (
+                                                            <span className="text-[11px] text-gray-400 dark:text-gray-500 flex-shrink-0 ml-2">
+                                                                {formatTime(conv.last_message.created_at)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {conv.last_message && (
+                                                        <p className={`text-xs truncate mt-0.5 ${hasUnread ? 'text-gray-800 dark:text-gray-200 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+                                                            {conv.last_message.content}
+                                                        </p>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </button>
-                                );
-                            })
-                        )}
+                                        </button>
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
 
-                    {/* Chat okno */}
-                    <div className="flex-1 flex flex-col">
+                    {/* Chat Panel */}
+                    <div className={`flex-1 flex flex-col ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
                         {selectedConversation ? (
                             <>
-                                {/* Hlavička chatu */}
-                                <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                                {/* Chat Header */}
+                                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <button
-                                            onClick={() => setSelectedConversation(null)}
-                                            className="md:hidden p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                                            onClick={() => { setShowMobileChat(false); setSelectedConversation(null); }}
+                                            className="md:hidden p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
                                         >
-                                            <ArrowLeft className="w-5 h-5" />
+                                            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                                         </button>
-                                        <div className="w-10 h-10 bg-gradient-to-r from-coral-500 to-coral-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-coral-400 to-coral-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
                                             {getOtherParticipant(selectedConversation)?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-gray-900">
+                                            <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
                                                 {getOtherParticipant(selectedConversation)?.full_name}
                                             </h3>
-                                            <p className="text-xs text-gray-500">
-                                                {getOtherParticipant(selectedConversation)?.full_name?.split(' ')[0]}
-                                            </p>
+                                            {typingUser ? (
+                                                <p className="text-xs text-coral-500 animate-pulse font-medium">
+                                                    píše správu...
+                                                </p>
+                                            ) : (
+                                                <p className="text-xs text-emerald-500">
+                                                    Online
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={() => {
-                                            const other = getOtherParticipant(selectedConversation);
-                                            if (other?.full_name) {
-                                                navigate(`/craftsmen/${selectedConversation.participant_1 === user!.id ? selectedConversation.participant_2 : selectedConversation.participant_1}`);
-                                            }
-                                        }}
-                                        className="text-sm text-coral-500 hover:underline"
-                                    >
-                                        Zobraziť profil
-                                    </button>
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            onClick={() => navigate(`/craftsmen/${getOtherId(selectedConversation)}`)}
+                                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                                            title="Zobraziť profil"
+                                        >
+                                            <MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                                        </button>
+                                    </div>
                                 </div>
 
-                                {/* Správy */}
-                                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                                {/* Messages Area */}
+                                <div
+                                    ref={messagesContainerRef}
+                                    className="flex-1 overflow-y-auto px-4 py-3 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-800 chat-messages-area"
+                                >
                                     {messages.length === 0 ? (
-                                        <div className="text-center text-gray-500 py-12">
-                                            <p>Zatiaľ žiadne správy</p>
-                                            <p className="text-sm mt-1">Napíšte prvú správu</p>
+                                        <div className="flex flex-col items-center justify-center h-full text-center">
+                                            <div className="w-20 h-20 bg-gradient-to-br from-coral-100 to-coral-200 dark:from-coral-900/30 dark:to-coral-800/30 rounded-full flex items-center justify-center mb-4">
+                                                <Send className="w-8 h-8 text-coral-500" />
+                                            </div>
+                                            <p className="text-gray-600 dark:text-gray-300 font-medium">Začnite konverzáciu</p>
+                                            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Napíšte prvú správu</p>
                                         </div>
                                     ) : (
-                                        messages.map((msg) => {
-                                            const isOwn = msg.sender_id === user!.id;
-                                            return (
-                                                <div
-                                                    key={msg.id}
-                                                    className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-                                                >
-                                                    <div
-                                                        className={`max-w-[70%] rounded-2xl px-4 py-2 ${isOwn
-                                                            ? 'bg-gradient-to-r from-coral-500 to-coral-600 text-white'
-                                                            : 'bg-gray-100 text-gray-900'
-                                                            }`}
-                                                    >
-                                                        <p className="text-sm break-words">{msg.content}</p>
-                                                        <div className={`text-xs mt-1 ${isOwn ? 'text-white/70' : 'text-gray-400'}`}>
-                                                            {new Date(msg.created_at).toLocaleTimeString('sk-SK', {
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            })}
-                                                            {isOwn && msg.read_at && (
-                                                                <span className="ml-1">✓✓</span>
-                                                            )}
+                                        <>
+                                            {groupMessagesByDate(messages).map((group) => (
+                                                <div key={group.date}>
+                                                    {/* Date separator */}
+                                                    <div className="flex justify-center my-4">
+                                                        <span className="px-3 py-1 bg-gray-200/80 dark:bg-gray-700/80 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full backdrop-blur-sm">
+                                                            {getDateLabel(group.date)}
+                                                        </span>
+                                                    </div>
+                                                    {/* Messages */}
+                                                    {group.messages.map((msg, idx) => {
+                                                        const isOwn = msg.sender_id === user!.id;
+                                                        const showAvatar = !isOwn && (idx === 0 || group.messages[idx - 1]?.sender_id !== msg.sender_id);
+                                                        return (
+                                                            <div
+                                                                key={msg.id}
+                                                                className={`flex mb-1 ${isOwn ? 'justify-end' : 'justify-start'} animate-fade-in`}
+                                                            >
+                                                                {/* Avatar for other user */}
+                                                                {!isOwn && (
+                                                                    <div className="w-7 mr-2 flex-shrink-0 self-end">
+                                                                        {showAvatar ? (
+                                                                            <div className="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white text-[10px] font-semibold">
+                                                                                {msg.sender?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                                                            </div>
+                                                                        ) : null}
+                                                                    </div>
+                                                                )}
+                                                                <div
+                                                                    className={`max-w-[75%] md:max-w-[65%] px-3.5 py-2 ${isOwn
+                                                                        ? 'bg-gradient-to-br from-coral-500 to-coral-600 text-white rounded-2xl rounded-br-md shadow-md shadow-coral-500/20'
+                                                                        : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-2xl rounded-bl-md shadow-sm border border-gray-100 dark:border-gray-600'
+                                                                        }`}
+                                                                >
+                                                                    <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{msg.content}</p>
+                                                                    <div className={`flex items-center justify-end gap-1 mt-0.5 ${isOwn ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'}`}>
+                                                                        <span className="text-[10px]">
+                                                                            {new Date(msg.created_at).toLocaleTimeString('sk-SK', {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit'
+                                                                            })}
+                                                                        </span>
+                                                                        {isOwn && (
+                                                                            msg.read_at ? (
+                                                                                <CheckCheck className="w-3.5 h-3.5 text-blue-300" />
+                                                                            ) : (
+                                                                                <Check className="w-3.5 h-3.5" />
+                                                                            )
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            ))}
+
+                                            {/* Typing indicator */}
+                                            {typingUser && (
+                                                <div className="flex justify-start mb-2 animate-fade-in">
+                                                    <div className="w-7 mr-2 flex-shrink-0 self-end">
+                                                        <div className="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white text-[10px] font-semibold">
+                                                            {typingUser.charAt(0).toUpperCase()}
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-white dark:bg-gray-700 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100 dark:border-gray-600">
+                                                        <div className="flex gap-1.5 items-center">
+                                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            );
-                                        })
+                                            )}
+                                        </>
                                     )}
                                     <div ref={messagesEndRef} />
                                 </div>
 
-                                {/* Vstup pre správu */}
-                                <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200">
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={newMessage}
-                                            onChange={(e) => setNewMessage(e.target.value)}
-                                            placeholder="Napíšte správu..."
-                                            className="form-input flex-1 rounded-full"
-                                        />
+                                {/* Message Input */}
+                                <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex-1 relative">
+                                            <input
+                                                type="text"
+                                                value={newMessage}
+                                                onChange={(e) => { setNewMessage(e.target.value); handleTyping(); }}
+                                                placeholder="Napíšte správu..."
+                                                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-coral-500/30 focus:border-coral-400 transition-all"
+                                            />
+                                        </div>
                                         <button
                                             type="submit"
                                             disabled={sending || !newMessage.trim()}
-                                            className="btn-gradient rounded-full w-10 h-10 p-0 flex items-center justify-center"
+                                            className="w-10 h-10 bg-gradient-to-br from-coral-500 to-coral-600 hover:from-coral-600 hover:to-coral-700 disabled:from-gray-300 disabled:to-gray-400 rounded-full flex items-center justify-center text-white shadow-md shadow-coral-500/20 disabled:shadow-none transition-all duration-200 hover:scale-105 active:scale-95"
                                         >
                                             <Send className="w-4 h-4" />
                                         </button>
@@ -488,15 +625,15 @@ export function MessagesPage() {
                                 </form>
                             </>
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
-                                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                    <MessageIcon className="w-10 h-10 text-gray-400" />
+                            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+                                <div className="w-24 h-24 bg-gradient-to-br from-coral-100 to-coral-200 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mb-5 shadow-inner">
+                                    <MessageIcon className="w-10 h-10 text-coral-400 dark:text-gray-400" />
                                 </div>
-                                <p className="text-lg font-medium text-gray-600">Vyberte konverzáciu</p>
-                                <p className="text-sm mt-1">alebo začnite nový chat</p>
+                                <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">Vyberte konverzáciu</p>
+                                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 mb-5">alebo začnite nový chat</p>
                                 <button
                                     onClick={() => setShowNewChat(true)}
-                                    className="mt-4 btn-outline text-sm"
+                                    className="btn-gradient text-sm py-2.5 px-6 rounded-full"
                                 >
                                     + Nová správa
                                 </button>
@@ -509,7 +646,22 @@ export function MessagesPage() {
     );
 }
 
-// Message icon komponent
+// Helper functions
+function formatTime(dateStr: string) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - date.getTime()) / 86400000);
+
+    if (diffDays === 0) {
+        return date.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+    }
+    if (diffDays === 1) return 'Včera';
+    if (diffDays < 7) {
+        return date.toLocaleDateString('sk-SK', { weekday: 'short' });
+    }
+    return date.toLocaleDateString('sk-SK', { day: 'numeric', month: 'numeric' });
+}
+
 const MessageIcon = ({ className }: { className?: string }) => (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />

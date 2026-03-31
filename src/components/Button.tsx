@@ -64,8 +64,8 @@ export function Button({
     ].join(' '),
 
     ghost: [
-      'bg-transparent text-gray-600',
-      'hover:bg-gray-100 hover:text-gray-900',
+      'bg-transparent text-gray-600 dark:text-gray-400',
+      'hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white',
       'focus-visible:ring-gray-400',
     ].join(' '),
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { MapPin, Star, Briefcase, Mail, Phone, MessageCircle, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Star, Briefcase, Mail, Phone, MessageCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 
 export function CraftsmanProfilePage() {
     const { id } = useParams<{ id: string }>();
@@ -29,8 +29,7 @@ export function CraftsmanProfilePage() {
                         avatar_url,
                         phone,
                         bio,
-                        email,
-                        nationality
+                        email
                     )
                 `)
                 .eq('user_id', id)
@@ -149,12 +148,6 @@ export function CraftsmanProfilePage() {
                             <span className="flex items-center gap-1 text-gray-600">
                                 {craftsman.total_jobs || 0} dokončených prác
                             </span>
-                            {craftsman.user?.nationality && (
-                                <span className="flex items-center gap-1 text-gray-600">
-                                    <MapPin className="w-4 h-4" />
-                                    Národnosť: {craftsman.user.nationality}
-                                </span>
-                            )}
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {craftsman.specialization?.map((spec: string, idx: number) => (

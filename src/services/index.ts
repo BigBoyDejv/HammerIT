@@ -5,3 +5,4 @@ export { offerService } from './offerService';
 export { contractService } from './contractService';
 export { messageService } from './messageService';
 export { notificationService } from './notificationService';
+export { verificationService } from './verificationService';

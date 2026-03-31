@@ -64,10 +64,10 @@ export const messageService = {
 
         // Poslať notifikáciu recipientovi
         if (conversation) {
-            const recipientId = conversation.participant_1 === senderId 
-                ? conversation.participant_2 
+            const recipientId = conversation.participant_1 === senderId
+                ? conversation.participant_2
                 : conversation.participant_1;
-            
+
             const { data: sender } = await supabase
                 .from('profiles')
                 .select('full_name')
@@ -169,7 +169,6 @@ export const messageService = {
         if (!conversations?.length) return 0;
 
         const conversationIds = conversations.map(c => c.id);
-
         const { count, error } = await supabase
             .from('messages')
             .select('*', { count: 'exact', head: true })
@@ -194,7 +193,6 @@ export const messageService = {
                     filter: `conversation_id=eq.${conversationId}`
                 },
                 async (payload) => {
-                    // Načítať správy aj s informáciami o odosielateľovi
                     const { data: fullMessage } = await supabase
                         .from('messages')
                         .select(`
@@ -210,6 +208,55 @@ export const messageService = {
                     onNewMessage(fullMessage as unknown as MessageWithSender);
                 }
             )
+            .subscribe();
+
+        return subscription;
+    },
+
+    // Real-time subscription na aktualizáciu prečítania (read receipts)
+    subscribeToReadReceipts(conversationId: string, onUpdate: () => void) {
+        const subscription = supabase
+            .channel(`read-receipts:${conversationId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `conversation_id=eq.${conversationId}`
+                },
+                () => {
+                    onUpdate();
+                }
+            )
+            .subscribe();
+
+        return subscription;
+    },
+
+    // Typing indicator via Broadcast
+    broadcastTyping(conversationId: string, userId: string, userName: string) {
+        const channel = supabase.channel(`typing:${conversationId}`);
+        channel.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                channel.send({
+                    type: 'broadcast',
+                    event: 'typing',
+                    payload: { userId, userName, timestamp: Date.now() }
+                });
+                // Unsubscribe after sending
+                setTimeout(() => channel.unsubscribe(), 500);
+            }
+        });
+    },
+
+    // Subscribe to typing indicators
+    subscribeToTyping(conversationId: string, onTyping: (data: { userId: string; userName: string }) => void) {
+        const subscription = supabase
+            .channel(`typing:${conversationId}`)
+            .on('broadcast', { event: 'typing' }, (payload) => {
+                onTyping(payload.payload as { userId: string; userName: string });
+            })
             .subscribe();
 
         return subscription;

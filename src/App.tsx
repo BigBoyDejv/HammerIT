@@ -17,6 +17,7 @@ import { MessagesPage } from './pages/MessagesPage';
 import { ContractsPage } from './pages/ContractsPage';
 import { ContractDetailPage } from './pages/ContractDetailPage';
 import { MyOffersPage } from './pages/MyOffersPage';
+import { JobMapPage } from './pages/JobMapPage';
 import { supabase } from './lib/supabase';
 import { useEffect } from 'react';
 import { RealtimeProvider } from './contexts/RealtimeContext';
@@ -86,6 +87,7 @@ function App() {
                 <Route path="/messages" element={user ? <MessagesPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/contracts" element={user ? <ContractsPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/contracts/:id" element={user ? <ContractDetailPage /> : <Navigate to="/auth/login" />} />
+                <Route path="/map" element={user ? <JobMapPage /> : <Navigate to="/auth/login" />} />
 
                 {/* Remeselník - moje ponuky */}
                 <Route

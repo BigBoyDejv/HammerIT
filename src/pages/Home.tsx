@@ -15,41 +15,41 @@ const FEATURES = [
     icon: <Search className="h-7 w-7" />,
     title: 'Nájdite remeselníka',
     desc: 'Vyhľadajte overených remeselníkov podľa kategórie a lokality za pár sekúnd.',
-    color: 'bg-navy-500/10 text-navy-600 border border-navy-200/40',
-    hover: 'group-hover:bg-navy-500 group-hover:text-white group-hover:border-transparent',
+    color: 'bg-navy-500/10 text-navy-600 dark:text-navy-400 border border-navy-200/40 dark:border-navy-500/20',
+    hover: 'group-hover:bg-navy-500 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
   },
   {
     icon: <MessageSquare className="h-7 w-7" />,
     title: 'Komunikujte priamo',
     desc: 'Chatujte s remeselníkmi, porovnajte ponuky a dohodnite detaily práce.',
-    color: 'bg-coral-500/10 text-coral-600 border border-coral-200/40',
-    hover: 'group-hover:bg-coral-500 group-hover:text-white group-hover:border-transparent',
+    color: 'bg-coral-500/10 text-coral-600 dark:text-coral-400 border border-coral-200/40 dark:border-coral-500/20',
+    hover: 'group-hover:bg-coral-500 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
   },
   {
     icon: <Wrench className="h-7 w-7" />,
     title: 'Práca hotová',
     desc: 'Sledujte priebeh práce v reálnom čase. Plaťte až po dokončení.',
-    color: 'bg-emerald-500/10 text-emerald-600 border border-emerald-200/40',
-    hover: 'group-hover:bg-emerald-500 group-hover:text-white group-hover:border-transparent',
+    color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/40 dark:border-emerald-500/20',
+    hover: 'group-hover:bg-emerald-500 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
   },
   {
     icon: <Star className="h-7 w-7" />,
     title: 'Ohodnoťte',
     desc: 'Zanechajte recenziu a pomôžte komunite nájsť tých najlepších.',
-    color: 'bg-amber-400/10 text-amber-600 border border-amber-200/40',
-    hover: 'group-hover:bg-amber-400 group-hover:text-white group-hover:border-transparent',
+    color: 'bg-amber-400/10 text-amber-600 dark:text-amber-400 border border-amber-200/40 dark:border-amber-500/20',
+    hover: 'group-hover:bg-amber-400 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
   },
 ];
 
 const CATEGORIES = [
-  { emoji: '⚡', name: 'Elektrikár', accent: 'hover:border-amber-300  hover:bg-amber-50' },
-  { emoji: '🧱', name: 'Murár', accent: 'hover:border-orange-300 hover:bg-orange-50' },
-  { emoji: '🎨', name: 'Maliar', accent: 'hover:border-pink-300   hover:bg-pink-50' },
-  { emoji: '🔧', name: 'Inštalatér', accent: 'hover:border-blue-300   hover:bg-blue-50' },
-  { emoji: '🪵', name: 'Podlahár', accent: 'hover:border-yellow-300 hover:bg-yellow-50' },
-  { emoji: '🏗️', name: 'Stavebné práce', accent: 'hover:border-navy-300   hover:bg-navy-50' },
-  { emoji: '🌿', name: 'Záhradník', accent: 'hover:border-emerald-300 hover:bg-emerald-50' },
-  { emoji: '🏠', name: 'Strechár', accent: 'hover:border-coral-300  hover:bg-coral-50' },
+  { emoji: '⚡', name: 'Elektrikár', accent: 'hover:border-amber-300 dark:hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/10' },
+  { emoji: '🧱', name: 'Murár', accent: 'hover:border-orange-300 dark:hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/10' },
+  { emoji: '🎨', name: 'Maliar', accent: 'hover:border-pink-300 dark:hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/10' },
+  { emoji: '🔧', name: 'Inštalatér', accent: 'hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10' },
+  { emoji: '🪵', name: 'Podlahár', accent: 'hover:border-yellow-300 dark:hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/10' },
+  { emoji: '🏗️', name: 'Stavebné práce', accent: 'hover:border-navy-300 dark:hover:border-navy-500 hover:bg-navy-50 dark:hover:bg-navy-900/10' },
+  { emoji: '🌿', name: 'Záhradník', accent: 'hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/10' },
+  { emoji: '🏠', name: 'Strechár', accent: 'hover:border-coral-300 dark:hover:border-coral-500 hover:bg-coral-50 dark:hover:bg-coral-900/10' },
 ];
 
 const TRUST = [
@@ -57,21 +57,21 @@ const TRUST = [
     icon: <Shield className="h-6 w-6" />,
     title: 'Overení remeselníci',
     desc: 'Každý remeselník prechádza overovacím procesom. Žiadne prekvapenia.',
-    iconBg: 'bg-navy-500/8 text-navy-600',
+    iconBg: 'bg-navy-500/8 dark:bg-navy-500/15 text-navy-600 dark:text-navy-400',
     accent: 'border-l-navy-500',
   },
   {
     icon: <Star className="h-6 w-6" />,
     title: 'Transparentné hodnotenia',
     desc: 'Skutočné recenzie od skutočných klientov. Vidíte presne čo dostanete.',
-    iconBg: 'bg-amber-400/10 text-amber-600',
+    iconBg: 'bg-amber-400/10 dark:bg-amber-400/20 text-amber-600 dark:text-amber-400',
     accent: 'border-l-amber-400',
   },
   {
     icon: <Zap className="h-6 w-6" />,
     title: 'Platba po dokončení',
     desc: 'Peniaze uvoľnené až keď ste spokojní s výsledkom práce.',
-    iconBg: 'bg-emerald-500/10 text-emerald-600',
+    iconBg: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
     accent: 'border-l-emerald-500',
   },
 ];
@@ -87,19 +87,19 @@ export function Home() {
         <div className="container-wide relative z-10 py-24">
           <div className="max-w-4xl mx-auto text-center">
 
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur border border-emerald-200/60 rounded-full px-4 py-1.5 mb-8 shadow-sm animate-fade-up">
+            <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-emerald-200/60 dark:border-emerald-500/20 rounded-full px-4 py-1.5 mb-8 shadow-sm animate-fade-up">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Platforma č.1 pre remeselníkov na Slovensku
               </span>
             </div>
 
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight mb-8 animate-fade-up delay-100">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight mb-8 animate-fade-up delay-100 text-gray-900 dark:text-white">
               Spojíme vás s{' '}
               <span className="gradient-text">najlepšími<br />remeselníkmi</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed font-light animate-fade-up delay-200">
+            <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light animate-fade-up delay-200">
               Rýchlo, bezpečne a spoľahlivo. Nájdite overených odborníkov vo vašom okolí.
             </p>
 
@@ -130,25 +130,25 @@ export function Home() {
 
         {/* Floating cards */}
         <div className="absolute top-1/4 left-8 animate-float delay-100 hidden lg:block">
-          <div className="glass rounded-2xl p-4 shadow-lg border border-white/50 w-48">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-white/50 dark:border-white/10 w-48">
             <div className="flex items-center gap-3 mb-2">
-              <div className="avatar w-8 h-8 text-xs">J</div>
+              <div className="w-8 h-8 rounded-full bg-navy-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">J</div>
               <div>
-                <div className="text-xs font-semibold text-gray-900">Jozo Murár</div>
-                <div className="stars text-xs">★★★★★</div>
+                <div className="text-xs font-semibold text-gray-900 dark:text-white">Jozo Murár</div>
+                <div className="stars text-xs flex gap-0.5 text-amber-400">★★★★★</div>
               </div>
             </div>
-            <div className="text-xs text-gray-500">Práca dokončená ✓</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Práca dokončená ✓</div>
           </div>
         </div>
-
+ 
         <div className="absolute top-1/3 right-8 animate-float delay-300 hidden lg:block">
-          <div className="glass rounded-2xl p-4 shadow-lg border border-white/50 w-52">
-            <div className="text-xs font-semibold text-gray-600 mb-1">Nová ponuka</div>
-            <div className="text-sm font-bold text-navy-500">Oprava strechy</div>
-            <div className="text-xs text-gray-500 mt-1">500€ – 800€ · Košice</div>
-            <div className="mt-2 text-xs bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5 inline-block font-medium">
-              3 ponuky
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-white/50 dark:border-white/10 w-52">
+            <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">Nová ponuka</div>
+            <div className="text-sm font-bold text-navy-600 dark:text-coral-400">Oprava strechy</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium italic">500€ – 800€ · Košice</div>
+            <div className="mt-2 text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 rounded-full px-2 py-0.5 inline-block font-bold">
+              3 PONUKY
             </div>
           </div>
         </div>
@@ -171,14 +171,14 @@ export function Home() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="py-28 bg-white">
+      <section className="py-28 bg-white dark:bg-slate-900/50">
         <div className="container-wide">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 bg-coral-500/8 rounded-full px-4 py-1.5 mb-4 border border-coral-200/40">
+            <div className="inline-flex items-center gap-2 bg-coral-500/8 dark:bg-coral-500/15 rounded-full px-4 py-1.5 mb-4 border border-coral-200/40 dark:border-coral-500/20">
               <Zap className="h-4 w-4 text-coral-500" />
-              <span className="text-sm font-semibold text-coral-600">Ako to funguje</span>
+              <span className="text-sm font-semibold text-coral-600 dark:text-coral-400">Ako to funguje</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
               Jednoducho. Rýchlo. Spoľahlivo.
             </h2>
           </div>
@@ -192,8 +192,8 @@ export function Home() {
                 <div className="text-xs font-bold text-gray-300 mb-2 tracking-widest uppercase">
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{f.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{f.title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -204,10 +204,10 @@ export function Home() {
       <section className="py-28 section-alt">
         <div className="container-wide">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight mb-4">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
               Kategórie prác
             </h2>
-            <p className="text-gray-500 text-lg">Nájdite odborníka pre každú potrebu</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">Nájdite odborníka pre každú potrebu</p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -220,7 +220,7 @@ export function Home() {
                 <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
                   {cat.emoji}
                 </div>
-                <div className="font-semibold text-gray-800 text-sm">{cat.name}</div>
+                <div className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{cat.name}</div>
                 <div className="mt-2 flex items-center justify-center gap-1 text-xs text-coral-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   Zobraziť <ChevronRight className="h-3 w-3" />
                 </div>
@@ -231,16 +231,16 @@ export function Home() {
       </section>
 
       {/* ── TRUST ── */}
-      <section className="py-28 bg-white">
+      <section className="py-28 bg-white dark:bg-slate-900/50">
         <div className="container-wide">
           <div className="grid md:grid-cols-3 gap-8">
             {TRUST.map((item, i) => (
-              <div key={item.title} className={`card-premium p-8 animate-fade-up delay-${i * 100} border-l-4 ${item.accent}`}>
+              <div key={item.title} className={`card-premium p-8 animate-fade-up delay-${i * 100} border-l-4 ${item.accent} dark:bg-slate-800/50`}>
                 <div className={`feature-card-icon w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${item.iconBg}`}>
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-500 leading-relaxed">{item.desc}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{item.title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>

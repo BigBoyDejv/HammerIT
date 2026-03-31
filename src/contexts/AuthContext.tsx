@@ -7,9 +7,12 @@ type Profile = {
   role: 'client' | 'craftsman';
   full_name: string;
   email: string;
+  avatar_url: string | null;
   phone: string | null;
   bio: string | null;
   nationality: string | null;
+  is_verified: boolean;
+  verification_status: 'none' | 'pending' | 'verified' | 'rejected';
   created_at: string;
 };
 
@@ -103,9 +106,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: email,
         full_name: fullName,
         role: role,
+        avatar_url: null,
         phone: null,
         bio: null,
         nationality: null,
+        is_verified: false,
+        verification_status: 'none',
         created_at: new Date().toISOString()
       });
     }

@@ -327,6 +327,29 @@ export function Navbar() {
               <MobileNavLink to="/auth/register" onClick={() => setIsOpen(false)}>Registrovať sa</MobileNavLink>
             </>
           )}
+
+          {/* Theme Toggle Mobile */}
+          <div className="pt-4 border-t border-gray-100 dark:border-white/5 mt-2">
+            <button
+              onClick={() => { toggleTheme(); }}
+              className="flex items-center justify-between w-full p-4 rounded-2xl bg-gray-50 dark:bg-slate-800/40 text-gray-700 dark:text-gray-300 transition-all active:scale-[0.98] border border-gray-100 dark:border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${resolvedTheme === 'dark' ? 'bg-amber-400/10 text-amber-400' : 'bg-white text-gray-600 shadow-sm'}`}>
+                  {resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold leading-none mb-1">
+                    {resolvedTheme === 'dark' ? 'Svetlý režim' : 'Tmavý režim'}
+                  </p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400">Prepnúť vzhľad aplikácie</p>
+                </div>
+              </div>
+              <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${resolvedTheme === 'dark' ? 'bg-coral-500' : 'bg-gray-300 dark:bg-gray-700'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300 ${resolvedTheme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </nav>

@@ -12,9 +12,8 @@ export function BottomNav() {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [pendingOffers, setPendingOffers] = useState(0);
 
-    // Hide on auth pages
+    // Identify auth pages
     const isAuthPage = location.pathname.includes('/auth/login') || location.pathname.includes('/auth/register');
-    if (isAuthPage) return null;
 
     useEffect(() => {
         if (!user) return;
@@ -59,6 +58,8 @@ export function BottomNav() {
             setPendingOffers(count || 0);
         }
     };
+
+    if (isAuthPage || !user) return null;
 
     const clientItems = [
         { path: '/dashboard', icon: Home, label: 'Domov', badge: 0 },

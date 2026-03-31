@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { craftsmanService } from '../services';
 import { supabase } from '../lib/supabase';
-import { MapPin, Star, Briefcase, Clock, Mail, Phone, MessageCircle, CheckCircle, Award, Calendar, ArrowLeft } from 'lucide-react';
+import { MapPin, Star, Briefcase, Mail, Phone, MessageCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 
 export function CraftsmanProfilePage() {
     const { id } = useParams<{ id: string }>();
@@ -30,7 +29,8 @@ export function CraftsmanProfilePage() {
                         avatar_url,
                         phone,
                         bio,
-                        email
+                        email,
+                        nationality
                     )
                 `)
                 .eq('user_id', id)
@@ -147,9 +147,14 @@ export function CraftsmanProfilePage() {
                                 {craftsman.years_experience || 0} rokov skúseností
                             </span>
                             <span className="flex items-center gap-1 text-gray-600">
-                                <Clock className="w-4 h-4" />
                                 {craftsman.total_jobs || 0} dokončených prác
                             </span>
+                            {craftsman.user?.nationality && (
+                                <span className="flex items-center gap-1 text-gray-600">
+                                    <MapPin className="w-4 h-4" />
+                                    Národnosť: {craftsman.user.nationality}
+                                </span>
+                            )}
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {craftsman.specialization?.map((spec: string, idx: number) => (
@@ -177,11 +182,30 @@ export function CraftsmanProfilePage() {
 
             {/* About Section */}
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">O mne</h2>
-                <p className="text-gray-600 leading-relaxed">
-                    {craftsman.user?.bio || 'Tento remeselník zatiaľ nepridal žiadny popis.'}
-                </p>
+                <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">O mne</h2>
+                <div className="prose prose-sm max-w-none text-gray-600 whitespace-pre-wrap leading-relaxed">
+                    {craftsman.user?.bio || 'Tento remeselník zatiaľ nepridal žiadny podrobný popis.'}
+                </div>
             </div>
+
+            {/* Portfolio Section */}
+            {craftsman.portfolio && craftsman.portfolio.length > 0 && (
+                <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Moja práca / Portfólio</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {craftsman.portfolio.map((img: string, idx: number) => (
+                            <div key={idx} className="aspect-video rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                                <img 
+                                    src={img} 
+                                    alt={`Práca ${idx + 1}`} 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    onClick={() => window.open(img, '_blank')}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Skills & Rates */}
             <div className="grid md:grid-cols-2 gap-6 mb-6">

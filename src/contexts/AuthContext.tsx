@@ -6,9 +6,10 @@ type Profile = {
   id: string;
   role: 'client' | 'craftsman';
   full_name: string;
-  email: string;  // <-- PRIDAJ EMAIL DO TYPU
+  email: string;
   phone: string | null;
   bio: string | null;
+  nationality: string | null;
   created_at: string;
 };
 
@@ -99,11 +100,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       setProfile({
         id: data.user.id,
-        email: email,  // <-- PRIDAJ AJ TU
+        email: email,
         full_name: fullName,
         role: role,
         phone: null,
         bio: null,
+        nationality: null,
         created_at: new Date().toISOString()
       });
     }

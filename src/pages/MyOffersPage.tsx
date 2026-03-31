@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import { offerService } from '../services/offerService';  // PRIDAJ IMPORT
 import { Clock, CheckCircle, XCircle, Eye, MapPin, Euro, Briefcase, RefreshCw } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface Offer {
     id: string;
@@ -13,7 +14,7 @@ interface Offer {
     message: string;
     status: 'pending' | 'accepted' | 'rejected';
     created_at: string;
-    job: {
+    job?: {
         id: string;
         title: string;
         description: string;
@@ -37,38 +38,18 @@ export function MyOffersPage() {
 
     const loadOffers = async () => {
         if (!user) return;
-
+        
         try {
-            const { data, error } = await supabase
-                .from('job_offers')
-                .select(`
-                    *,
-                    job:job_requests!job_offers_job_request_id_fkey(
-                        id,
-                        title,
-                        description,
-                        location,
-                        category,
-                        budget_min,
-                        budget_max,
-                        status,
-                        client:profiles!job_requests_client_id_fkey(
-                            full_name,
-                            avatar_url
-                        )
-                    )
-                `)
-                .eq('craftsman_id', user.id)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setOffers(data || []);
+            // POUŽI offerService namiesto priameho supabase volania
+            const data = await offerService.getMyOffers(user.id);
+            setOffers(data as Offer[] || []);
         } catch (error) {
             console.error('Error loading offers:', error);
         } finally {
             setLoading(false);
         }
     };
+
 
     // Počiatočné načítanie
     useEffect(() => {

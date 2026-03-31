@@ -146,55 +146,6 @@ export function MessagesPage() {
             .subscribe();
     };
 
-    // Globálne real-time subskripcie pre aktualizáciu badgeov
-    useEffect(() => {
-        if (!user) return;
-
-        // Subskripcia na nové správy (pre aktualizáciu zoznamu konverzácií)
-        const messageSubscription = supabase
-            .channel('messages-global')
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'messages'
-                },
-                () => {
-                    loadConversations();
-                    if (selectedConversation) {
-                        loadMessages(selectedConversation.id);
-                    }
-                }
-            )
-            .subscribe();
-
-        // Subskripcia na zmeny stavu prečítania
-        const readSubscription = supabase
-            .channel('read-status')
-            .on(
-                'postgres_changes',
-                {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'messages',
-                    filter: `read_at=not.is.null`
-                },
-                () => {
-                    loadConversations();
-                    if (selectedConversation) {
-                        loadMessages(selectedConversation.id);
-                    }
-                }
-            )
-            .subscribe();
-
-        return () => {
-            messageSubscription.unsubscribe();
-            readSubscription.unsubscribe();
-        };
-    }, [user, selectedConversation]);
-
     // Počiatočné načítanie konverzácií
     useEffect(() => {
         loadConversations();

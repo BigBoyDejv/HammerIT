@@ -3,9 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { notificationService } from '../services/notificationService';
-import { messageService } from '../services/messageService';
-import { CheckCircle, XCircle, Clock, Send, MessageCircle, ArrowLeft, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Send, MessageCircle, ArrowLeft } from 'lucide-react';
 import type { Database } from '../lib/database.types';
 import { offerService } from '../services/offerService';
 
@@ -70,28 +68,6 @@ export function JobDetailPage() {
         }
     };
 
-    // Vytvoriť konverzáciu
-    const createConversation = async (userId1: string, userId2: string) => {
-        const [participant_1, participant_2] = [userId1, userId2].sort();
-
-        const { data: existing, error: checkError } = await supabase
-            .from('conversations')
-            .select('id')
-            .eq('participant_1', participant_1)
-            .eq('participant_2', participant_2)
-            .maybeSingle();
-
-        if (existing) return existing.id;
-
-        const { data: newConv, error: createError } = await supabase
-            .from('conversations')
-            .insert({ participant_1, participant_2, last_message_at: new Date().toISOString() })
-            .select()
-            .single();
-
-        if (createError) throw createError;
-        return newConv.id;
-    };
 
     // handleOfferSubmit - použi offerService
     const handleOfferSubmit = async (e: React.FormEvent) => {
@@ -133,7 +109,7 @@ export function JobDetailPage() {
 
         try {
             // POUŽI offerService namiesto priameho volania
-            const result = await offerService.updateOfferStatus(offerId, action, user!.id);
+            await offerService.updateOfferStatus(offerId, action, user!.id);
 
             if (action === 'accepted') {
                 alert('Ponuka bola prijatá! Zmluva bola vytvorená.');
@@ -161,10 +137,8 @@ export function JobDetailPage() {
             if (offer.id === acceptedOfferId) {
                 await handleOfferAction(offer.id, 'accepted');
             } else {
-                await supabase
-                    .from('job_offers')
-                    .update({ status: 'rejected' })
-                    .eq('id', offer.id);
+                // Použi offerService aby sa odoslala notifikácia o zamietnutí
+                await offerService.updateOfferStatus(offer.id, 'rejected');
             }
         }
 

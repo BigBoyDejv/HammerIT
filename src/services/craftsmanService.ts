@@ -14,7 +14,7 @@ export const craftsmanService = {
             .from('craftsman_profiles')
             .select(`
         *,
-        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio)
+        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio, nationality)
       `);
 
         if (filters?.specialization) {
@@ -40,7 +40,7 @@ export const craftsmanService = {
             .from('craftsman_profiles')
             .select(`
         *,
-        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio)
+        user:profiles!craftsman_profiles_user_id_fkey(full_name, avatar_url, phone, bio, nationality)
       `)
             .eq('user_id', userId)
             .single();
@@ -53,6 +53,7 @@ export const craftsmanService = {
         specialization?: string[];
         hourly_rate?: number;
         years_experience?: number;
+        portfolio?: string[];
     }) {
         const { data, error } = await supabase
             .from('craftsman_profiles')

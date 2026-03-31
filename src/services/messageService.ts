@@ -1,9 +1,8 @@
-// src/services/messageService.ts
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
+import { notificationService } from './notificationService';
 
 type Message = Database['public']['Tables']['messages']['Row'];
-type Conversation = Database['public']['Tables']['conversations']['Row'];
 
 // Rozšírený typ pre správu so senderom
 export type MessageWithSender = Message & {
@@ -55,10 +54,34 @@ export const messageService = {
 
         if (error) throw error;
 
-        await supabase
+        // Aktualizovať konverzáciu
+        const { data: conversation } = await supabase
             .from('conversations')
             .update({ last_message_at: new Date().toISOString() })
-            .eq('id', conversationId);
+            .eq('id', conversationId)
+            .select()
+            .single();
+
+        // Poslať notifikáciu recipientovi
+        if (conversation) {
+            const recipientId = conversation.participant_1 === senderId 
+                ? conversation.participant_2 
+                : conversation.participant_1;
+            
+            const { data: sender } = await supabase
+                .from('profiles')
+                .select('full_name')
+                .eq('id', senderId)
+                .single();
+
+            await notificationService.createNotification({
+                user_id: recipientId,
+                type: 'message',
+                title: sender?.full_name || 'Nová správa',
+                message: content.length > 50 ? content.substring(0, 50) + '...' : content,
+                link: `/messages?user=${senderId}`
+            });
+        }
 
         return data as Message;
     },

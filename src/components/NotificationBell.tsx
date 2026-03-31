@@ -1,6 +1,6 @@
 // src/components/NotificationBell.tsx
 import { useState, useEffect } from 'react';
-import { Bell, CheckCheck, X } from 'lucide-react';
+import { Bell, CheckCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationService, Notification } from '../services/notificationService';
 import { Link } from 'react-router-dom';
@@ -96,14 +96,17 @@ export function NotificationBell() {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="relative p-2 rounded-full hover:bg-gray-100 transition-all active:scale-95 group"
                 aria-label="Notifikácie"
             >
-                <Bell className="w-5 h-5 text-gray-600" />
+                <Bell className={`w-5 h-5 transition-colors ${unreadCount > 0 ? 'text-coral-500' : 'text-gray-600 group-hover:text-gray-900'}`} />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-coral-500 text-white text-xs rounded-full flex items-center justify-center shadow-md">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
+                    <>
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-coral-500 rounded-full animate-ping opacity-75" />
+                        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-coral-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm border-2 border-white">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    </>
                 )}
             </button>
 

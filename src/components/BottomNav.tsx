@@ -84,17 +84,17 @@ export function BottomNav() {
                         <Link
                             key={item.path}
                             to={item.path}
-                            className={`nav-item tap-scale relative ${isActive ? 'active' : ''}`}
+                            className={`nav-item tap-scale relative flex-1 flex flex-col items-center py-1 ${isActive ? 'active' : ''}`}
                         >
                             <div className="relative">
-                                <Icon className="nav-icon" strokeWidth={isActive ? 2.5 : 1.75} />
+                                <Icon className={`nav-icon transition-colors ${isActive ? 'text-coral-500' : 'text-gray-400 dark:text-gray-500'}`} strokeWidth={isActive ? 2.5 : 1.75} />
                                 {item.badge > 0 && (
-                                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-coral-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 shadow-sm">
+                                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-coral-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 shadow-sm border border-white dark:border-gray-900">
                                         {item.badge > 9 ? '9+' : item.badge}
                                     </span>
                                 )}
                             </div>
-                            <span className="nav-label">{item.label}</span>
+                            <span className={`nav-label transition-colors ${isActive ? 'text-coral-500 font-bold' : 'text-gray-400 dark:text-gray-500 font-medium'}`}>{item.label}</span>
 
                             {/* Active indicator dot */}
                             {isActive && (

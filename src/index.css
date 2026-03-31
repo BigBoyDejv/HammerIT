@@ -994,7 +994,11 @@ h6 {
         }
 
         /* Gridy na jeden stĺpec */
-        .grid {
+        .grid:not(.grid-cols-2):not(.grid-cols-3):not(.grid-cols-4):not(.grid-cols-5) {
+            grid-template-columns: 1fr !important;
+        }
+
+        .md\:grid-cols-2, .md\:grid-cols-3, .md\:grid-cols-4 {
             grid-template-columns: 1fr !important;
         }
 

@@ -88,17 +88,17 @@ export function DashboardModern() {
                     <Sparkles className="w-4 h-4 text-coral-500" />
                     Rýchle akcie
                 </h2>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                     {profile?.role === 'client' ? (
-                        <Link to="/jobs/new" className="flex-1 btn-gradient text-center py-3 text-sm">
+                        <Link to="/jobs/new" className="w-full btn-gradient text-center py-3 text-sm">
                             + Nová práca
                         </Link>
                     ) : (
-                        <Link to="/jobs" className="flex-1 btn-gradient text-center py-3 text-sm">
+                        <Link to="/jobs" className="w-full btn-gradient text-center py-3 text-sm">
                             🔍 Prehliadať práce
                         </Link>
                     )}
-                    <Link to="/messages" className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-center py-3 rounded-xl text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <Link to="/messages" className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-center py-3 rounded-xl text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                         💬 Správy
                     </Link>
                 </div>

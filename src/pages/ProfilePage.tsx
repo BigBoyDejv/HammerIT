@@ -129,7 +129,6 @@ export function ProfilePage() {
 
     const handlePasswordUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Mock functionality
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
@@ -168,7 +167,6 @@ export function ProfilePage() {
             await verificationService.submitVerification(user!.id, verificationFile);
             setVerificationFile(null);
             await loadVerification();
-            // Reload profile to update verification_status
             window.location.reload();
         } catch (err: any) {
             alert(err.message || 'Nepodarilo sa odoslať dokument');
@@ -318,7 +316,7 @@ export function ProfilePage() {
                                             <button
                                                 type="submit"
                                                 disabled={loading}
-                                                className="btn-primary py-2 px-6 flex items-center gap-2 shadow-lg hover:shadow-coral/40"
+                                                className="bg-gradient-to-r from-coral-500 to-coral-600 text-white font-medium py-2 px-6 rounded-xl hover:from-coral-600 hover:to-coral-700 transition-all flex items-center gap-2 disabled:opacity-50"
                                             >
                                                 <Save className="w-4 h-4" />
                                                 {loading ? 'Ukladám...' : 'Uložiť'}
@@ -327,53 +325,55 @@ export function ProfilePage() {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
-                                                <label className="form-label pl-1">Celé meno</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Celé meno</label>
                                                 <input
                                                     type="text"
                                                     required
-                                                    className="form-input bg-gray-50 dark:bg-gray-900/50 focus:bg-white dark:focus:bg-gray-900"
+                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                     value={formData.full_name}
                                                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="form-label pl-1">Email (nemožné zmeniť)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Email (nemožné zmeniť)</label>
                                                 <input
                                                     type="email"
                                                     disabled
-                                                    className="form-input bg-gray-100 dark:bg-gray-800 cursor-not-allowed text-gray-500 dark:text-gray-400"
+                                                    className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 cursor-not-allowed"
                                                     value={user?.email || ''}
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="form-label pl-1">Telefón</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Telefón</label>
                                                 <div className="relative">
                                                     <input
                                                         type="tel"
-                                                        className="form-input pl-10 bg-gray-50 dark:bg-gray-900/50 focus:bg-white dark:focus:bg-gray-900"
+                                                        className="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                         placeholder="+421 xxx xxx xxx"
                                                         value={formData.phone}
                                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                                     />
+                                                    <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="form-label pl-1">Národnosť</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Národnosť</label>
                                                 <div className="relative">
                                                     <input
                                                         type="text"
-                                                        className="form-input pl-10 bg-gray-50 dark:bg-gray-900/50 focus:bg-white dark:focus:bg-gray-900"
+                                                        className="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                         placeholder="Slovenská"
                                                         value={formData.nationality}
                                                         onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
                                                     />
+                                                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                                                 </div>
                                             </div>
                                             <div className="md:col-span-2 space-y-2">
-                                                <label className="form-label pl-1">O mne / Bio</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">O mne / Bio</label>
                                                 <textarea
                                                     rows={4}
-                                                    className="form-textarea bg-gray-50 dark:bg-gray-900/50 focus:bg-white dark:focus:bg-gray-900"
+                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                     placeholder="Povedzte niečo o sebe..."
                                                     value={formData.bio}
                                                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
@@ -393,7 +393,7 @@ export function ProfilePage() {
                                             <div className="flex gap-2 mb-8">
                                                 <input
                                                     type="url"
-                                                    className="form-input bg-gray-50 dark:bg-gray-900/50"
+                                                    className="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                     placeholder="https://example.com/image.jpg"
                                                     value={newImageUrl}
                                                     onChange={(e) => setNewImageUrl(e.target.value)}
@@ -401,7 +401,7 @@ export function ProfilePage() {
                                                 <button
                                                     type="button"
                                                     onClick={addPortfolioImage}
-                                                    className="btn-primary whitespace-nowrap px-6 shrink-0"
+                                                    className="bg-gradient-to-r from-coral-500 to-coral-600 text-white font-medium px-6 py-2 rounded-xl hover:from-coral-600 hover:to-coral-700 transition-all whitespace-nowrap"
                                                 >
                                                     Pridať
                                                 </button>
@@ -449,11 +449,11 @@ export function ProfilePage() {
 
                                         <form onSubmit={handlePasswordUpdate} className="grid grid-cols-1 gap-6">
                                             <div className="space-y-2">
-                                                <label className="form-label pl-1">Aktuálne heslo</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Aktuálne heslo</label>
                                                 <div className="relative">
                                                     <input
                                                         type={showPassword ? "text" : "password"}
-                                                        className="form-input pl-10 bg-gray-50 dark:bg-gray-900/50 focus:bg-white dark:focus:bg-gray-900"
+                                                        className="w-full px-4 py-2 pl-10 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                         placeholder="••••••••"
                                                         value={passwords.current}
                                                         onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
@@ -470,20 +470,20 @@ export function ProfilePage() {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div className="space-y-2">
-                                                    <label className="form-label pl-1">Nové heslo</label>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Nové heslo</label>
                                                     <input
                                                         type="password"
-                                                        className="form-input bg-gray-50 dark:bg-gray-900/50 focus:bg-white dark:focus:bg-gray-900"
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                         placeholder="Nové heslo"
                                                         value={passwords.new}
                                                         onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="form-label pl-1">Potvrdenie hesla</label>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Potvrdenie hesla</label>
                                                     <input
                                                         type="password"
-                                                        className="form-input bg-gray-50 dark:bg-gray-900/50 focus:bg-white dark:focus:bg-gray-900"
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
                                                         placeholder="Potvrďte heslo"
                                                         value={passwords.confirm}
                                                         onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
@@ -492,7 +492,7 @@ export function ProfilePage() {
                                             </div>
 
                                             <div className="flex justify-end pt-4">
-                                                <button type="submit" className="btn-primary py-2 px-8 flex items-center gap-2">
+                                                <button type="submit" className="bg-gradient-to-r from-coral-500 to-coral-600 text-white font-medium py-2 px-8 rounded-xl hover:from-coral-600 hover:to-coral-700 transition-all flex items-center gap-2">
                                                     <Save className="w-4 h-4" />
                                                     Aktualizovať heslo
                                                 </button>
@@ -517,7 +517,7 @@ export function ProfilePage() {
                                                         <p className="text-sm text-gray-500 dark:text-gray-400">Pridajte extra vrstvu zabezpečenia k vášmu kontu</p>
                                                     </div>
                                                 </div>
-                                                <div className={`w-14 h-7 rounded-full transition-all relative flex items-center px-1 ${formData.two_factor ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                                                <div className={`w-14 h-7 rounded-full transition-all relative flex items-center px-1 ${formData.two_factor ? 'bg-coral-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
                                                     <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${formData.two_factor ? 'translate-x-7' : 'translate-x-0'}`}></div>
                                                 </div>
                                             </div>
@@ -669,7 +669,7 @@ export function ProfilePage() {
                                                 <button
                                                     onClick={handleVerificationUpload}
                                                     disabled={!verificationFile || verificationLoading}
-                                                    className="btn-gradient py-2.5 px-8 flex items-center gap-2 disabled:opacity-50"
+                                                    className="bg-gradient-to-r from-coral-500 to-coral-600 text-white font-medium py-2.5 px-8 rounded-xl hover:from-coral-600 hover:to-coral-700 transition-all flex items-center gap-2 disabled:opacity-50"
                                                 >
                                                     {verificationLoading ? (
                                                         <>
@@ -745,7 +745,7 @@ function SidebarItem({ icon: Icon, label, active = false, onClick, badge }: { ic
         <button
             onClick={onClick}
             className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200 group ${active
-                ? 'bg-coral-50 dark:bg-coral-900/20 text-coral-600 font-bold'
+                ? 'bg-coral-50 dark:bg-coral-900/20 text-coral-600 dark:text-coral-400 font-bold'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium'
                 }`}
         >
@@ -761,17 +761,17 @@ function SidebarItem({ icon: Icon, label, active = false, onClick, badge }: { ic
 
 function ToggleRow({ icon: Icon, title, description, active, onToggle }: { icon: any, title: string, description: string, active: boolean, onToggle: () => void }) {
     return (
-        <div className="flex items-center justify-between p-5 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all cursor-pointer group" onClick={onToggle}>
+        <div className="flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-900/30 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-all cursor-pointer group" onClick={onToggle}>
             <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${active ? 'bg-orange-100 text-orange-600' : 'bg-gray-200 text-gray-500'}`}>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${active ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                     <Icon className="w-6 h-6" />
                 </div>
                 <div>
-                    <p className="font-bold text-gray-900">{title}</p>
-                    <p className="text-sm text-gray-500">{description}</p>
+                    <p className="font-bold text-gray-900 dark:text-white">{title}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
                 </div>
             </div>
-            <div className={`w-14 h-7 rounded-full transition-all relative flex items-center px-1 ${active ? 'bg-coral-500' : 'bg-gray-300'}`}>
+            <div className={`w-14 h-7 rounded-full transition-all relative flex items-center px-1 ${active ? 'bg-coral-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
                 <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${active ? 'translate-x-7' : 'translate-x-0'}`}></div>
             </div>
         </div>
@@ -783,14 +783,19 @@ function CheckboxCard({ title, description, defaultChecked = false }: { title: s
     return (
         <div
             onClick={() => setChecked(!checked)}
-            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${checked ? 'border-coral-100 bg-coral-50/30' : 'border-gray-50 hover:border-gray-100 bg-white'}`}
+            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${checked
+                ? 'border-coral-200 dark:border-coral-800 bg-coral-50/30 dark:bg-coral-900/20'
+                : 'border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
+                }`}
         >
             <div className="flex items-start justify-between">
                 <div>
-                    <p className={`font-bold transition-colors ${checked ? 'text-coral-600' : 'text-gray-900'}`}>{title}</p>
-                    <p className="text-xs text-gray-500 mt-1">{description}</p>
+                    <p className={`font-bold transition-colors ${checked ? 'text-coral-600 dark:text-coral-400' : 'text-gray-900 dark:text-white'}`}>
+                        {title}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p>
                 </div>
-                <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${checked ? 'bg-coral-500 border-coral-500' : 'border-gray-300'}`}>
+                <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${checked ? 'bg-coral-500 border-coral-500' : 'border-gray-300 dark:border-gray-600'}`}>
                     {checked && <div className="w-2 h-2 rounded-full bg-white"></div>}
                 </div>
             </div>

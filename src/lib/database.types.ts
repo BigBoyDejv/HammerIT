@@ -125,6 +125,7 @@ export type Database = {
           rating_avg: number | null
           specialization: string[]
           total_jobs: number | null
+          transport_rate: number | null
           updated_at: string | null
           user_id: string
           verified: boolean | null
@@ -137,6 +138,7 @@ export type Database = {
           rating_avg?: number | null
           specialization?: string[]
           total_jobs?: number | null
+          transport_rate?: number | null
           updated_at?: string | null
           user_id: string
           verified?: boolean | null
@@ -149,6 +151,7 @@ export type Database = {
           rating_avg?: number | null
           specialization?: string[]
           total_jobs?: number | null
+          transport_rate?: number | null
           updated_at?: string | null
           user_id?: string
           verified?: boolean | null

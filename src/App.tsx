@@ -18,6 +18,12 @@ import { ContractsPage } from './pages/ContractsPage';
 import { ContractDetailPage } from './pages/ContractDetailPage';
 import { MyOffersPage } from './pages/MyOffersPage';
 import { JobMapPage } from './pages/JobMapPage';
+import { AboutUsPage } from './pages/AboutUsPage';
+import { HowItWorksPage } from './pages/HowItWorksPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { ContactPage } from './pages/ContactPage';
+import { CookiesPage } from './pages/CookiesPage';
+import { TermsPage } from './pages/TermsPage';
 import { supabase } from './lib/supabase';
 import { useEffect } from 'react';
 import { RealtimeProvider } from './contexts/RealtimeContext';
@@ -68,7 +74,10 @@ function App() {
           <Navbar />
 
           {/* Hlavný obsah - flex-1 zabezpečí, že footer bude dole */}
-          <main className="flex-1 pt-16 md:pt-20 pb-20 md:pb-0">
+          <main 
+            className="flex-1 pt-16 md:pt-20 md:pb-0" 
+            style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
+          >
             <div className="container mx-auto px-4 py-4 md:py-8">
               <Routes>
                 {/* Verejné stránky */}
@@ -98,6 +107,14 @@ function App() {
                       : <Navigate to="/dashboard" />
                   }
                 />
+
+                {/* Info stránky */}
+                <Route path="/about" element={<AboutUsPage />} />
+                <Route path="/how-it-works" element={<HowItWorksPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/cookies" element={<CookiesPage />} />
+                <Route path="/terms" element={<TermsPage />} />
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" />} />

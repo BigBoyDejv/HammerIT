@@ -49,11 +49,10 @@ const Footer = () => {
                     <div>
                         <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-white/50">Spoločnosť</h4>
                         <ul className="space-y-3">
-                            {["O nás", "Ako to funguje", "Pre remeselníkov", "Cenník", "Blog", "Kariéra"].map((s) => (
-                                <li key={s}>
-                                    <Link to="#" className="text-sm text-white/60 hover:text-coral-500 transition-colors">{s}</Link>
-                                </li>
-                            ))}
+                            <li><Link to="/about" className="text-sm text-white/60 hover:text-coral-500 transition-colors">O nás</Link></li>
+                            <li><Link to="/how-it-works" className="text-sm text-white/60 hover:text-coral-500 transition-colors">Ako to funguje</Link></li>
+                            <li><Link to="/contact" className="text-sm text-white/60 hover:text-coral-500 transition-colors">Kontakt</Link></li>
+                            <li><Link to="#" className="text-sm text-white/60 hover:text-coral-500 transition-colors">Pre remeselníkov</Link></li>
                         </ul>
                     </div>
 
@@ -71,7 +70,7 @@ const Footer = () => {
                             </li>
                             <li className="flex items-start gap-3 text-sm text-white/60">
                                 <MapPin className="w-4 h-4 text-coral-500 flex-shrink-0 mt-0.5" />
-                                Hlavná 1, 811 01 Bratislava
+                                Košice
                             </li>
                         </ul>
                     </div>
@@ -79,12 +78,12 @@ const Footer = () => {
 
                 <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-xs text-white/40">
-                        © 2024 HammerIt. Všetky práva vyhradené.
+                        © 2026 HammerIt. Všetky práva vyhradené.
                     </p>
                     <div className="flex gap-6">
-                        <Link to="#" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Obchodné podmienky</Link>
-                        <Link to="#" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Ochrana súkromia</Link>
-                        <Link to="#" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Cookies</Link>
+                        <Link to="/terms" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Obchodné podmienky</Link>
+                        <Link to="/privacy" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Ochrana súkromia</Link>
+                        <Link to="/cookies" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Cookies</Link>
                     </div>
                 </div>
             </div>

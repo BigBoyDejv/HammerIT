@@ -1,5 +1,5 @@
-// ─── Navbar.tsx ────────────────────────────────────────────────────────────────
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Hammer, ChevronDown, Sun, Moon, Map } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -290,8 +290,17 @@ export function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      <div className={`md:hidden transition-all duration-300 ${isOpen ? 'max-h-[calc(100vh-5rem)] overflow-y-auto opacity-100' : 'max-h-0 overflow-hidden opacity-0'}`}>
-        <div className="px-4 py-4 space-y-1 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-white/5">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="md:hidden overflow-hidden bg-white dark:bg-slate-900 shadow-xl"
+          >
+            <div className="max-h-[calc(100vh-5rem)] overflow-y-auto">
+              <div className="px-4 py-4 space-y-1 border-t border-gray-100 dark:border-white/5">
           {user ? (
             <>
               <MobileNavLink to={getHomeLink()} onClick={() => setIsOpen(false)}>Domov</MobileNavLink>
@@ -359,8 +368,11 @@ export function Navbar() {
             <a href="mailto:info@hammerit.sk" className="hover:text-coral-500 transition-colors">Kontakt</a>
           </div>
         </div>
-      </div>
-    </nav>
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</nav>
   );
 }
 

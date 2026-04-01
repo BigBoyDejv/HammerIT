@@ -348,6 +348,10 @@ h6 {
     box-shadow: 0 8px 24px rgba(255, 77, 26, 0.4);
 }
 
+.btn-primary:active {
+    transform: scale(0.96);
+}
+
 .btn-secondary {
     display: inline-flex;
     align-items: center;
@@ -368,6 +372,10 @@ h6 {
     box-shadow: var(--shadow-sm);
 }
 
+.btn-secondary:active {
+    transform: scale(0.96);
+}
+
 .btn-outline {
     display: inline-flex;
     align-items: center;
@@ -385,6 +393,10 @@ h6 {
 .btn-outline:hover {
     background: var(--coral);
     color: white;
+}
+
+.btn-outline:active {
+    transform: scale(0.96);
 }
 
 /* ═══════════════════════════════════════
@@ -790,6 +802,15 @@ h6 {
 }
 
 @media (max-width: 768px) {
+    /* Native feel: hide scrollbars on mobile */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    * {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+
     .dashboard-card-number {
         font-size: 2.25rem;
     }

@@ -32,12 +32,17 @@ export function Dashboard() {
           completed: contracts?.filter((c: any) => c.status === 'completed').length || 0,
         });
         
-        const formattedContracts = contracts?.slice(0, 2).map((c: any) => ({
-            ...c.job,
-            client: c.client,
-            budget_min: c.final_price || c.job?.budget_min,
-            budget_max: c.final_price || c.job?.budget_max,
-        })) || [];
+        const formattedContracts = contracts?.slice(0, 2).map((c: any) => {
+            const jobData = Array.isArray(c.job) ? c.job[0] : c.job;
+            const clientData = Array.isArray(c.client) ? c.client[0] : c.client;
+            return {
+                ...jobData,
+                contract_id: c.id,
+                client: clientData,
+                budget_min: c.final_price || jobData?.budget_min,
+                budget_max: c.final_price || jobData?.budget_max,
+            };
+        }) || [];
         setRecentJobs(formattedContracts);
       }
     } catch (error) {
@@ -172,7 +177,7 @@ export function Dashboard() {
           </div>
           <div className="grid grid-cols-1 gap-4">
             {recentJobs.map((job: any) => (
-              <JobCardModern key={job.id} job={job} variant="compact" />
+              <JobCardModern key={job.id || job.contract_id} job={job} variant="active" />
             ))}
           </div>
         </div>

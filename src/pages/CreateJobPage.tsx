@@ -1,9 +1,9 @@
 // src/pages/CreateJobPage.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { jobService } from '../services/jobService';
-import { ArrowLeft, Send, Briefcase, MapPin, Euro, FileText, Tag, Navigation, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Briefcase, MapPin, Euro, FileText, Tag, Navigation, Loader2, Home } from 'lucide-react';
 
 const CATEGORIES = [
     'Elektrikár', 'Murár', 'Maliar', 'Inštalatér',
@@ -15,16 +15,50 @@ export function CreateJobPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [geoLoading, setGeoLoading] = useState(false);
+    
+    const [addressQuery, setAddressQuery] = useState('');
+    const [addressDetails, setAddressDetails] = useState('');
+    const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         category: '',
-        location: '',
         budget_min: '',
         budget_max: '',
         lat: null as number | null,
         lng: null as number | null,
     });
+
+    // Auto-complete suggestions for address
+    useEffect(() => {
+        if (addressQuery.length < 3) {
+            setAddressSuggestions([]);
+            return;
+        }
+        const delayDebounceFn = setTimeout(async () => {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=5&countrycodes=sk,cz`);
+                const data = await res.json();
+                setAddressSuggestions(data);
+            } catch (err) {
+                console.error('Error fetching address suggestions:', err);
+            }
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [addressQuery]);
+
+    const handleSelectSuggestion = (suggestion: any) => {
+        setAddressQuery(suggestion.display_name);
+        setFormData(prev => ({
+            ...prev,
+            lat: parseFloat(suggestion.lat),
+            lng: parseFloat(suggestion.lon)
+        }));
+        setShowSuggestions(false);
+    };
 
     const handleGetLocation = () => {
         if (!navigator.geolocation) {
@@ -35,13 +69,8 @@ export function CreateJobPage() {
         navigator.geolocation.getCurrentPosition(
             async (pos) => {
                 const { latitude, longitude } = pos.coords;
-                setFormData(prev => ({
-                    ...prev,
-                    lat: latitude,
-                    lng: longitude,
-                }));
+                setFormData(prev => ({ ...prev, lat: latitude, lng: longitude }));
 
-                // Reverse geocode to get address
                 try {
                     const res = await fetch(
                         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=14&addressdetails=1`,
@@ -49,12 +78,11 @@ export function CreateJobPage() {
                     );
                     const data = await res.json();
                     if (data.display_name) {
-                        // Shorten address: city + district or village
                         const addr = data.address;
                         const city = addr.city || addr.town || addr.village || addr.municipality || '';
                         const district = addr.city_district || addr.suburb || '';
                         const shortAddress = district ? `${city}, ${district}` : city || data.display_name.split(',').slice(0, 2).join(',');
-                        setFormData(prev => ({ ...prev, location: shortAddress }));
+                        setAddressQuery(shortAddress);
                     }
                 } catch (err) {
                     console.error('Reverse geocoding failed:', err);
@@ -74,13 +102,17 @@ export function CreateJobPage() {
         e.preventDefault();
         setLoading(true);
 
+        const finalLocation = addressDetails 
+            ? `${addressQuery} (${addressDetails})`
+            : addressQuery;
+
         try {
             await jobService.createJob({
                 client_id: user!.id,
                 title: formData.title,
                 description: formData.description,
                 category: formData.category,
-                location: formData.location,
+                location: finalLocation,
                 budget_min: formData.budget_min ? Number(formData.budget_min) : null,
                 budget_max: formData.budget_max ? Number(formData.budget_max) : null,
                 lat: formData.lat,
@@ -97,18 +129,13 @@ export function CreateJobPage() {
         }
     };
 
-    // Presmerovanie ak nie je klient
     if (profile?.role !== 'client') {
         return (
             <div className="glass-card p-12 text-center bg-card dark:bg-slate-800/40 border border-gray-100 dark:border-gray-700/50">
                 <Briefcase className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">Prístup odmietnutý</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                    Iba zákazníci môžu vytvárať nové pracovné ponuky.
-                </p>
-                <Link to="/jobs" className="btn-gradient inline-flex mt-6">
-                    Späť na zoznam prác
-                </Link>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Iba zákazníci môžu vytvárať nové pracovné ponuky.</p>
+                <Link to="/jobs" className="btn-gradient inline-flex mt-6">Späť na zoznam prác</Link>
             </div>
         );
     }
@@ -183,37 +210,65 @@ export function CreateJobPage() {
                         <div>
                             <label className="form-label flex items-center gap-2 dark:text-gray-300">
                                 <MapPin className="w-4 h-4 text-coral-500" />
-                                Lokalita *
+                                Adresa (mesto, ulica) *
                             </label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    required
-                                    className="input-modern flex-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value={formData.location}
-                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                    placeholder="napr. Bratislava, Košice..."
-                                />
+                            <div className="flex gap-2 relative">
+                                <div className="flex-1 relative">
+                                    <input
+                                        type="text"
+                                        required
+                                        className="input-modern w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        value={addressQuery}
+                                        onChange={(e) => {
+                                            setAddressQuery(e.target.value);
+                                            setShowSuggestions(true);
+                                        }}
+                                        onFocus={() => setShowSuggestions(true)}
+                                        placeholder="Začnite písať adresu..."
+                                    />
+                                    {showSuggestions && addressSuggestions.length > 0 && (
+                                        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto">
+                                            {addressSuggestions.map((suggestion, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    onClick={() => handleSelectSuggestion(suggestion)}
+                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-50 dark:border-gray-700/50 last:border-0"
+                                                >
+                                                    {suggestion.display_name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                                 <button
                                     type="button"
                                     onClick={handleGetLocation}
                                     disabled={geoLoading}
                                     className="flex items-center gap-1.5 px-3 py-2 bg-coral-50 dark:bg-coral-900/30 text-coral-600 dark:text-coral-400 border border-coral-200 dark:border-coral-800 rounded-xl text-sm font-medium hover:bg-coral-100 dark:hover:bg-coral-900/50 transition-all flex-shrink-0"
-                                    title="Použiť moju polohu"
+                                    title="Použiť detekciu polohy"
                                 >
                                     {geoLoading ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
                                     ) : (
                                         <Navigation className="w-4 h-4" />
                                     )}
-                                    <span className="hidden sm:inline">📍</span>
                                 </button>
                             </div>
-                            {formData.lat && formData.lng && (
-                                <p className="text-xs text-emerald-500 mt-1 flex items-center gap-1">
-                                    ✅ GPS súradnice uložené ({formData.lat.toFixed(4)}, {formData.lng.toFixed(4)})
-                                </p>
-                            )}
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label className="form-label flex items-center gap-2 dark:text-gray-300">
+                                <Home className="w-4 h-4 text-coral-500" />
+                                Detaily miesta (byt, poschodie, špecifikácie)
+                            </label>
+                            <input
+                                type="text"
+                                className="input-modern dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                value={addressDetails}
+                                onChange={(e) => setAddressDetails(e.target.value)}
+                                placeholder="napr. 3. poschodie, zvonček Novák"
+                            />
                         </div>
                     </div>
 
@@ -229,7 +284,7 @@ export function CreateJobPage() {
                                 className="input-modern dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 value={formData.budget_min}
                                 onChange={(e) => setFormData({ ...formData, budget_min: e.target.value })}
-                                placeholder="napr. 500"
+                                placeholder="napr. 50"
                             />
                         </div>
 
@@ -244,7 +299,7 @@ export function CreateJobPage() {
                                 className="input-modern dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 value={formData.budget_max}
                                 onChange={(e) => setFormData({ ...formData, budget_max: e.target.value })}
-                                placeholder="napr. 1000"
+                                placeholder="napr. 250"
                             />
                         </div>
                     </div>
@@ -252,8 +307,8 @@ export function CreateJobPage() {
                     <div className="flex gap-4 pt-4">
                         <button
                             type="submit"
-                            disabled={loading}
-                            className="btn-gradient flex-1 flex items-center justify-center gap-2 py-3"
+                            disabled={loading || !addressQuery}
+                            className="btn-gradient flex-1 flex items-center justify-center gap-2 py-3 disabled:opacity-50"
                         >
                             {loading ? (
                                 <>
@@ -266,13 +321,6 @@ export function CreateJobPage() {
                                     Vytvoriť ponuku
                                 </>
                             )}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => navigate('/jobs')}
-                            className="btn-secondary dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
-                        >
-                            Zrušiť
                         </button>
                     </div>
                 </form>

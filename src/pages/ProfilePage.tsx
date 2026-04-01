@@ -53,6 +53,11 @@ export function ProfilePage() {
         two_factor: false,
     });
 
+    const [craftsmanData, setCraftsmanData] = useState({
+        hourly_rate: '',
+        transport_rate: '',
+    });
+
     const [passwords, setPasswords] = useState({
         current: '',
         new: '',
@@ -91,6 +96,10 @@ export function ProfilePage() {
                 .single();
             if (data) {
                 setPortfolio(data.portfolio || []);
+                setCraftsmanData({
+                    hourly_rate: data.hourly_rate?.toString() || '',
+                    transport_rate: data.transport_rate?.toString() || '',
+                });
             }
         } catch (error) {
             console.error('Error loading craftsman data:', error);
@@ -112,7 +121,11 @@ export function ProfilePage() {
             if (profile?.role === 'craftsman') {
                 await supabase
                     .from('craftsman_profiles')
-                    .update({ portfolio })
+                    .update({ 
+                        portfolio,
+                        hourly_rate: craftsmanData.hourly_rate ? Number(craftsmanData.hourly_rate) : null,
+                        transport_rate: craftsmanData.transport_rate ? Number(craftsmanData.transport_rate) : null
+                    })
                     .eq('user_id', user!.id);
             }
 
@@ -382,6 +395,39 @@ export function ProfilePage() {
                                     </div>
 
                                     {profile?.role === 'craftsman' && (
+                                        <>
+                                        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 space-y-6">
+                                            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                                <CreditCard className="w-5 h-5 text-emerald-500" />
+                                                Cenník služieb (Nezáväzný)
+                                            </h2>
+                                            
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Hodinová sadzba (€/hod)</label>
+                                                    <input
+                                                        type="number"
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
+                                                        placeholder="napr. 15"
+                                                        value={craftsmanData.hourly_rate}
+                                                        onChange={(e) => setCraftsmanData({ ...craftsmanData, hourly_rate: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 pl-1">Taxa za dopravu (€/km)</label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.1"
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all"
+                                                        placeholder="napr. 0.5"
+                                                        value={craftsmanData.transport_rate}
+                                                        onChange={(e) => setCraftsmanData({ ...craftsmanData, transport_rate: e.target.value })}
+                                                    />
+                                                    <p className="text-xs text-gray-400 pl-1">Pomáha zákazníkom odhadnúť dodatočné náklady</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
                                             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                                                 <ImageIcon className="w-5 h-5 text-emerald-500" />
@@ -429,6 +475,7 @@ export function ProfilePage() {
                                                 )}
                                             </div>
                                         </div>
+                                        </>
                                     )}
                                 </form>
                             )}

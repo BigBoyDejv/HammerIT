@@ -152,7 +152,7 @@ export function CraftsmanProfilePage() {
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {craftsman.specialization?.map((spec: string, idx: number) => (
-                                <span key={idx} className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-600 px-3 py-1 rounded-full text-sm">
+                                <span key={idx} className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-sm">
                                     {spec}
                                 </span>
                             ))}
@@ -207,7 +207,7 @@ export function CraftsmanProfilePage() {
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Špecializácie</h2>
                     <div className="flex flex-wrap gap-2">
                         {craftsman.specialization?.map((spec: string, idx: number) => (
-                            <span key={idx} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300 dark:text-gray-600">
+                            <span key={idx} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300">
                                 {spec}
                             </span>
                         ))}
@@ -218,11 +218,23 @@ export function CraftsmanProfilePage() {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Hodinová sadzba</h2>
-                    <div className="text-3xl font-bold text-coral-500">
-                        {craftsman.hourly_rate ? `${craftsman.hourly_rate}€` : 'Dohodou'}
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Cenník</h2>
+                    <div className="space-y-4">
+                        <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Hodinová sadzba</p>
+                            <div className="text-2xl font-bold text-coral-500">
+                                {craftsman.hourly_rate ? `${craftsman.hourly_rate} € / hod` : 'Dohodou'}
+                            </div>
+                        </div>
+                        {craftsman.transport_rate && (
+                            <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Taxa za dopravu</p>
+                                <div className="text-2xl font-bold text-coral-500">
+                                    {craftsman.transport_rate} € / km
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">za hodinu práce</p>
                 </div>
             </div>
 

@@ -31,7 +31,14 @@ export function Dashboard() {
           active: contracts?.filter((c: any) => c.status === 'active').length || 0,
           completed: contracts?.filter((c: any) => c.status === 'completed').length || 0,
         });
-        setRecentJobs(contracts?.slice(0, 2) || []);
+        
+        const formattedContracts = contracts?.slice(0, 2).map((c: any) => ({
+            ...c.job,
+            client: c.client,
+            budget_min: c.final_price || c.job?.budget_min,
+            budget_max: c.final_price || c.job?.budget_max,
+        })) || [];
+        setRecentJobs(formattedContracts);
       }
     } catch (error) {
       console.error('Error loading data:', error);

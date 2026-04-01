@@ -104,7 +104,7 @@ export function CraftsmanProfilePage() {
     if (!craftsman) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-500">Remeselník nebol nájdený</p>
+                <p className="text-gray-500 dark:text-gray-400">Remeselník nebol nájdený</p>
                 <Link to="/craftsmen" className="text-coral-500 hover:underline mt-2 inline-block">
                     Späť na zoznam
                 </Link>
@@ -116,43 +116,43 @@ export function CraftsmanProfilePage() {
 
     return (
         <div className="max-w-4xl mx-auto animate-fade-in">
-            <Link to="/craftsmen" className="inline-flex items-center gap-2 text-gray-500 hover:text-coral-500 transition-colors mb-6">
+            <Link to="/craftsmen" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-coral-500 transition-colors mb-6">
                 <ArrowLeft className="w-4 h-4" />
                 Späť na zoznam remeselníkov
             </Link>
 
             {/* Profile Header */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
                 <div className="flex flex-col md:flex-row gap-6">
                     <div className="w-32 h-32 bg-gradient-to-r from-coral-500 to-coral-600 rounded-2xl flex items-center justify-center text-white text-5xl font-bold">
                         {craftsman.user?.full_name?.charAt(0) || 'R'}
                     </div>
                     <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                            <h1 className="text-3xl font-bold text-gray-900">{craftsman.user?.full_name}</h1>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{craftsman.user?.full_name}</h1>
                             {craftsman.verified && (
-                                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs px-2 py-1 rounded-full flex items-center gap-1">
                                     <CheckCircle className="w-3 h-3" /> Overený
                                 </span>
                             )}
                         </div>
                         <div className="flex flex-wrap gap-4 mb-4">
-                            <span className="flex items-center gap-1 text-gray-600">
+                            <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                                 <span className="font-semibold">{craftsman.rating_avg?.toFixed(1) || 'Nový'}</span>
                                 <span className="text-sm">({craftsman.total_jobs || 0} hodnotení)</span>
                             </span>
-                            <span className="flex items-center gap-1 text-gray-600">
+                            <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                                 <Briefcase className="w-4 h-4" />
                                 {craftsman.years_experience || 0} rokov skúseností
                             </span>
-                            <span className="flex items-center gap-1 text-gray-600">
+                            <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                                 {craftsman.total_jobs || 0} dokončených prác
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-2 mb-4">
                             {craftsman.specialization?.map((spec: string, idx: number) => (
-                                <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                                <span key={idx} className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-600 px-3 py-1 rounded-full text-sm">
                                     {spec}
                                 </span>
                             ))}
@@ -166,7 +166,7 @@ export function CraftsmanProfilePage() {
                                     <MessageCircle className="w-4 h-4" /> Správa
                                 </button>
                             )}
-                            <Link to={`/jobs?craftsman=${craftsman.user_id}`} className="btn-outline">
+                            <Link to={`/jobs?craftsman=${craftsman.user_id}`} className="btn-outline dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:border-gray-500">
                                 Pozrieť práce
                             </Link>
                         </div>
@@ -175,20 +175,20 @@ export function CraftsmanProfilePage() {
             </div>
 
             {/* About Section */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">O mne</h2>
-                <div className="prose prose-sm max-w-none text-gray-600 whitespace-pre-wrap leading-relaxed">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">O mne</h2>
+                <div className="prose prose-sm max-w-none text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">
                     {craftsman.user?.bio || 'Tento remeselník zatiaľ nepridal žiadny podrobný popis.'}
                 </div>
             </div>
 
             {/* Portfolio Section */}
             {craftsman.portfolio && craftsman.portfolio.length > 0 && (
-                <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Moja práca / Portfólio</h2>
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">Moja práca / Portfólio</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {craftsman.portfolio.map((img: string, idx: number) => (
-                            <div key={idx} className="aspect-video rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                            <div key={idx} className="aspect-video rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
                                 <img 
                                     src={img} 
                                     alt={`Práca ${idx + 1}`} 
@@ -203,69 +203,69 @@ export function CraftsmanProfilePage() {
 
             {/* Skills & Rates */}
             <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-white rounded-xl shadow-md p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Špecializácie</h2>
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Špecializácie</h2>
                     <div className="flex flex-wrap gap-2">
                         {craftsman.specialization?.map((spec: string, idx: number) => (
-                            <span key={idx} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+                            <span key={idx} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm text-gray-700 dark:text-gray-300 dark:text-gray-600">
                                 {spec}
                             </span>
                         ))}
                         {(!craftsman.specialization || craftsman.specialization.length === 0) && (
-                            <p className="text-gray-500 text-sm">Zatiaľ neboli pridané žiadne špecializácie</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Zatiaľ neboli pridané žiadne špecializácie</p>
                         )}
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Hodinová sadzba</h2>
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Hodinová sadzba</h2>
                     <div className="text-3xl font-bold text-coral-500">
                         {craftsman.hourly_rate ? `${craftsman.hourly_rate}€` : 'Dohodou'}
                     </div>
-                    <p className="text-gray-500 text-sm mt-2">za hodinu práce</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">za hodinu práce</p>
                 </div>
             </div>
 
             {/* Contact Info */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Kontaktné údaje</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Kontaktné údaje</h2>
                 <div className="space-y-3">
                     {craftsman.user?.phone && (
-                        <div className="flex items-center gap-3 text-gray-600">
+                        <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
                             <Phone className="w-5 h-5" />
                             <span>{craftsman.user.phone}</span>
                         </div>
                     )}
                     {craftsman.user?.email && (
-                        <div className="flex items-center gap-3 text-gray-600">
+                        <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
                             <Mail className="w-5 h-5" />
                             <span>{craftsman.user.email}</span>
                         </div>
                     )}
                     {!craftsman.user?.phone && !craftsman.user?.email && (
-                        <p className="text-gray-500">Kontaktné údaje nie sú k dispozícii</p>
+                        <p className="text-gray-500 dark:text-gray-400">Kontaktné údaje nie sú k dispozícii</p>
                     )}
                 </div>
             </div>
 
             {/* Reviews Section */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Hodnotenia od klientov</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Hodnotenia od klientov</h2>
                 {reviews.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">Zatiaľ žiadne hodnotenia</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">Zatiaľ žiadne hodnotenia</p>
                 ) : (
                     <div className="space-y-4">
                         {reviews.map((review) => (
-                            <div key={review.id} className="border-b border-gray-100 pb-4 last:border-0">
+                            <div key={review.id} className="border-b border-gray-100 dark:border-gray-700 pb-4 last:border-0">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm font-medium">
+                                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-sm font-medium">
                                         {review.reviewer?.full_name?.charAt(0)}
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-900">{review.reviewer?.full_name}</p>
+                                        <p className="font-medium text-gray-900 dark:text-white">{review.reviewer?.full_name}</p>
                                         <div className="flex items-center gap-1">
                                             {[...Array(5)].map((_, i) => (
-                                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
+                                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300 dark:text-gray-600'}`} />
                                             ))}
                                         </div>
                                     </div>
@@ -273,7 +273,7 @@ export function CraftsmanProfilePage() {
                                         {new Date(review.created_at).toLocaleDateString('sk-SK')}
                                     </span>
                                 </div>
-                                <p className="text-gray-600 text-sm">{review.comment}</p>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm">{review.comment}</p>
                             </div>
                         ))}
                     </div>

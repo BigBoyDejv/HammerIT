@@ -117,6 +117,12 @@ export const offerService = {
         if (error) throw error;
 
         if (status === 'accepted') {
+            // 1. Zamietnuť všetky OSTATNÉ ponuky pre túto zákazku
+            await supabase
+                .from('job_offers')
+                .update({ status: 'rejected' })
+                .eq('job_request_id', offer.job_request_id)
+                .neq('id', id);
             const { error: contractError } = await supabase
                 .from('contracts')
                 .insert({

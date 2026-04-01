@@ -53,6 +53,7 @@ export function NotificationBell() {
                                 Notifikácie
                             </h3>
                             <div className="flex gap-2">
+                                
                                 <button
                                     onClick={() => markAllAsRead()}
                                     title="Označiť všetko ako prečítané"

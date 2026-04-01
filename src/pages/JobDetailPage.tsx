@@ -1,12 +1,11 @@
-import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { 
-    CheckCircle, XCircle, Clock, Send, MessageCircle, ArrowLeft, 
-    Briefcase, MapPin, Euro, Calendar, User, ChevronRight, 
-    AlertCircle, Sparkles, TrendingUp, ShieldCheck, Tag, Loader2
+    CheckCircle, Clock, Send, MessageCircle, ArrowLeft, 
+    MapPin, Euro, Calendar, 
+    AlertCircle, Sparkles, TrendingUp, ShieldCheck, Tag, Loader2, XCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Database } from '../lib/database.types';
@@ -58,9 +57,9 @@ export function JobDetailPage() {
         if (id) loadJob();
     }, [id]);
 
-    const loadJob = async () => {
+    const loadJob = async (silent = false) => {
         if (!id) return;
-        setLoading(true);
+        if (!silent) setLoading(true);
         setError(null);
         try {
             const data = await fetchJob(id);
@@ -69,7 +68,7 @@ export function JobDetailPage() {
             console.error(err);
             setError('Nepodarilo sa načítať detaily dopytu.');
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
@@ -77,8 +76,8 @@ export function JobDetailPage() {
         e.preventDefault();
         if (!user || !id || !job) return;
 
-        const alreadyOffered = job.job_offers?.some(o => o.craftsman_id === user.id);
-        if (alreadyOffered) return;
+        const activeOffer = job.job_offers?.find(o => o.craftsman_id === user.id && (o.status === 'pending' || o.status === 'accepted'));
+        if (activeOffer) return;
 
         setSubmitting(true);
         try {
@@ -92,9 +91,10 @@ export function JobDetailPage() {
             });
 
             setOfferForm({ price: '', duration: '', message: '' });
-            await loadJob();
-        } catch (err) {
+            await loadJob(true); // Silent reload
+        } catch (err: any) {
             console.error(err);
+            alert('Chyba pri odosielaní ponuky: ' + (err.message || 'Nepodarilo sa pripojiť k serveru'));
         } finally {
             setSubmitting(false);
         }
@@ -105,10 +105,11 @@ export function JobDetailPage() {
 
         try {
             await offerService.updateOfferStatus(offerId, action, user!.id);
-            await loadJob();
+            await loadJob(true); // Silent reload
             window.dispatchEvent(new CustomEvent('refresh-offers'));
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
+            alert('Chyba pri aktualizácii statusu: ' + (err.message || 'Nepodarilo sa pripojiť k serveru'));
         } finally {
             setActionLoading(null);
         }
@@ -151,9 +152,11 @@ export function JobDetailPage() {
 
     const isMyJob = job.client_id === user?.id;
     const existingOffer = job.job_offers?.find(o => o.craftsman_id === user?.id);
-    const alreadyOffered = !!existingOffer;
-    const canSubmitOffer = currentUserProfile?.role === 'craftsman' && !isMyJob && job.status === 'open' && !alreadyOffered;
-    const isPending = existingOffer?.status === 'pending';
+    
+    // Ponuka sa považuje za "existujúcu" len ak je čakajúca alebo prijatá. 
+    // Ak je zamietnutá, remeselník môže poslať novú.
+    const isOfferActive = existingOffer && (existingOffer.status === 'pending' || existingOffer.status === 'accepted');
+    const canSubmitOffer = currentUserProfile?.role === 'craftsman' && !isMyJob && job.status === 'open' && !isOfferActive;
 
     const getStatusInfo = () => {
         const statusMap = {
@@ -229,8 +232,12 @@ export function JobDetailPage() {
                         {job.client && (
                             <div className="pt-8 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 bg-gradient-to-tr from-navy-800 to-black rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl">
-                                        {job.client.full_name?.charAt(0) ?? 'K'}
+                                    <div className="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-white font-black text-xl shadow-xl bg-gradient-to-tr from-navy-800 to-black transition-all group-hover/avatar:rotate-6">
+                                        {job.client.avatar_url ? (
+                                            <img src={job.client.avatar_url} alt={job.client.full_name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span>{job.client.full_name?.charAt(0) ?? 'K'}</span>
+                                        )}
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Zverejnil zákazník</p>
@@ -270,17 +277,28 @@ export function JobDetailPage() {
                                     <motion.div 
                                         key={offer.id}
                                         initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }}
-                                        className={`bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border ${offer.status === 'accepted' ? 'border-emerald-500/50 bg-emerald-500/5 shadow-emerald-500/10' : 'border-gray-50 dark:border-white/5 shadow-sm'} shadow-2xl shadow-navy-900/5`}
+                                        className={`bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border ${
+                                            offer.status === 'accepted' 
+                                            ? 'border-emerald-500/50 bg-emerald-500/5 shadow-emerald-500/10' 
+                                            : offer.status === 'rejected'
+                                            ? 'border-red-500/20 bg-red-500/5 opacity-80'
+                                            : 'border-gray-50 dark:border-white/5 shadow-sm'
+                                        } shadow-2xl shadow-navy-900/5`}
                                     >
                                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-14 h-14 bg-gradient-to-tr from-coral-500 to-coral-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl">
-                                                    {offer.craftsman?.full_name?.charAt(0)}
+                                                <div className="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-white font-black text-xl shadow-xl bg-gradient-to-tr from-coral-500 to-coral-600">
+                                                    {offer.craftsman?.avatar_url ? (
+                                                        <img src={offer.craftsman.avatar_url} alt={offer.craftsman.full_name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span>{offer.craftsman?.full_name?.charAt(0)}</span>
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <p className="font-black text-gray-900 dark:text-white">{offer.craftsman?.full_name}</p>
                                                         {offer.status === 'accepted' && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                                                        {offer.status === 'rejected' && <XCircle className="w-4 h-4 text-red-500" />}
                                                     </div>
                                                     <div className="flex items-center gap-4">
                                                         <span className="text-xs font-black text-coral-500 uppercase tracking-widest">{offer.price} €</span>
@@ -302,9 +320,10 @@ export function JobDetailPage() {
                                                     </button>
                                                     <button 
                                                         onClick={() => handleOfferAction(offer.id, 'rejected')}
-                                                        className="flex-1 md:flex-none px-6 py-3 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 font-black text-xs uppercase rounded-xl hover:bg-red-50 hover:text-red-500 transition-all"
+                                                        disabled={actionLoading === offer.id}
+                                                        className="flex-1 md:flex-none px-6 py-3 bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 font-black text-xs uppercase rounded-xl hover:bg-red-50 hover:text-red-500 transition-all disabled:opacity-50"
                                                     >
-                                                        Odmietnuť
+                                                        {actionLoading === offer.id ? '...' : 'Odmietnuť'}
                                                     </button>
                                                 </div>
                                             )}
@@ -312,6 +331,11 @@ export function JobDetailPage() {
                                             {offer.status === 'accepted' && (
                                                 <span className="px-6 py-3 bg-emerald-500/10 text-emerald-600 font-black text-[10px] uppercase tracking-widest rounded-xl">
                                                     Prijatá ponuka
+                                                </span>
+                                            )}
+                                            {offer.status === 'rejected' && (
+                                                <span className="px-6 py-3 bg-red-500/10 text-red-600 font-black text-[10px] uppercase tracking-widest rounded-xl">
+                                                    Odmietnutá
                                                 </span>
                                             )}
                                         </div>
@@ -415,7 +439,7 @@ export function JobDetailPage() {
                         </AnimatePresence>
 
                         {/* Already Offered / Pending Status */}
-                        {alreadyOffered && (
+                        {isOfferActive && (
                             <div className="bg-emerald-50 dark:bg-emerald-900/10 rounded-[2.5rem] p-8 border border-emerald-500/20 text-center">
                                 <CheckCircle className="w-10 h-10 text-emerald-500 mx-auto mb-4" />
                                 <h4 className="text-lg font-black text-emerald-900 dark:text-emerald-400">Ponuka odoslaná</h4>

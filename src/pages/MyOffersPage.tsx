@@ -1,11 +1,23 @@
-import { LoadingSpinner } from '../components/LoadingSpinner';
-// src/pages/MyOffersPage.tsx
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { offerService } from '../services/offerService';  // PRIDAJ IMPORT
-import { Clock, CheckCircle, XCircle, Eye, MapPin, Euro, Briefcase, RefreshCw } from 'lucide-react';
+import { offerService } from '../services/offerService';
 import { supabase } from '../lib/supabase';
+import { OfferCard } from '../components/OfferCard';
+import { OfferTabs } from '../components/OfferTabs';
+import { 
+  Briefcase, 
+  Search, 
+  RotateCcw, 
+  Clock, 
+  CheckCircle, 
+  XCircle,
+  LayoutGrid,
+  List,
+  RefreshCw,
+  Zap,
+  Tag
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface Offer {
     id: string;
@@ -35,13 +47,13 @@ export function MyOffersPage() {
     const { user } = useAuth();
     const [offers, setOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [filter, setFilter] = useState<'all' | 'pending' | 'accepted' | 'rejected'>('all');
 
-    const loadOffers = async () => {
+    const loadOffers = useCallback(async () => {
         if (!user) return;
-        
+        setLoading(true);
         try {
-            // POUŽI offerService namiesto priameho supabase volania
             const data = await offerService.getMyOffers(user.id);
             setOffers(data as Offer[] || []);
         } catch (error) {
@@ -49,15 +61,13 @@ export function MyOffersPage() {
         } finally {
             setLoading(false);
         }
-    };
-
-
-    // Počiatočné načítanie
-    useEffect(() => {
-        loadOffers();
     }, [user]);
 
-    // Real-time subskripcia na zmeny v ponukách
+    useEffect(() => {
+        loadOffers();
+    }, [loadOffers]);
+
+    // Real-time subscription
     useEffect(() => {
         if (!user) return;
 
@@ -71,196 +81,131 @@ export function MyOffersPage() {
                     table: 'job_offers',
                     filter: `craftsman_id=eq.${user.id}`
                 },
-                () => {
-                    console.log('Offer changed, reloading...');
-                    loadOffers();
-                }
+                () => loadOffers()
             )
             .subscribe();
 
-        // Event listener pre manuálne refresh (z iných komponentov)
-        const handleRefresh = () => {
-            loadOffers();
-        };
-        window.addEventListener('refresh-offers', handleRefresh);
-
         return () => {
             subscription.unsubscribe();
-            window.removeEventListener('refresh-offers', handleRefresh);
         };
-    }, [user]);
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Clock className="w-5 h-5 text-yellow-500" />;
-            case 'accepted':
-                return <CheckCircle className="w-5 h-5 text-green-500" />;
-            case 'rejected':
-                return <XCircle className="w-5 h-5 text-red-500" />;
-            default:
-                return null;
-        }
-    };
-
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return { text: 'Čaká na schválenie', class: 'bg-yellow-100 text-yellow-800' };
-            case 'accepted':
-                return { text: 'Prijatá ✓', class: 'bg-green-100 text-green-800' };
-            case 'rejected':
-                return { text: 'Zamietnutá ✗', class: 'bg-red-100 text-red-800' };
-            default:
-                return { text: status, class: 'bg-gray-100 text-gray-800' };
-        }
-    };
+    }, [user, loadOffers]);
 
     const filteredOffers = offers.filter(offer =>
         filter === 'all' ? true : offer.status === filter
     );
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <LoadingSpinner />
+    const tabs = [
+        { value: 'all', label: 'Všetky', count: offers.length },
+        { value: 'pending', label: 'Čakajúce', count: offers.filter(o => o.status === 'pending').length },
+        { value: 'accepted', label: 'Prijaté', count: offers.filter(o => o.status === 'accepted').length },
+        { value: 'rejected', label: 'Zamietnuté', count: offers.filter(o => o.status === 'rejected').length }
+    ];
+
+    // Skeleton Loader Component
+    const SkeletonOfferCard = () => (
+        <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 animate-pulse">
+            <div className="flex justify-between mb-4">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-lg w-2/3"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-1/4"></div>
             </div>
-        );
-    }
+            <div className="flex gap-2 mb-6">
+                <div className="h-5 bg-gray-100 dark:bg-gray-700/50 rounded w-20"></div>
+                <div className="h-5 bg-gray-100 dark:bg-gray-700/50 rounded w-24"></div>
+            </div>
+            <div className="h-32 bg-gray-50 dark:bg-gray-900 rounded-2xl mb-6"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-xl w-full"></div>
+        </div>
+    );
 
     return (
-        <div className="max-w-5xl mx-auto animate-fade-in">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Moje ponuky</h1>
-                    <p className="text-gray-500 mt-1">Prehľad všetkých vašich ponúk na práce</p>
-                </div>
-                <div className="flex gap-3">
-                    <button
-                        onClick={() => loadOffers()}
-                        className="btn-outline text-sm py-2 px-3 flex items-center gap-1"
-                        title="Obnoviť"
-                    >
-                        <RefreshCw className="w-4 h-4" />
-                        Obnoviť
-                    </button>
-                    <Link to="/jobs" className="btn-outline text-sm">
-                        🔍 Prehliadať práce
-                    </Link>
-                </div>
-            </div>
-
-            {/* Filtre */}
-            <div className="flex gap-2 mb-6 flex-wrap">
-                {[
-                    { value: 'all', label: 'Všetky', count: offers.length },
-                    { value: 'pending', label: 'Čakajúce', count: offers.filter(o => o.status === 'pending').length },
-                    { value: 'accepted', label: 'Prijaté', count: offers.filter(o => o.status === 'accepted').length },
-                    { value: 'rejected', label: 'Zamietnuté', count: offers.filter(o => o.status === 'rejected').length }
-                ].map((tab) => (
-                    <button
-                        key={tab.value}
-                        onClick={() => setFilter(tab.value as any)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === tab.value
-                            ? 'bg-coral-500 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            }`}
-                    >
-                        {tab.label} ({tab.count})
-                    </button>
-                ))}
-            </div>
-
-            {offers.length === 0 ? (
-                <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                    <div className="w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Clock className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Zatiaľ žiadne ponuky</h3>
-                    <p className="text-gray-500 dark:text-gray-400">Keď zareagujete na nejakú prácu, uvidíte ju tu.</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {filteredOffers.map((offer) => {
-                        const status = getStatusText(offer.status);
-                        return (
-                            <div key={offer.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 dark:border-gray-700">
-                                <div className="p-5">
-                                    <div className="flex flex-wrap items-start justify-between gap-4">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                                    {offer.job?.title}
-                                                </h2>
-                                                <span className={`text-xs px-2 py-1 rounded-full ${status.class} flex items-center gap-1`}>
-                                                    {getStatusIcon(offer.status)}
-                                                    <span>{status.text}</span>
-                                                </span>
-                                            </div>
-
-                                            <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-3">
-                                                {offer.job?.description}
-                                            </p>
-
-                                            <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
-                                                <span className="flex items-center gap-1">
-                                                    <Briefcase className="w-4 h-4" /> {offer.job?.category}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <MapPin className="w-4 h-4" /> {offer.job?.location}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <Euro className="w-4 h-4" /> {offer.job?.budget_min}€ - {offer.job?.budget_max}€
-                                                </span>
-                                            </div>
-
-                                            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 mb-3">
-                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tvoja ponuka:</p>
-                                                <div className="flex items-center gap-4">
-                                                    <span className="text-xl font-bold text-coral-500">{offer.price}€</span>
-                                                    <span className="text-sm text-gray-500 dark:text-gray-400">⏱️ {offer.estimated_duration}</span>
-                                                </div>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">"{offer.message}"</p>
-                                            </div>
-
-                                            <div className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
-                                                <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300">
-                                                    {offer.job?.client?.full_name?.charAt(0) || 'K'}
-                                                </div>
-                                                <span className="text-sm text-gray-500 dark:text-gray-400">Klient: {offer.job?.client?.full_name}</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col gap-2 min-w-[100px]">
-                                            <Link
-                                                to={`/jobs/${offer.job_request_id}`}
-                                                className="btn-primary text-sm py-2 px-3 flex items-center justify-center gap-1"
-                                            >
-                                                <Eye className="w-4 h-4" /> Detail
-                                            </Link>
-                                            {offer.status === 'accepted' && (
-                                                <Link
-                                                    to="/messages"
-                                                    className="btn-outline dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 text-sm py-2 px-3 flex items-center justify-center gap-1"
-                                                >
-                                                    💬 Správa
-                                                </Link>
-                                            )}
-                                            {offer.status === 'rejected' && (
-                                                <Link
-                                                    to={`/jobs/${offer.job_request_id}`}
-                                                    className="btn-outline dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 text-sm py-2 px-3 flex items-center justify-center gap-1"
-                                                >
-                                                    🔄 Poslať novú ponuku
-                                                </Link>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+        <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900/50 pb-24">
+            {/* Header Section */}
+            <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 pt-28 pb-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-black uppercase tracking-widest mb-3">
+                                <Zap className="w-3 h-3" />
+                                <span>Moja aktivita</span>
                             </div>
-                        );
-                    })}
+                            <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                                Moje <span className="gradient-text">ponuky</span>
+                            </h1>
+                            <p className="mt-2 text-gray-500 dark:text-gray-400 font-medium">
+                                Sledujte stav svojich reakcií na dopyty v reálnom čase.
+                            </p>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                            <div className="hidden sm:flex bg-gray-100 dark:bg-gray-700 p-1 rounded-xl shadow-inner ring-1 ring-black/5 dark:ring-white/5">
+                                <button 
+                                    onClick={() => setViewMode('grid')}
+                                    className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-gray-600 shadow-sm text-coral-500' : 'text-gray-400'}`}
+                                >
+                                    <LayoutGrid className="w-5 h-5" />
+                                </button>
+                                <button 
+                                    onClick={() => setViewMode('list')}
+                                    className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-gray-600 shadow-sm text-coral-500' : 'text-gray-400'}`}
+                                >
+                                    <List className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <button
+                                onClick={loadOffers}
+                                className="btn-secondary flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700"
+                                title="Obnoviť"
+                            >
+                                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                                <span className="hidden sm:inline">Obnoviť</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            )}
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+                {/* Tabs / Filters Component */}
+                <OfferTabs 
+                    tabs={tabs} 
+                    activeTab={filter} 
+                    onTabChange={(val) => setFilter(val as any)} 
+                />
+
+                {/* Main Content Area */}
+                {loading ? (
+                    <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-6"}>
+                        {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonOfferCard key={i} />)}
+                    </div>
+                ) : filteredOffers.length === 0 ? (
+                    <div className="text-center py-24 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm animate-fade-in ring-1 ring-black/5 dark:ring-white/5">
+                        <div className="w-24 h-24 bg-gray-50 dark:bg-gray-700/50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-gray-300 dark:text-gray-600">
+                           {filter === 'pending' ? <Clock className="w-12 h-12" /> : filter === 'accepted' ? <CheckCircle className="w-12 h-12" /> : filter === 'rejected' ? <XCircle className="w-12 h-12" /> : <Search className="w-12 h-12" />}
+                        </div>
+                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Žiadne ponuky {filter !== 'all' ? `v kategórii "${tabs.find(t => t.value === filter)?.label}"` : ''}</h3>
+                        <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-10 font-medium">
+                            {filter === 'all' 
+                                ? 'Zatiaľ ste neposlali žiadnu ponuku. Začnite hľadaním zaujímavých prác vo vašom okolí.'
+                                : `Momentálne nemáte žiadne ponuky so stavom ${tabs.find(t => t.value === filter)?.label.toLowerCase()}.`}
+                        </p>
+                        <Link 
+                            to="/jobs"
+                            className="btn-primary inline-flex items-center gap-3 px-10 py-4 rounded-xl font-black shadow-xl shadow-coral-500/30 active:scale-95 transition-all text-sm uppercase tracking-[0.1em]"
+                        >
+                            <Search className="w-5 h-5" />
+                            Prehliadať práce
+                        </Link>
+                    </div>
+                ) : (
+                    <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" : "max-w-3xl mx-auto space-y-8"}>
+                        {filteredOffers.map((offer) => (
+                            <div key={offer.id} className="animate-fade-in transition-all duration-300">
+                                <OfferCard offer={offer} />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

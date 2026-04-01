@@ -371,8 +371,12 @@ export function MessagesPage() {
                                     }}
                                     className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-200"
                                 >
-                                    <div className="w-10 h-10 bg-gradient-to-br from-coral-400 to-coral-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md">
-                                        {userItem.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                    <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-md bg-gradient-to-br from-coral-400 to-coral-600">
+                                        {userItem.avatar_url ? (
+                                            <img src={userItem.avatar_url} alt={userItem.full_name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-white font-semibold text-sm">{userItem.full_name?.charAt(0)?.toUpperCase()}</span>
+                                        )}
                                     </div>
                                     <div className="flex-1 text-left">
                                         <p className="font-medium text-gray-900 dark:text-white">{userItem.full_name}</p>
@@ -434,8 +438,12 @@ export function MessagesPage() {
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div className="relative">
-                                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold shadow-md ${isSelected ? 'bg-gradient-to-br from-coral-400 to-coral-600' : 'bg-gradient-to-br from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600'}`}>
-                                                        {other?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                                    <div className={`w-12 h-12 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold shadow-md ${isSelected ? 'bg-gradient-to-br from-coral-400 to-coral-600' : 'bg-gradient-to-br from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600'}`}>
+                                                        {other?.avatar_url ? (
+                                                            <img src={other.avatar_url} alt={other.full_name} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <span>{other?.full_name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                                        )}
                                                     </div>
                                                     {hasUnread && (
                                                         <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-coral-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
@@ -481,8 +489,16 @@ export function MessagesPage() {
                                         >
                                             <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                                         </button>
-                                        <div className="w-10 h-10 bg-gradient-to-br from-coral-400 to-coral-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
-                                            {getOtherParticipant(selectedConversation)?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                        <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold shadow-md bg-gradient-to-br from-coral-400 to-coral-600">
+                                            {getOtherParticipant(selectedConversation)?.avatar_url ? (
+                                                <img 
+                                                    src={getOtherParticipant(selectedConversation)?.avatar_url!} 
+                                                    alt={getOtherParticipant(selectedConversation)?.full_name} 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <span>{getOtherParticipant(selectedConversation)?.full_name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                            )}
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
@@ -546,8 +562,12 @@ export function MessagesPage() {
                                                                 {!isOwn && (
                                                                     <div className="w-7 mr-2 flex-shrink-0 self-end">
                                                                         {showAvatar ? (
-                                                                            <div className="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white text-[10px] font-semibold">
-                                                                                {msg.sender?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                                                            <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center text-white text-[10px] font-semibold bg-gradient-to-br from-gray-400 to-gray-500">
+                                                                                {msg.sender?.avatar_url ? (
+                                                                                    <img src={msg.sender.avatar_url} alt={msg.sender.full_name} className="w-full h-full object-cover" />
+                                                                                ) : (
+                                                                                    <span>{msg.sender?.full_name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                                                                                )}
                                                                             </div>
                                                                         ) : null}
                                                                     </div>
@@ -585,8 +605,12 @@ export function MessagesPage() {
                                             {typingUser && (
                                                 <div className="flex justify-start mb-2 animate-fade-in">
                                                     <div className="w-7 mr-2 flex-shrink-0 self-end">
-                                                        <div className="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white text-[10px] font-semibold">
-                                                            {typingUser.charAt(0).toUpperCase()}
+                                                        <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center text-white text-[10px] font-semibold bg-gradient-to-br from-gray-400 to-gray-500">
+                                                            {getOtherParticipant(selectedConversation)?.avatar_url ? (
+                                                                <img src={getOtherParticipant(selectedConversation)?.avatar_url!} alt="Typing" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <span>{typingUser.charAt(0).toUpperCase()}</span>
+                                                            )}
                                                         </div>
                                                     </div>
                                                     <div className="bg-white dark:bg-gray-700 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100 dark:border-gray-600">

@@ -1,7 +1,6 @@
 // src/services/offerService.ts
 import { supabase } from '../lib/supabase';
 import { notificationService } from './notificationService';
-// import { messageService } from './messageService';
 
 export type Offer = {
     id: string;
@@ -21,6 +20,15 @@ export type Offer = {
 
 export const offerService = {
     async createOffer(offer: Omit<Offer, 'id' | 'created_at'>): Promise<Offer> {
+        // 1. Ak existuje predchádzajúca zamietnutá ponuka, odstránime ju, aby sme umožnili novú
+        await supabase
+            .from('job_offers')
+            .delete()
+            .eq('job_request_id', offer.job_request_id)
+            .eq('craftsman_id', offer.craftsman_id)
+            .eq('status', 'rejected');
+
+        // 2. Vytvoriť novú ponuku
         const { data, error } = await supabase
             .from('job_offers')
             .insert({
@@ -32,58 +40,59 @@ export const offerService = {
 
         if (error) throw error;
 
-        // 2. Získať informácie o práci a klientovi
-        const { data: job } = await supabase
-            .from('job_requests')
-            .select('*, client:profiles!client_id(*)')
-            .eq('id', offer.job_request_id)
-            .single();
-
-        // 3. Získať informácie o remeselníkovi
-        const { data: craftsman } = await supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('id', offer.craftsman_id)
-            .single();
-
-        // 4. Vytvoriť notifikáciu pre klienta
-        await notificationService.createNotification({
-            user_id: job.client_id,
-            type: 'offer',
-            title: 'Nová ponuka na vašu prácu',
-            message: `${craftsman?.full_name} poslal ponuku na prácu "${job.title}" za ${offer.price}€`,
-            data: { job_id: offer.job_request_id, offer_id: data.id, craftsman_name: craftsman?.full_name },
-            link: `/jobs/${offer.job_request_id}`
-        });
-
-        // 5. Automaticky vytvoriť konverzáciu a poslať správu
-        const [participant_1, participant_2] = [offer.craftsman_id, job.client_id].sort();
-
-        let { data: conversation } = await supabase
-            .from('conversations')
-            .select('*')
-            .eq('participant_1', participant_1)
-            .eq('participant_2', participant_2)
-            .maybeSingle();
-
-        if (!conversation) {
-            const { data: newConversation } = await supabase
-                .from('conversations')
-                .insert({ participant_1, participant_2, last_message_at: new Date().toISOString() })
-                .select()
+        // Všetko ostatné v try-catch pre stabilitu UI
+        try {
+            const { data: job } = await supabase
+                .from('job_requests')
+                .select('*, client:profiles!client_id(*)')
+                .eq('id', offer.job_request_id)
                 .single();
-            conversation = newConversation;
-        }
 
-        // Poslať automatickú správu
-        if (conversation) {
-            await supabase
-                .from('messages')
-                .insert({
-                    conversation_id: conversation.id,
-                    sender_id: offer.craftsman_id,
-                    content: `🎯 Poslal som ponuku na vašu prácu "${job.title}": ${offer.price}€, odhadovaný čas: ${offer.estimated_duration}\n\n📝 Správa: ${offer.message}`
+            const { data: craftsman } = await supabase
+                .from('profiles')
+                .select('full_name')
+                .eq('id', offer.craftsman_id)
+                .single();
+
+            if (job && craftsman) {
+                await notificationService.createNotification({
+                    user_id: job.client_id,
+                    type: 'offer',
+                    title: 'Nová ponuka na vašu prácu',
+                    message: `${craftsman.full_name} poslal ponuku na prácu "${job.title}" za ${offer.price}€`,
+                    data: { job_id: offer.job_request_id, offer_id: data.id, craftsman_name: craftsman.full_name },
+                    link: `/jobs/${offer.job_request_id}`
                 });
+
+                const [p1, p2] = [offer.craftsman_id, job.client_id].sort();
+                let { data: conversation } = await supabase
+                    .from('conversations')
+                    .select('*')
+                    .eq('participant_1', p1)
+                    .eq('participant_2', p2)
+                    .maybeSingle();
+
+                if (!conversation) {
+                    const { data: newConv } = await supabase
+                        .from('conversations')
+                        .insert({ participant_1: p1, participant_2: p2, last_message_at: new Date().toISOString() })
+                        .select()
+                        .single();
+                    conversation = newConv;
+                }
+
+                if (conversation) {
+                    await supabase
+                        .from('messages')
+                        .insert({
+                            conversation_id: conversation.id,
+                            sender_id: offer.craftsman_id,
+                            content: `🎯 Poslal som ponuku na vašu prácu "${job.title}": ${offer.price}€, odhadovaný čas: ${offer.estimated_duration}\n\n📝 Správa: ${offer.message}`
+                        });
+                }
+            }
+        } catch (err) {
+            console.error('Background tasks failed:', err);
         }
 
         return data;
@@ -98,7 +107,6 @@ export const offerService = {
 
         if (fetchError) throw fetchError;
 
-        // 2. Aktualizovať stav ponuky
         const { data, error } = await supabase
             .from('job_offers')
             .update({ status })
@@ -108,9 +116,7 @@ export const offerService = {
 
         if (error) throw error;
 
-        // 3. Ak je ponuka prijatá, vytvoriť kontrakt
         if (status === 'accepted') {
-            // Vytvoriť kontrakt
             const { error: contractError } = await supabase
                 .from('contracts')
                 .insert({
@@ -125,13 +131,11 @@ export const offerService = {
 
             if (contractError) throw contractError;
 
-            // Aktualizovať stav práce
             await supabase
                 .from('job_requests')
                 .update({ status: 'in_progress' })
                 .eq('id', offer.job_request_id);
 
-            // Notifikácia pre remeselníka
             await notificationService.createNotification({
                 user_id: offer.craftsman_id,
                 type: 'contract',
@@ -141,7 +145,6 @@ export const offerService = {
                 link: `/contracts`
             });
 
-            // Notifikácia pre klienta
             await notificationService.createNotification({
                 user_id: clientId || offer.job_request.client_id,
                 type: 'contract',
@@ -151,7 +154,6 @@ export const offerService = {
                 link: `/contracts`
             });
 
-            // Vytvoriť konverzáciu a poslať správu
             const [participant_1, participant_2] = [offer.craftsman_id, clientId || offer.job_request.client_id].sort();
 
             let { data: conversation } = await supabase
@@ -180,16 +182,19 @@ export const offerService = {
                     });
             }
         }
-        // 4. Ak je ponuka zamietnutá
         else if (status === 'rejected') {
-            await notificationService.createNotification({
-                user_id: offer.craftsman_id,
-                type: 'offer',
-                title: 'Ponuka zamietnutá',
-                message: `Klient zamietol vašu ponuku na prácu "${offer.job_request.title}"`,
-                data: { job_id: offer.job_request_id },
-                link: `/jobs/${offer.job_request_id}`
-            });
+            try {
+                await notificationService.createNotification({
+                    user_id: offer.craftsman_id,
+                    type: 'offer',
+                    title: 'Ponuka zamietnutá',
+                    message: `Klient zamietol vašu ponuku na prácu "${offer.job_request.title}"`,
+                    data: { job_id: offer.job_request_id },
+                    link: `/jobs/${offer.job_request_id}`
+                });
+            } catch (notifErr) {
+                console.error('Error sending rejection notification:', notifErr);
+            }
         }
 
         return data;
@@ -239,8 +244,4 @@ export const offerService = {
         if (error) throw error;
         return data || [];
     }
-
-
-
-
 };

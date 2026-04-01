@@ -18,22 +18,40 @@ export function Dashboard() {
   const loadData = async () => {
     try {
       if (profile?.role === 'client') {
+        // 1. Dopyty
         const jobs = await jobService.getMyJobs(user!.id);
+        // 2. Zmluvy
+        const contracts = await contractService.getMyContractsAsClient(user!.id);
+
+        const openJobs = jobs?.filter((j: any) => j.status === 'open') || [];
+        const activeContracts = contracts?.filter((c: any) => c.status === 'active' || c.status === 'pending_confirmation' || c.status === 'disputed') || [];
+        const completedContracts = contracts?.filter((c: any) => c.status === 'completed') || [];
+
         setStats({
-          total: jobs?.length || 0,
-          active: jobs?.filter((j: any) => j.status === 'in_progress' || j.status === 'open').length || 0,
-          completed: jobs?.filter((j: any) => j.status === 'completed').length || 0,
+          total: (jobs?.length || 0) + (contracts?.length || 0),
+          active: openJobs.length + activeContracts.length,
+          completed: completedContracts.length,
         });
-        setRecentJobs(jobs?.slice(0, 3) || []);
+
+        // Spojiť dopyty a zmluvy pre "Najnovšie"
+        const combinedRecent = [
+            ...openJobs.slice(0, 2),
+            ...activeContracts.slice(0, 2)
+        ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 3);
+
+        setRecentJobs(combinedRecent);
       } else {
         const contracts = await contractService.getMyContractsAsCraftsman(user!.id);
+        const active = contracts?.filter((c: any) => c.status === 'active' || c.status === 'pending_confirmation' || c.status === 'disputed') || [];
+        const completed = contracts?.filter((c: any) => c.status === 'completed') || [];
+
         setStats({
           total: contracts?.length || 0,
-          active: contracts?.filter((c: any) => c.status === 'active').length || 0,
-          completed: contracts?.filter((c: any) => c.status === 'completed').length || 0,
+          active: active.length,
+          completed: completed.length,
         });
         
-        const formattedContracts = contracts?.slice(0, 3).map((c: any) => {
+        const formattedContracts = active.slice(0, 3).map((c: any) => {
             const jobData = Array.isArray(c.job) ? c.job[0] : c.job;
             const clientData = Array.isArray(c.client) ? c.client[0] : c.client;
             return {

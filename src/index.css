@@ -141,10 +141,12 @@ h6 {
 @keyframes fadeIn {
     from {
         opacity: 0;
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -156,6 +158,16 @@ h6 {
 
     to {
         opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
         transform: translateX(0);
     }
 }
@@ -240,6 +252,10 @@ h6 {
 
 .animate-slide-left {
     animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-right {
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-float {
@@ -792,6 +808,19 @@ h6 {
     background: rgba(255, 77, 26, 0.4);
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 77, 26, 0.2);
+    border-radius: 10px;
+}
+
 /* ═══════════════════════════════════════
    RESPONSIVE UTILS
 ═══════════════════════════════════════ */
@@ -1029,13 +1058,13 @@ h6 {
             justify-content: center;
         }
 
-        /* Gridy na jeden stĺpec */
+        /* Gridy na jeden stĺpec na mobile */
         .grid:not(.grid-cols-2):not(.grid-cols-3):not(.grid-cols-4):not(.grid-cols-5) {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: 1fr;
         }
 
-        .md\:grid-cols-2, .md\:grid-cols-3, .md\:grid-cols-4 {
-            grid-template-columns: 1fr !important;
+        .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+            grid-template-columns: 1fr;
         }
 
         /* Formuláre */

@@ -14,9 +14,10 @@ import { ProfilePage } from './pages/ProfilePage';
 import { CraftsmenPage } from './pages/CraftsmenPage';
 import { CraftsmanProfilePage } from './pages/CraftsmanProfilePage';
 import { MessagesPage } from './pages/MessagesPage';
-import { ContractsPage } from './pages/ContractsPage';
+// import { ContractsPage } from './pages/ContractsPage';
 import { ContractDetailPage } from './pages/ContractDetailPage';
 import { MyOffersPage } from './pages/MyOffersPage';
+import { MyRequestsPage } from './pages/MyRequestsPage';
 import { JobMapPage } from './pages/JobMapPage';
 import { AboutUsPage } from './pages/AboutUsPage';
 import { HowItWorksPage } from './pages/HowItWorksPage';
@@ -70,13 +71,14 @@ function App() {
                 <Route path="/craftsmen" element={user ? <CraftsmenPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/craftsmen/:id" element={user ? <CraftsmanProfilePage /> : <Navigate to="/auth/login" />} />
                 <Route path="/messages" element={user ? <MessagesPage /> : <Navigate to="/auth/login" />} />
-                <Route path="/contracts" element={user ? <ContractsPage /> : <Navigate to="/auth/login" />} />
+                <Route path="/contracts" element={user ? <MyRequestsPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/contracts/:id" element={user ? <ContractDetailPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/map" element={user ? <JobMapPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/notifications" element={user ? <NotificationsPage /> : <Navigate to="/auth/login" />} />
 
-                {/* Remeselník - moje ponuky */}
+                {/* Moje aktivity */}
                 <Route path="/my-offers" element={user && profile && profile.role === 'craftsman' ? <MyOffersPage /> : <Navigate to="/dashboard" />} />
+                <Route path="/my-requests" element={user ? <MyRequestsPage /> : <Navigate to="/auth/login" />} />
 
                 {/* Info stránky */}
                 <Route path="/about" element={<AboutUsPage />} />

@@ -15,7 +15,7 @@ interface Contract {
   craftsman_id: string;
   client_id: string;
   final_price: number;
-  status: 'active' | 'completed' | 'cancelled' | 'disputed';
+  status: 'active' | 'completed' | 'cancelled' | 'disputed' | 'pending_confirmation';
   payment_status: 'pending' | 'paid' | 'refunded';
   started_at: string | null;
   completed_at: string | null;
@@ -88,7 +88,8 @@ export function ContractsPage() {
 
   const filteredContracts = useMemo(() => {
     return contracts.filter(c => {
-      const matchesTab = activeTab === 'active' ? c.status === 'active' : c.status === 'completed';
+      const isActiveStatus = c.status === 'active' || c.status === 'pending_confirmation' || c.status === 'disputed';
+      const matchesTab = activeTab === 'active' ? isActiveStatus : c.status === 'completed';
       const matchesSearch = 
         c.job?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.craftsman?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -98,13 +99,14 @@ export function ContractsPage() {
   }, [contracts, activeTab, searchQuery]);
 
   const counts = {
-    active: contracts.filter(c => c.status === 'active').length,
+    active: contracts.filter(c => c.status === 'active' || c.status === 'pending_confirmation' || c.status === 'disputed').length,
     completed: contracts.filter(c => c.status === 'completed').length
   };
 
   const getStatusBadge = (status: Contract['status']) => {
     const map = {
       active: { label: 'Prebieha', icon: Clock, classes: 'bg-amber-500 text-white shadow-amber-500/20' },
+      pending_confirmation: { label: 'Čaká na potvrdenie', icon: Info, classes: 'bg-blue-500 text-white shadow-blue-500/20' },
       completed: { label: 'Dokončená', icon: CheckCircle, classes: 'bg-emerald-500 text-white shadow-emerald-500/20' },
       cancelled: { label: 'Zrušená', icon: XCircle, classes: 'bg-red-500 text-white shadow-red-500/20' },
       disputed: { label: 'Spor', icon: AlertCircle, classes: 'bg-orange-500 text-white shadow-orange-500/20' },

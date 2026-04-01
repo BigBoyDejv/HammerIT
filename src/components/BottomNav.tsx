@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, MessageSquare, User, ClipboardList, Map, Bell } from 'lucide-react';
+import { Home, Search, MessageSquare, User, ClipboardList, Bell } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useEffect, useState } from 'react';
@@ -117,11 +117,23 @@ export function BottomNav() {
                                 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
-                                <Icon 
-                                    className={`transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-400 dark:text-gray-500'}`} 
-                                    strokeWidth={isActive ? 2.5 : 2} 
-                                    size={24}
-                                />
+                                {item.label === 'Profil' ? (
+                                    <div className={`w-6 h-6 rounded-full overflow-hidden flex items-center justify-center transition-all ${isActive ? 'ring-2 ring-white shadow-md' : 'ring-1 ring-gray-300 dark:ring-gray-600 grayscale opacity-70'}`}>
+                                        {profile?.avatar_url ? (
+                                            <img src={profile.avatar_url} alt="Profil" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-br from-coral-500 to-coral-600 flex items-center justify-center text-[10px] font-bold text-white uppercase">
+                                                {profile?.full_name?.charAt(0) || 'U'}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <Icon 
+                                        className={`transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-400 dark:text-gray-500'}`} 
+                                        strokeWidth={isActive ? 2.5 : 2} 
+                                        size={24}
+                                    />
+                                )}
                                 {item.badge > 0 && (
                                     <span className={`absolute ${isActive ? '-top-1 -right-1' : 'top-1 right-2'} min-w-[16px] h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 shadow-sm transition-all duration-300 ${isActive ? 'bg-amber-400 border-2 border-coral-500' : 'bg-coral-500 border-2 border-white dark:border-gray-900'}`}>
                                         {item.badge > 9 ? '9+' : item.badge}

@@ -204,11 +204,19 @@ export function CraftsmenPage() {
                         >
                             <div className="flex justify-between items-start mb-6">
                                 <div className="relative">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-navy-800 to-black rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-navy-900/10 group-hover:rotate-6 transition-transform">
-                                        {craftsman.user.full_name?.charAt(0) || 'R'}
+                                    <div className="w-20 h-20 bg-gradient-to-br from-navy-800 to-black rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-navy-900/10 group-hover:rotate-6 transition-all overflow-hidden border-2 border-white dark:border-slate-800">
+                                        {craftsman.user.avatar_url ? (
+                                            <img 
+                                                src={craftsman.user.avatar_url} 
+                                                alt={craftsman.user.full_name} 
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span>{craftsman.user.full_name?.charAt(0) || 'R'}</span>
+                                        )}
                                     </div>
                                     {craftsman.verified && (
-                                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg border-4 border-white dark:border-slate-900">
+                                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg border-4 border-white dark:border-slate-900 z-10">
                                             <ShieldCheck className="w-5 h-5" />
                                         </div>
                                     )}

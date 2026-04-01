@@ -40,6 +40,7 @@ export function ProfilePage() {
     const [verificationLoading, setVerificationLoading] = useState(false);
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const avatarInputRef = useRef<HTMLInputElement>(null);
 
     // States
     const [showPassword, setShowPassword] = useState(false);
@@ -172,6 +173,63 @@ export function ProfilePage() {
         }
     };
 
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !user) return;
+
+        setLoading(true);
+        try {
+            // 0. Ak existuje stará fotka, vymazať ju zo storage
+            if (profile?.avatar_url) {
+                try {
+                    // Získanie názvu súboru z URL
+                    const urlParts = profile.avatar_url.split('/');
+                    const oldFileName = urlParts[urlParts.length - 1];
+                    
+                    if (oldFileName) {
+                        await supabase.storage
+                            .from('avatars')
+                            .remove([oldFileName]);
+                    }
+                } catch (deleteError) {
+                    // Ignorujeme chybu pri mazaní, aby sme nezablokovali upload novej fotky
+                    console.error('Error deleting old avatar:', deleteError);
+                }
+            }
+
+            // 1. Nahrať do Supabase Storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            // 2. Získať verejnú URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            // 3. Aktualizovať profil
+            await updateProfile({
+                avatar_url: publicUrl
+            });
+
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 3000);
+        } catch (err: any) {
+            console.error('Avatar upload error:', err);
+            alert('Nepodarilo sa nahrať fotku: ' + err.message);
+        } finally {
+            setLoading(false);
+            // Reset input so user can pick the same file again if they want
+            if (avatarInputRef.current) avatarInputRef.current.value = '';
+        }
+    };
+
     const handleVerificationUpload = async () => {
         if (!verificationFile) return;
         setVerificationLoading(true);
@@ -276,12 +334,37 @@ export function ProfilePage() {
                                 </div>
                                 <div className="px-6 pb-6 text-center -mt-16 relative z-10">
                                     <div className="relative inline-block group/avatar">
-                                        <div className="w-32 h-32 rounded-3xl bg-white dark:bg-gray-700 p-1.5 shadow-xl mx-auto transition-transform group-hover/avatar:scale-105 duration-300">
-                                            <div className="w-full h-full rounded-2xl bg-gradient-to-br from-coral-500 to-coral-600 flex items-center justify-center text-white text-4xl font-bold overflow-hidden">
-                                                {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                                            </div>
+                                        <input
+                                            type="file"
+                                            ref={avatarInputRef}
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleAvatarUpload}
+                                        />
+                                        <div className="w-32 h-32 rounded-3xl bg-white dark:bg-gray-700 p-1.5 shadow-xl mx-auto transition-transform group-hover/avatar:scale-105 duration-300 relative overflow-hidden">
+                                            {profile?.avatar_url ? (
+                                                <img 
+                                                    src={profile.avatar_url} 
+                                                    alt={profile.full_name} 
+                                                    className="w-full h-full rounded-2xl object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full rounded-2xl bg-gradient-to-br from-coral-500 to-coral-600 flex items-center justify-center text-white text-4xl font-bold">
+                                                    {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                                </div>
+                                            )}
+                                            
+                                            {loading && (
+                                                <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+                                                    <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+                                                </div>
+                                            )}
                                         </div>
-                                        <button className="absolute bottom-1 right-1 bg-white dark:bg-gray-600 p-2 rounded-xl shadow-lg border border-gray-100 dark:border-gray-500 text-navy-600 dark:text-white hover:text-coral-500 dark:hover:text-coral-400 transition-colors">
+                                        <button 
+                                            type="button"
+                                            onClick={() => avatarInputRef.current?.click()}
+                                            className="absolute bottom-1 right-1 bg-white dark:bg-gray-600 p-2 rounded-xl shadow-lg border border-gray-100 dark:border-gray-500 text-navy-600 dark:text-white hover:text-coral-500 dark:hover:text-coral-400 transition-colors z-20"
+                                        >
                                             <Camera className="w-5 h-5" />
                                         </button>
                                     </div>

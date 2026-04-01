@@ -1,14 +1,13 @@
-import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { 
-    Star, Briefcase, Mail, Phone, MessageCircle, CheckCircle, ArrowLeft, 
-    ShieldCheck, Clock, MapPin, TrendingUp, Award, Image as ImageIcon,
-    ChevronRight, ExternalLink, Calendar, Plus
+    Star, Mail, Phone, MessageCircle, CheckCircle, ArrowLeft, 
+    ShieldCheck, MapPin, TrendingUp, Award, Image as ImageIcon,
+    ChevronRight, Calendar, Plus
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export function CraftsmanProfilePage() {
     const { id } = useParams<{ id: string }>();
@@ -142,8 +141,12 @@ export function CraftsmanProfilePage() {
                         <div className="bg-white dark:bg-slate-900/50 backdrop-blur-xl rounded-[3rem] p-8 sm:p-12 border border-gray-100 dark:border-white/5 shadow-2xl shadow-navy-900/5">
                             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
                                 <div className="relative">
-                                    <div className="w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-navy-800 to-black rounded-[2.5rem] flex items-center justify-center text-white text-6xl font-black shadow-2xl transition-transform group-hover:scale-105 duration-500">
-                                        {craftsman.user?.full_name?.charAt(0) || 'R'}
+                                    <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-[2.5rem] overflow-hidden flex items-center justify-center text-white text-6xl font-black shadow-2xl transition-transform group-hover:scale-105 duration-500 bg-gradient-to-br from-navy-800 to-black">
+                                        {craftsman.user?.avatar_url ? (
+                                            <img src={craftsman.user.avatar_url} alt={craftsman.user.full_name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span>{craftsman.user?.full_name?.charAt(0) || 'R'}</span>
+                                        )}
                                     </div>
                                     {craftsman.verified && (
                                         <div className="absolute -bottom-2 -right-2 w-14 h-14 bg-emerald-500 rounded-3xl flex items-center justify-center text-white shadow-lg border-[6px] border-white dark:border-slate-900">
@@ -262,8 +265,12 @@ export function CraftsmanProfilePage() {
                                     >
                                         <div className="flex items-center justify-between mb-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 bg-gradient-to-tr from-coral-500 to-coral-600 rounded-2xl flex items-center justify-center text-white font-black text-xl">
-                                                    {review.reviewer?.full_name?.charAt(0)}
+                                                <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center text-white font-black text-xl bg-gradient-to-tr from-coral-500 to-coral-600">
+                                                    {review.reviewer?.avatar_url ? (
+                                                        <img src={review.reviewer.avatar_url} alt={review.reviewer.full_name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span>{review.reviewer?.full_name?.charAt(0)}</span>
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <p className="font-black text-gray-900 dark:text-white">{review.reviewer?.full_name}</p>

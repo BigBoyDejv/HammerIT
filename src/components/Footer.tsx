@@ -1,89 +1,153 @@
 // src/components/Footer.tsx
 import { Link } from 'react-router-dom';
-import { Wrench, Mail, Phone, MapPin, Facebook, Instagram, Twitter } from 'lucide-react';
+import { 
+  Hammer, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Facebook, 
+  Instagram, 
+  Linkedin, 
+  Send,
+  ExternalLink
+} from 'lucide-react';
 
 const Footer = () => {
     return (
-        <footer className="hidden md:block bg-[#191970] dark:bg-slate-950 text-white mt-auto border-t border-white/5 transition-colors duration-300">
-            <div className="container mx-auto px-4 py-12 md:py-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-                    {/* Brand */}
-                    <div className="space-y-4">
-                        <Link to="/" className="flex items-center gap-2.5">
-                            <div className="w-10 h-10 rounded-xl bg-coral-500 flex items-center justify-center">
-                                <Wrench className="w-5 h-5 text-white" />
+        <footer className="hidden md:block bg-gray-50 dark:bg-slate-900 text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-white/5 transition-colors duration-500">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+                {/* Main Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+                    
+                    {/* Column 1: Brand & About */}
+                    <div className="md:col-span-2 lg:col-span-1 space-y-6 text-center lg:text-left">
+                        <Link to="/" className="inline-flex items-center gap-3 group justify-center lg:justify-start">
+                            <div className="w-12 h-12 rounded-2xl bg-coral-500 flex items-center justify-center shadow-lg shadow-coral-500/20 group-hover:rotate-6 transition-transform duration-300">
+                                <Hammer className="w-6 h-6 text-white" />
                             </div>
-                            <span className="font-heading text-xl font-bold">
+                            <span className="text-2xl font-black text-gray-900 dark:text-white tracking-tighter">
                                 Hammer<span className="text-coral-500">It</span>
                             </span>
                         </Link>
-                        <p className="text-white/60 text-sm leading-relaxed max-w-xs">
-                            Spájame domácnosti so skúsenými remeselníkmi. Rýchlo, spoľahlivo a transparentne.
+                        <p className="text-sm md:text-base leading-relaxed max-w-sm mx-auto lg:mx-0 font-medium opacity-80">
+                            Najväčšia slovenská sieť certifikovaných remeselníkov. Premeníme vaše vízie na realitu s garanciou kvality a bezpečnej platby.
                         </p>
-                        <div className="flex gap-3">
-                            <a href="#" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center hover:bg-coral-500 transition-colors">
-                                <Facebook className="w-4 h-4" />
-                            </a>
-                            <a href="#" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center hover:bg-coral-500 transition-colors">
-                                <Instagram className="w-4 h-4" />
-                            </a>
-                            <a href="#" className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center hover:bg-coral-500 transition-colors">
-                                <Twitter className="w-4 h-4" />
-                            </a>
+                        <div className="flex justify-center lg:justify-start gap-4">
+                            {[
+                                { Icon: Facebook, href: "#", label: "Facebook" },
+                                { Icon: Instagram, href: "#", label: "Instagram" },
+                                { Icon: Linkedin, href: "#", label: "LinkedIn" }
+                            ].map((social, i) => (
+                                <a 
+                                    key={i} 
+                                    href={social.href}
+                                    aria-label={social.label}
+                                    className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm hover:bg-coral-500 hover:text-white dark:hover:bg-coral-500 transition-all duration-300 hover:-translate-y-1"
+                                >
+                                    <social.Icon className="w-5 h-5" />
+                                </a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Služby */}
-                    <div>
-                        <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-white/50">Služby</h4>
-                        <ul className="space-y-3">
-                            {["Inštalatérske práce", "Elektrikárske práce", "Maliarske práce", "Stolárske práce", "Murárske práce"].map((s) => (
+                    {/* Column 2: Services */}
+                    <div className="text-center md:text-left">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 mb-8">Služby</h4>
+                        <ul className="space-y-4">
+                            {["Inštalatéri", "Elektrikári", "Maliari", "Stolári", "Murári"].map((s) => (
                                 <li key={s}>
-                                    <Link to="/jobs" className="text-sm text-white/60 hover:text-coral-500 transition-colors">{s}</Link>
+                                    <Link to="/jobs" className="text-sm md:text-base font-semibold hover:text-coral-500 transition-colors flex items-center justify-center md:justify-start gap-2 group">
+                                        <div className="w-1 h-1 bg-coral-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        {s} prácas
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Spoločnosť */}
-                    <div>
-                        <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-white/50">Spoločnosť</h4>
-                        <ul className="space-y-3">
-                            <li><Link to="/about" className="text-sm text-white/60 hover:text-coral-500 transition-colors">O nás</Link></li>
-                            <li><Link to="/how-it-works" className="text-sm text-white/60 hover:text-coral-500 transition-colors">Ako to funguje</Link></li>
-                            <li><Link to="/contact" className="text-sm text-white/60 hover:text-coral-500 transition-colors">Kontakt</Link></li>
-                            <li><Link to="#" className="text-sm text-white/60 hover:text-coral-500 transition-colors">Pre remeselníkov</Link></li>
+                    {/* Column 3: Company */}
+                    <div className="text-center md:text-left">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 mb-8">Spoločnosť</h4>
+                        <ul className="space-y-4">
+                            <li><Link to="/about" className="text-sm md:text-base font-semibold hover:text-coral-500 transition-colors">O nás</Link></li>
+                            <li><Link to="/how-it-works" className="text-sm md:text-base font-semibold hover:text-coral-500 transition-colors">Centrum pomoci</Link></li>
+                            <li><Link to="/contact" className="text-sm md:text-base font-semibold hover:text-coral-500 transition-colors">Kontakt</Link></li>
+                            <li>
+                                <Link to="/auth/register" className="text-sm md:text-base font-black text-coral-500 flex items-center justify-center md:justify-start gap-2 group">
+                                    Pre remeselníkov
+                                    <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
-                    {/* Kontakt */}
-                    <div>
-                        <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-white/50">Kontakt</h4>
-                        <ul className="space-y-3">
-                            <li className="flex items-center gap-3 text-sm text-white/60">
-                                <Mail className="w-4 h-4 text-coral-500 flex-shrink-0" />
-                                info@hammerit.sk
-                            </li>
-                            <li className="flex items-center gap-3 text-sm text-white/60">
-                                <Phone className="w-4 h-4 text-coral-500 flex-shrink-0" />
-                                +421 900 123 456
-                            </li>
-                            <li className="flex items-start gap-3 text-sm text-white/60">
-                                <MapPin className="w-4 h-4 text-coral-500 flex-shrink-0 mt-0.5" />
-                                Košice
-                            </li>
-                        </ul>
+                    {/* Column 4: Contact & Newsletter */}
+                    <div className="text-center md:text-left space-y-8">
+                        <div>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 mb-8">Kontakt</h4>
+                            <ul className="space-y-5">
+                                <li>
+                                    <a href="mailto:info@hammerit.sk" className="flex items-center justify-center md:justify-start gap-3 group text-sm md:text-base font-semibold transition-all">
+                                        <div className="w-8 h-8 rounded-lg bg-coral-50 dark:bg-coral-500/10 flex items-center justify-center text-coral-500 group-hover:scale-110 transition-transform">
+                                            <Mail className="w-4 h-4" />
+                                        </div>
+                                        info@hammerit.sk
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="tel:+421900123456" className="flex items-center justify-center md:justify-start gap-3 group text-sm md:text-base font-semibold transition-all">
+                                        <div className="w-8 h-8 rounded-lg bg-coral-50 dark:bg-coral-500/10 flex items-center justify-center text-coral-500 group-hover:scale-110 transition-transform">
+                                            <Phone className="w-4 h-4" />
+                                        </div>
+                                        +421 900 123 456
+                                    </a>
+                                </li>
+                                <li className="flex items-center justify-center md:justify-start gap-3 text-sm md:text-base font-semibold">
+                                    <div className="w-8 h-8 rounded-lg bg-coral-50 dark:bg-coral-500/10 flex items-center justify-center text-coral-500">
+                                        <MapPin className="w-4 h-4" />
+                                    </div>
+                                    Slovenská republika
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Newsletter Mini Form */}
+                        <div className="bg-white dark:bg-slate-800/50 p-6 rounded-3xl border border-gray-100 dark:border-white/5 space-y-3">
+                            <h5 className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white">Newsletter</h5>
+                            <div className="relative">
+                                <input 
+                                    type="email" 
+                                    placeholder="Váš email" 
+                                    className="w-full bg-gray-50 dark:bg-slate-900 border-none rounded-xl py-3 pl-4 pr-12 text-sm focus:ring-2 focus:ring-coral-500 transition-all font-medium"
+                                />
+                                <button className="absolute right-1 top-1 bottom-1 w-10 bg-coral-500 text-white rounded-lg flex items-center justify-center hover:bg-coral-600 transition-colors">
+                                    <Send className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-xs text-white/40">
-                        © 2026 HammerIt. Všetky práva vyhradené.
+                {/* Bottom Bar: Legal & Copyright */}
+                <div className="pt-8 border-t border-gray-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-center md:text-left">
+                        © 2026 HammerIt s.r.o. <span className="hidden sm:inline mx-2">•</span> <br className="sm:hidden" /> Vyrobené s precíznosťou 🛠️
                     </p>
-                    <div className="flex gap-6">
-                        <Link to="/terms" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Obchodné podmienky</Link>
-                        <Link to="/privacy" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Ochrana súkromia</Link>
-                        <Link to="/cookies" className="text-xs text-white/40 hover:text-coral-500 transition-colors">Cookies</Link>
+                    
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+                        {[
+                            { name: "Podmienky", path: "/terms" },
+                            { name: "Súkromie", path: "/privacy" },
+                            { name: "Cookies", path: "/cookies" }
+                        ].map((link) => (
+                            <Link 
+                                key={link.path}
+                                to={link.path}
+                                className="text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 hover:text-coral-500 dark:hover:text-coral-400 transition-colors underline-offset-4 hover:underline"
+                            >
+                                {link.name}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

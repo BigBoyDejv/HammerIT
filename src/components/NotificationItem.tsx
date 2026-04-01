@@ -2,19 +2,19 @@ import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { sk } from 'date-fns/locale';
 import { 
-    MessageCircle, Gift, FileText, CheckCircle, 
-    Briefcase, Info, Clock, ArrowRight
+    MessageCircle, FileText, CheckCircle, 
+    Briefcase, Info, Clock, ArrowRight, Star
 } from 'lucide-react';
 import { Notification, NotificationType } from '../services/notificationService';
 import { useNotifications } from '../contexts/NotificationContext';
 
 const getNotificationIcon = (type: NotificationType) => {
     switch (type) {
-        case 'message': return <MessageCircle className="w-5 h-5 text-coral-500" />;
-        case 'offer': return <Gift className="w-5 h-5 text-emerald-500" />;
-        case 'contract': return <FileText className="w-5 h-5 text-[#191970] dark:text-cyan-400" />;
+        case 'message': return <MessageCircle className="w-5 h-5 text-blue-500" />;
+        case 'offer': return <Briefcase className="w-5 h-5 text-coral-500" />;
+        case 'contract': return <FileText className="w-5 h-5 text-emerald-500" />;
         case 'verification': return <CheckCircle className="w-5 h-5 text-blue-500" />;
-        case 'review': return <Briefcase className="w-5 h-5 text-amber-500" />;
+        case 'review': return <Star className="w-5 h-5 text-amber-500" />;
         default: return <Info className="w-5 h-5 text-gray-500" />;
     }
 };

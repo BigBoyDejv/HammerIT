@@ -17,18 +17,26 @@ export interface Notification {
 export const notificationService = {
     // Vytvoriť notifikáciu (často volané zo serverových funkcií alebo po dôležitých akciách)
     async createNotification(notification: Omit<Notification, 'id' | 'created_at' | 'read'>): Promise<Notification> {
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('notifications')
             .insert({
                 ...notification,
                 read: false,
                 created_at: new Date().toISOString()
-            })
-            .select()
-            .single();
+            });
 
-        if (error) throw error;
-        return data;
+        if (error) {
+            console.error('❌ Error creating notification:', error);
+            throw error;
+        }
+        
+        // Vrátime "falošný" objekt, keďže reálny bol vložený, ale RLS nám ho nedovolí prečítať späť
+        return {
+            ...notification,
+            id: 'temp-id-' + Math.random(),
+            read: false,
+            created_at: new Date().toISOString()
+        } as Notification;
     },
 
     // Získať notifikácie pre používateľa s pagináciou

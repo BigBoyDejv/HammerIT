@@ -22,15 +22,17 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const loadNotifications = useCallback(async () => {
         if (!user) return;
         setLoading(true);
+        console.log('🔔 NotificationContext: Fetching for user', user.id);
         try {
             const [data, count] = await Promise.all([
                 notificationService.getNotifications(user.id),
                 notificationService.getUnreadCount(user.id)
             ]);
+            console.log(`🔔 NotificationContext: Loaded ${data.length} notifications, ${count} unread`);
             setNotifications(data);
             setUnreadCount(count);
         } catch (err) {
-            console.error('Failed to load notifications:', err);
+            console.error('❌ NotificationContext: Failed to load notifications:', err);
         } finally {
             setLoading(false);
         }
@@ -41,18 +43,23 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             loadNotifications();
             
             // Subskripcia na real-time notifikácie
+            console.log('🔔 NotificationContext: Starting real-time subscription...');
             const sub = notificationService.subscribeToNotifications(user.id, (newNotif) => {
-                setNotifications(prev => [newNotif, ...prev]);
+                console.log('🔔 NotificationContext: New notification received!', newNotif);
+                
+                setNotifications(prev => {
+                    // Ak už taká notifikácia v zozname je (napr. z loadNotifications), nepridávame ju
+                    if (prev.some(n => n.id === newNotif.id)) return prev;
+                    return [newNotif, ...prev];
+                });
                 setUnreadCount(prev => prev + 1);
                 
-                // Opätovné načítanie pre istotu (napr. ak je tam nejaká server-side logika)
+                // Opätovné načítanie pre zosynchronizovanie
                 loadNotifications();
-                
-                // Dispatch event pre Navbar/BottomNav
-                window.dispatchEvent(new CustomEvent('notification-received', { detail: newNotif }));
             });
 
             return () => {
+                console.log('🔔 NotificationContext: Cleaning up subscription');
                 sub.unsubscribe();
             };
         } else {

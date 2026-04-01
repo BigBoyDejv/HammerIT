@@ -6,9 +6,9 @@ export function CookiesPage() {
                 <section>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Čo sú to cookies?</h2>
                     <p>
-                        Súbory cookies sú malé textové súbory, ktoré sa do vášho počítača alebo mobilného zariadenia ukradajú pri návšteve našej platformy. 
+                        Súbory cookies sú malé textové súbory, ktoré sa do vášho počítača alebo mobilného zariadenia ukladajú pri návšteve našej platformy. 
                         Pomáhajú našej webstránke zapamätať si vaše akcie a preferencie počas určitého obdobia.
-                    </p>
+                    </p>    
                 </section>
                 <section>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Ako cookies využívame?</h2>

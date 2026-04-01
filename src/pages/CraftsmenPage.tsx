@@ -1,7 +1,11 @@
-import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { craftsmanService } from '../services';
+import { 
+    Filter, X, Star, CheckCircle, ArrowRight, 
+    Sparkles, ShieldCheck, Briefcase, TrendingUp 
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Craftsman {
     id: string;
@@ -76,134 +80,195 @@ export function CraftsmenPage() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <LoadingSpinner />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 animate-pulse">
+                <div className="h-12 w-48 bg-gray-200 dark:bg-gray-800 rounded-2xl" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="h-80 bg-gray-100 dark:bg-gray-800/50 rounded-[2.5rem]" />
+                    ))}
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto animate-fade-in px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Remeselníci</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 pt-4">
+                <div className="space-y-1">
+                    <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
+                        Hľadať remeselníka
+                        <Sparkles className="w-6 h-6 text-amber-400" />
+                    </h1>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">Nájdite overených profesionálov pre váš projekt</p>
+                </div>
+                
                 <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="btn-outline flex items-center gap-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className={`btn-outline flex items-center gap-2 group transition-all duration-300 ${showFilters ? 'bg-navy-900 text-white border-navy-900' : ''}`}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                    {showFilters ? 'Skryť filter' : 'Zobraziť filter'}
+                    {showFilters ? <X className="w-5 h-5" /> : <Filter className="w-5 h-5 group-hover:rotate-12 transition-transform" />}
+                    <span className="font-bold">{showFilters ? 'Zavrieť filter' : 'Filtrovať výsledky'}</span>
                 </button>
             </div>
 
-            {showFilters && (
-                <div className="filter-section animate-fade-in bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <select
-                            className="form-select bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
-                            value={filters.specialization}
-                            onChange={(e) => setFilters({ ...filters, specialization: e.target.value })}
-                        >
-                            <option value="">Všetky kategórie</option>
-                            {allSpecializations.map(spec => (
-                                <option key={spec} value={spec}>{spec}</option>
-                            ))}
-                        </select>
-                        <input
-                            type="number"
-                            placeholder="Min hodinová sadzba (€)"
-                            className="form-input bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                            value={filters.minRate}
-                            onChange={(e) => setFilters({ ...filters, minRate: e.target.value })}
-                        />
-                        <input
-                            type="number"
-                            placeholder="Max hodinová sadzba (€)"
-                            className="form-input bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                            value={filters.maxRate}
-                            onChange={(e) => setFilters({ ...filters, maxRate: e.target.value })}
-                        />
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={filters.verified}
-                                onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
-                                className="w-4 h-4 text-coral-500 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <span className="text-sm text-gray-700 dark:text-gray-300">Len overení</span>
-                        </label>
-                    </div>
-                    <div className="flex gap-3 mt-4">
-                        <button onClick={handleFilter} className="btn-primary">Filtrovať</button>
-                        <button onClick={resetFilters} className="btn-secondary dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">Reset</button>
-                    </div>
-                </div>
-            )}
-
-            {craftsmen.length === 0 ? (
-                <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                    <p className="text-gray-500 dark:text-gray-400 italic">Nenašli sa žiadni remeselníci</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {craftsmen.map((craftsman) => (
-                        <div key={craftsman.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700">
-                            <div className="p-6">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-navy-600 to-navy-700 dark:from-navy-700 dark:to-navy-800 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-sm">
-                                            {craftsman.user.full_name?.charAt(0) || 'R'}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
-                                                {craftsman.user.full_name}
-                                            </h3>
-                                            <div className="flex items-center gap-1 mt-1">
-                                                <span className="text-yellow-500 dark:text-yellow-400">★</span>
-                                                <span className="text-sm text-gray-600 dark:text-gray-300">{craftsman.rating_avg.toFixed(1)}</span>
-                                                <span className="text-xs text-gray-400 dark:text-gray-500">({craftsman.total_jobs})</span>
-                                                {craftsman.verified && (
-                                                    <span className="ml-2 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-0.5 rounded-full">
-                                                        Overený
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4">
-                                    <div className="flex flex-wrap gap-2 mb-3">
-                                        {craftsman.specialization.slice(0, 2).map((spec, idx) => (
-                                            <span key={idx} className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full">
-                                                {spec}
-                                            </span>
+            <AnimatePresence>
+                {showFilters && (
+                    <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden mb-10"
+                    >
+                        <div className="bg-white dark:bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] border border-gray-100 dark:border-white/5 p-8 shadow-2xl shadow-navy-900/5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-1">Kategória</label>
+                                    <select
+                                        className="w-full bg-gray-50 dark:bg-slate-800 border-none rounded-2xl p-4 text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-coral-500 transition-all"
+                                        value={filters.specialization}
+                                        onChange={(e) => setFilters({ ...filters, specialization: e.target.value })}
+                                    >
+                                        <option value="">Všetky práce</option>
+                                        {allSpecializations.map(spec => (
+                                            <option key={spec} value={spec}>{spec}</option>
                                         ))}
-                                        {craftsman.specialization.length > 2 && (
-                                            <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full">
-                                                +{craftsman.specialization.length - 2}
-                                            </span>
-                                        )}
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-1">Min. cena (€/h)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="Napr. 10"
+                                        className="w-full bg-gray-50 dark:bg-slate-800 border-none rounded-2xl p-4 text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-coral-500 transition-all"
+                                        value={filters.minRate}
+                                        onChange={(e) => setFilters({ ...filters, minRate: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-1">Max. cena (€/h)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="Napr. 50"
+                                        className="w-full bg-gray-50 dark:bg-slate-800 border-none rounded-2xl p-4 text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-coral-500 transition-all"
+                                        value={filters.maxRate}
+                                        onChange={(e) => setFilters({ ...filters, maxRate: e.target.value })}
+                                    />
+                                </div>
+                                <div className="flex items-center gap-4 h-[54px] px-4 bg-gray-50 dark:bg-slate-800 rounded-2xl cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-all group" onClick={() => setFilters({ ...filters, verified: !filters.verified })}>
+                                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${filters.verified ? 'bg-coral-500 border-coral-500' : 'border-gray-200 dark:border-gray-600'}`}>
+                                        {filters.verified && <CheckCircle className="w-3 h-3 text-white" />}
                                     </div>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-                                        {craftsman.user.bio || 'Žiadny popis'}
-                                    </p>
-                                    <div className="flex justify-between items-center pt-3 border-t border-gray-100 dark:border-gray-700">
-                                        <div>
-                                            <span className="text-2xl font-bold text-navy-600 dark:text-coral-400">{craftsman.hourly_rate}€</span>
-                                            <span className="text-sm text-gray-500 dark:text-gray-400">/hod</span>
-                                        </div>
-                                        <Link
-                                            to={`/craftsmen/${craftsman.user_id}`}
-                                            className="btn-primary text-sm"
-                                        >
-                                            Zobraziť profil
-                                        </Link>
-                                    </div>
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-200">Iba overení</span>
                                 </div>
                             </div>
+                            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-gray-100 dark:border-white/5">
+                                <button onClick={handleFilter} className="flex-1 bg-gradient-to-tr from-coral-500 to-coral-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-coral-500/20 active:scale-[0.98] transition-all">
+                                    Aktualizovať výsledky
+                                </button>
+                                <button onClick={resetFilters} className="sm:px-10 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 font-bold py-4 rounded-2xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-all">
+                                    Zrušiť
+                                </button>
+                            </div>
                         </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {craftsmen.length === 0 ? (
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center py-20 bg-gray-50 dark:bg-slate-900/50 rounded-[3rem] border-2 border-dashed border-gray-200 dark:border-white/5"
+                >
+                    <div className="w-24 h-24 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                        🔍
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Žiadni remeselníci sa nenašli</h3>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium max-w-sm mx-auto">
+                        Skúste upraviť parametre vášho filtra alebo zmeniť kategóriu vyhľadávania.
+                    </p>
+                    <button onClick={resetFilters} className="mt-8 text-coral-500 font-black border-b-2 border-coral-500 hover:text-coral-600 transition-all">
+                        Zobraziť všetkých
+                    </button>
+                </motion.div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {craftsmen.map((craftsman, idx) => (
+                        <motion.div 
+                            key={craftsman.id} 
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: (idx % 3) * 0.1 }}
+                            className="group relative bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 dark:border-white/5 p-8"
+                        >
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="relative">
+                                    <div className="w-20 h-20 bg-gradient-to-br from-navy-800 to-black rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-navy-900/10 group-hover:rotate-6 transition-transform">
+                                        {craftsman.user.full_name?.charAt(0) || 'R'}
+                                    </div>
+                                    {craftsman.verified && (
+                                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg border-4 border-white dark:border-slate-900">
+                                            <ShieldCheck className="w-5 h-5" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="text-right">
+                                    <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-xl">
+                                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                                        <span className="font-black text-amber-700 dark:text-amber-400 text-sm">{craftsman.rating_avg.toFixed(1)}</span>
+                                    </div>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">{craftsman.total_jobs} prác</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="text-xl font-black text-gray-900 dark:text-white group-hover:text-coral-500 transition-colors leading-tight">
+                                        {craftsman.user.full_name}
+                                    </h3>
+                                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mt-1">
+                                        <Briefcase className="w-3 h-3" /> {craftsman.years_experience}r. skúseností
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    {craftsman.specialization.slice(0, 3).map((spec, idx) => (
+                                        <span key={idx} className="text-[10px] font-black uppercase tracking-widest bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
+                                            {spec}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 font-medium leading-relaxed">
+                                    {craftsman.user.bio || 'Máme viacročné skúsenosti v odbore a zakladáme si na kvalite a spokojnosti našich klientov.'}
+                                </p>
+                                
+                                {/* Footer: Price & CTA */}
+                                <div className="mt-8 pt-8 border-t border-gray-100 dark:border-white/5 space-y-6">
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hodinová sadzba</p>
+                                            <p className="text-3xl font-black text-gray-900 dark:text-white mt-0.5">
+                                                {craftsman.hourly_rate}<span className="text-base font-bold text-gray-400 ml-1">€/hod</span>
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-1 bg-coral-50 dark:bg-coral-900/10 px-3 py-1.5 rounded-xl border border-coral-100/50 dark:border-coral-800/50">
+                                            <TrendingUp className="w-3.5 h-3.5 text-coral-500" />
+                                            <span className="text-[10px] font-black text-coral-600 dark:text-coral-400 uppercase tracking-widest">Dostupný</span>
+                                        </div>
+                                    </div>
+
+                                    <Link
+                                        to={`/craftsmen/${craftsman.user_id}`}
+                                        className="flex items-center justify-center gap-3 w-full py-4 bg-gradient-to-tr from-navy-800 to-navy-900 dark:from-coral-500 dark:to-coral-600 text-white rounded-[1.5rem] font-bold shadow-xl shadow-navy-900/10 dark:shadow-coral-500/20 group/btn hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                    >
+                                        <span className="tracking-tight">Zobraziť profil</span>
+                                        <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </motion.div>
                     ))}
                 </div>
             )}

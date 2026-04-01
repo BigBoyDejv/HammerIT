@@ -1,14 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, MessageSquare, User, ClipboardList, Map } from 'lucide-react';
+import { Home, Search, MessageSquare, User, ClipboardList, Map, Bell } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../contexts/NotificationContext';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-
 import { motion } from 'framer-motion';
 
 export function BottomNav() {
     const location = useLocation();
     const { user, profile } = useAuth();
+    const { unreadCount: notificationCount } = useNotifications();
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [pendingOffers, setPendingOffers] = useState(0);
 
@@ -64,6 +65,7 @@ export function BottomNav() {
     const clientItems = [
         { path: '/dashboard', icon: Home, label: 'Domov', badge: 0 },
         { path: '/jobs', icon: Search, label: 'Práce', badge: 0 },
+        { path: '/notifications', icon: Bell, label: 'Notif.', badge: notificationCount },
         { path: '/messages', icon: MessageSquare, label: 'Správy', badge: unreadMessages },
         { path: '/profile', icon: User, label: 'Profil', badge: 0 },
     ];
@@ -71,7 +73,7 @@ export function BottomNav() {
     const craftsmanItems = [
         { path: '/dashboard', icon: Home, label: 'Domov', badge: 0 },
         { path: '/jobs', icon: Search, label: 'Hľadať', badge: 0 },
-        { path: '/map', icon: Map, label: 'Mapa', badge: 0 },
+        { path: '/notifications', icon: Bell, label: 'Notif.', badge: notificationCount },
         { path: '/my-offers', icon: ClipboardList, label: 'Ponuky', badge: pendingOffers },
         { path: '/messages', icon: MessageSquare, label: 'Správy', badge: unreadMessages },
     ];

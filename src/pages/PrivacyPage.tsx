@@ -7,14 +7,14 @@ export function PrivacyPage() {
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">1. Zbieranie a ochrana údajov</h2>
                     <p>
                         Zaväzujeme sa chrániť vaše osobné údaje. Zhromažďujeme len tie dáta, ktoré sú nutné
-                        pre plynulé fungovanie aplikácie HammerIt (ako email, meno, lokalita či telefónne číslo pre dohodnutie zákazky).
+                        pre plynulé a bezpečné fungovanie aplikácie HammerIt (ako email, meno, lokalita či telefónne číslo pre dohodnutie zákazky).
                         Tieto dáta nie sú predávané tretím stranám bez vášho výslovného a vedomeho súhlasu.
                     </p>
                 </section>
                 <section>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">2. Komunikácia a práca s geolokáciou</h2>
                     <p>
-                        Pre funkciu zobrazenia zákaziek vo vašom blízkom okolí na mape využívame vaše lokálne geolokačné údaje, pokiaľ nám to
+                        Pre funkciu zobrazenia zákaziek vo vašom blízkom okolí na mape využívame vaše lokálne geolokačné údaje, pokiaľ nám to 
                         odoberaním v prehliadači povolíte. Tieto údaje sa uchovávajú pre účel daných úloh. V rámci aplikácie máte kedykoľvek
                         možnosť odobrať tieto práva cez svoj profil alebo cez nastavenia prehliadača.
                     </p>

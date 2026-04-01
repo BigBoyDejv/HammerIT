@@ -24,39 +24,14 @@ import { PrivacyPage } from './pages/PrivacyPage';
 import { ContactPage } from './pages/ContactPage';
 import { CookiesPage } from './pages/CookiesPage';
 import { TermsPage } from './pages/TermsPage';
-import { supabase } from './lib/supabase';
-import { useEffect } from 'react';
 import { RealtimeProvider } from './contexts/RealtimeContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Footer from './components/Footer';
+import { CookieConsent } from './components/CookieConsent';
+import { NotificationsPage } from './pages/NotificationsPage';
 
 function App() {
   const { user, profile, loading } = useAuth();
-
-  useEffect(() => {
-    // Ak nemáme používateľa, nespúšťame subskripciu
-    if (!user) return;
-
-    const notificationSub = supabase
-      .channel('global-notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        },
-        () => {
-          // Spustiť aktualizáciu notifikačného badge
-          window.dispatchEvent(new Event('notification-received'));
-        }
-      )
-      .subscribe();
-
-    return () => {
-      notificationSub.unsubscribe();
-    };
-  }, [user]);
 
   if (loading) {
     return (
@@ -69,13 +44,14 @@ function App() {
   return (
     <BrowserRouter>
       <RealtimeProvider>
+        <NotificationProvider>
         {/* Flex kontajner na celú výšku */}
         <div className="min-h-screen flex flex-col">
           <Navbar />
 
           {/* Hlavný obsah - flex-1 zabezpečí, že footer bude dole */}
-          <main 
-            className="flex-1 pt-16 md:pt-20 md:pb-0" 
+          <main
+            className="flex-1 pt-16 md:pt-20 md:pb-0"
             style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
           >
             <div className="container mx-auto px-4 py-4 md:py-8">
@@ -97,16 +73,10 @@ function App() {
                 <Route path="/contracts" element={user ? <ContractsPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/contracts/:id" element={user ? <ContractDetailPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/map" element={user ? <JobMapPage /> : <Navigate to="/auth/login" />} />
+                <Route path="/notifications" element={user ? <NotificationsPage /> : <Navigate to="/auth/login" />} />
 
                 {/* Remeselník - moje ponuky */}
-                <Route
-                  path="/my-offers"
-                  element={
-                    user && profile && profile.role === 'craftsman'
-                      ? <MyOffersPage />
-                      : <Navigate to="/dashboard" />
-                  }
-                />
+                <Route path="/my-offers" element={user && profile && profile.role === 'craftsman' ? <MyOffersPage /> : <Navigate to="/dashboard" />} />
 
                 {/* Info stránky */}
                 <Route path="/about" element={<AboutUsPage />} />
@@ -128,7 +98,9 @@ function App() {
           {/* BottomNav a FAB sú fixed, takže sú vždy viditeľné */}
           <BottomNav />
           <FAB />
+          <CookieConsent />
         </div>
+        </NotificationProvider>
       </RealtimeProvider>
     </BrowserRouter>
   );

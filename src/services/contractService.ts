@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
+import { notificationService } from './notificationService';
 
 // type Contract = Database['public']['Tables']['contracts']['Row'];
 type ContractInsert = Database['public']['Tables']['contracts']['Insert'];
@@ -50,6 +51,16 @@ export const contractService = {
             .from('job_requests')
             .update({ status: 'in_progress' })
             .eq('id', jobRequestId);
+
+        // Notifikácie
+        await notificationService.createNotification({
+            user_id: contract.craftsman_id,
+            type: 'contract',
+            title: 'Nová zmluva vytvorená',
+            message: `Zmluva na prácu "${offer.job_request.title}" bola vytvorená.`,
+            data: { job_id: jobRequestId, contract_id: data.id },
+            link: `/contracts/${data.id}`
+        });
 
         return data;
     },
@@ -113,6 +124,25 @@ export const contractService = {
             .from('job_requests')
             .update({ status: 'completed' })
             .eq('id', data.job_request_id);
+
+        // Notifikácia pre klienta aj remeselníka
+        await notificationService.createNotification({
+            user_id: data.client_id,
+            type: 'contract',
+            title: 'Zmluva dokončená',
+            message: `Práca bola označená za dokončenú. Môžete prejsť k platbe a hodnoteniu.`,
+            data: { contract_id: id },
+            link: `/contracts/${id}`
+        });
+
+        await notificationService.createNotification({
+            user_id: data.craftsman_id,
+            type: 'contract',
+            title: 'Zmluva dokončená',
+            message: `Vaša práca bola úspešne dokončená.`,
+            data: { contract_id: id },
+            link: `/contracts/${id}`
+        });
 
         return data;
     }

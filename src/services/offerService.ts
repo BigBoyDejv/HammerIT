@@ -52,6 +52,7 @@ export const offerService = {
             type: 'offer',
             title: 'Nová ponuka na vašu prácu',
             message: `${craftsman?.full_name} poslal ponuku na prácu "${job.title}" za ${offer.price}€`,
+            data: { job_id: offer.job_request_id, offer_id: data.id, craftsman_name: craftsman?.full_name },
             link: `/jobs/${offer.job_request_id}`
         });
 
@@ -136,6 +137,7 @@ export const offerService = {
                 type: 'contract',
                 title: 'Ponuka prijatá! 🎉',
                 message: `Klient prijal vašu ponuku na prácu "${offer.job_request.title}". Môžete začať pracovať!`,
+                data: { job_id: offer.job_request_id, offer_id: id },
                 link: `/contracts`
             });
 
@@ -145,6 +147,7 @@ export const offerService = {
                 type: 'contract',
                 title: 'Zmluva vytvorená',
                 message: `Prijali ste ponuku od ${offer.craftsman.full_name}. Zmluva bola vytvorená.`,
+                data: { job_id: offer.job_request_id, craftsman_name: offer.craftsman.full_name },
                 link: `/contracts`
             });
 
@@ -184,6 +187,7 @@ export const offerService = {
                 type: 'offer',
                 title: 'Ponuka zamietnutá',
                 message: `Klient zamietol vašu ponuku na prácu "${offer.job_request.title}"`,
+                data: { job_id: offer.job_request_id },
                 link: `/jobs/${offer.job_request_id}`
             });
         }

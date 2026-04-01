@@ -1,193 +1,98 @@
-// src/components/NotificationBell.tsx
-import { useState, useEffect } from 'react';
-import { Bell, CheckCheck } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { notificationService, Notification } from '../services/notificationService';
+import { useState, useRef, useEffect } from 'react';
+import { Bell, CheckSquare, Settings, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNotifications } from '../contexts/NotificationContext';
+import { NotificationsList } from './NotificationsList';
 
 export function NotificationBell() {
-    const { user } = useAuth();
-    const [notifications, setNotifications] = useState<Notification[]>([]);
-    const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const { notifications, unreadCount, markAllAsRead, loading } = useNotifications();
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Načítať notifikácie
-    const loadNotifications = async () => {
-        if (!user) return;
-        try {
-            const data = await notificationService.getNotifications(user.id);
-            setNotifications(data);
-            setUnreadCount(data.filter(n => !n.read).length);
-        } catch (error) {
-            console.error('Error loading notifications:', error);
-        }
-    };
-
-    // Počiatočné načítanie
     useEffect(() => {
-        loadNotifications();
-    }, [user]);
-
-    // Real-time subskripcia na nové notifikácie
-    useEffect(() => {
-        if (!user) return;
-
-        const subscription = supabase
-            .channel(`notifications:${user.id}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'notifications',
-                    filter: `user_id=eq.${user.id}`
-                },
-                (payload) => {
-                    const newNotification = payload.new as Notification;
-                    setNotifications(prev => [newNotification, ...prev]);
-                    setUnreadCount(prev => prev + 1);
-                }
-            )
-            .subscribe();
-
-        return () => {
-            subscription.unsubscribe();
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
         };
-    }, [user]);
-
-    // Event listener pre manuálne refresh (ak treba)
-    useEffect(() => {
-        if (!user) return;
-
-        const handleRefresh = () => {
-            loadNotifications();
-        };
-
-        window.addEventListener('refresh-notifications', handleRefresh);
-        return () => {
-            window.removeEventListener('refresh-notifications', handleRefresh);
-        };
-    }, [user]);
-
-    const markAsRead = async (id: string) => {
-        await notificationService.markAsRead(id);
-        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-        setUnreadCount(prev => Math.max(0, prev - 1));
-    };
-
-    const markAllAsRead = async () => {
-        await notificationService.markAllAsRead(user!.id);
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-        setUnreadCount(0);
-    };
-
-    const getIcon = (type: string) => {
-        switch (type) {
-            case 'message': return '💬';
-            case 'offer': return '📋';
-            case 'contract': return '📄';
-            case 'review': return '⭐';
-            default: return '🔔';
-        }
-    };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     return (
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all active:scale-95 group"
-                aria-label="Notifikácie"
+                className={`relative w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-300 ${
+                    isOpen 
+                    ? 'bg-navy-900 text-white shadow-xl shadow-navy-900/20' 
+                    : 'bg-white dark:bg-slate-900 text-gray-400 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 border border-gray-100 dark:border-white/5'
+                }`}
             >
-                <Bell className={`w-5 h-5 transition-colors ${unreadCount > 0 ? 'text-coral-500' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`} />
+                <Bell className={`w-5 h-5 transition-transform duration-500 ${isOpen ? 'rotate-12 scale-110' : ''}`} />
                 {unreadCount > 0 && (
-                    <>
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-coral-500 rounded-full animate-ping opacity-75" />
-                        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-coral-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm border-2 border-white dark:border-gray-900">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                        </span>
-                    </>
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-coral-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-slate-950 animate-bounce">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
                 )}
             </button>
 
-            {isOpen && (
-                <>
-                    {/* Backdrop pre mobile */}
-                    <div
-                        className="fixed inset-0 z-40 md:hidden"
-                        onClick={() => setIsOpen(false)}
-                    />
-
-                    {/* Dropdown */}
-                    <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50 animate-fade-in">
-                        {/* Hlavička */}
-                        <div className="p-3 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-gray-900 dark:text-white">
-                            <h3 className="font-semibold">Notifikácie</h3>
-                            {notifications.length > 0 && (
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                        className="absolute right-0 mt-3 w-[360px] sm:w-[420px] bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl shadow-navy-900/40 border border-gray-100 dark:border-white/5 overflow-hidden z-50 origin-top-right backdrop-blur-xl"
+                    >
+                        {/* Header */}
+                        <div className="p-6 pb-2 flex justify-between items-center border-b border-gray-50 dark:border-white/5">
+                            <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">
+                                Notifikácie
+                            </h3>
+                            <div className="flex gap-2">
                                 <button
-                                    onClick={markAllAsRead}
-                                    className="text-xs text-coral-500 dark:text-coral-400 hover:text-coral-600 dark:hover:text-coral-300 flex items-center gap-1"
+                                    onClick={() => markAllAsRead()}
+                                    title="Označiť všetko ako prečítané"
+                                    className="p-2.5 rounded-xl text-gray-400 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-all"
                                 >
-                                    <CheckCheck className="w-3 h-3" />
-                                    Označiť všetky
+                                    <CheckSquare className="w-5 h-5" />
                                 </button>
-                            )}
-                        </div>
-
-                        {/* Zoznam notifikácií */}
-                        <div className="max-h-96 overflow-y-auto">
-                            {notifications.length === 0 ? (
-                                <div className="p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
-                                    <Bell className="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-                                    <p>Žiadne notifikácie</p>
-                                </div>
-                            ) : (
-                                notifications.map((notif) => (
-                                    <Link
-                                        key={notif.id}
-                                        to={notif.link || '#'}
-                                        onClick={() => {
-                                            markAsRead(notif.id);
-                                            setIsOpen(false);
-                                        }}
-                                        className={`block p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-50 dark:border-gray-700/50 ${!notif.read ? 'bg-coral-50/30 dark:bg-coral-900/10 border-l-4 border-l-coral-500' : ''
-                                            }`}
-                                    >
-                                        <div className="flex items-start gap-3">
-                                            <div className="text-xl">{getIcon(notif.type)}</div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-sm text-gray-900 dark:text-white">{notif.title}</p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{notif.message}</p>
-                                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                                    {new Date(notif.created_at).toLocaleDateString('sk-SK', {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit'
-                                                    })}
-                                                </p>
-                                            </div>
-                                            {!notif.read && (
-                                                <div className="w-2 h-2 bg-coral-500 rounded-full mt-1" />
-                                            )}
-                                        </div>
-                                    </Link>
-                                ))
-                            )}
-                        </div>
-
-                        {/* Pätička */}
-                        {notifications.length > 0 && (
-                            <div className="p-2 border-t border-gray-100 dark:border-gray-700">
-                                <button
+                                <Link
+                                    to="/settings/notifications"
                                     onClick={() => setIsOpen(false)}
-                                    className="w-full text-center text-xs text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 py-1"
+                                    className="p-2.5 rounded-xl text-gray-400 hover:text-coral-500 hover:bg-coral-50 dark:hover:bg-coral-500/10 transition-all"
                                 >
-                                    Zavrieť
-                                </button>
+                                    <Settings className="w-5 h-5" />
+                                </Link>
                             </div>
-                        )}
-                    </div>
-                </>
-            )}
+                        </div>
+
+                        {/* List Area */}
+                        <div className="max-h-[480px] overflow-y-auto">
+                            <NotificationsList 
+                                notifications={notifications.slice(0, 10)} 
+                                loading={loading}
+                                onClose={() => setIsOpen(false)}
+                            />
+                        </div>
+
+                        {/* Footer */}
+                        <Link
+                            to="/notifications"
+                            onClick={() => setIsOpen(false)}
+                            className="block p-5 bg-gray-50 dark:bg-slate-800/80 hover:bg-coral-500 hover:text-white dark:hover:bg-coral-500 transition-all text-center text-xs font-black uppercase tracking-widest text-[#191970] dark:text-cyan-400"
+                        >
+                            <span className="flex items-center justify-center gap-2">
+                                Zobraziť všetky notifikácie
+                                <ArrowRight className="w-4 h-4" />
+                            </span>
+                        </Link>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

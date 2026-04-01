@@ -267,11 +267,15 @@ export function Navbar() {
                   )}
                 </button>
 
-                <NavLink to="/auth/login">Prihlásiť sa</NavLink>
+                <Link 
+                  to="/auth/login"
+                  className="px-5 py-2 rounded-full font-bold text-sm bg-gradient-to-r from-coral-500 to-coral-600 text-white hover:shadow-lg hover:scale-105 transition-all duration-300 shadow-lg shadow-coral-500/25"
+                >
+                  Prihlásiť sa
+                </Link>
                 <Link
                   to="/auth/register"
-                  className="px-5 py-2 rounded-full font-semibold text-sm bg-gradient-to-r from-coral-500 to-coral-600 text-white hover:shadow-lg hover:scale-105 transition-all duration-300"
-                  style={{ boxShadow: '0 4px 14px rgba(255,77,26,0.3)' }}
+                  className="px-5 py-2 rounded-full font-bold text-sm border-2 border-coral-500 text-coral-500 hover:bg-coral-50 dark:hover:bg-coral-900/10 transition-all duration-300"
                 >
                   Registrovať sa
                 </Link>
@@ -332,8 +336,20 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <MobileNavLink to="/auth/login" onClick={() => setIsOpen(false)}>Prihlásiť sa</MobileNavLink>
-              <MobileNavLink to="/auth/register" onClick={() => setIsOpen(false)}>Registrovať sa</MobileNavLink>
+              <Link 
+                to="/auth/login" 
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-center py-3 px-4 bg-coral-500 text-white font-bold rounded-xl shadow-lg shadow-coral-500/20 active:scale-95 transition-all mb-2"
+              >
+                Prihlásiť sa
+              </Link>
+              <Link 
+                to="/auth/register" 
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-center py-3 px-4 border-2 border-coral-500 text-coral-500 font-bold rounded-xl active:scale-95 transition-all"
+              >
+                Registrovať sa
+              </Link>
             </>
           )}
 
@@ -348,10 +364,10 @@ export function Navbar() {
                   {resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 </div>
                 <div className="text-left">
-                  <p className="text-sm font-bold leading-none mb-1">
+                  <p className="text-sm font-bold text-gray-900 dark:text-white leading-none mb-1">
                     {resolvedTheme === 'dark' ? 'Svetlý režim' : 'Tmavý režim'}
                   </p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400">Prepnúť vzhľad aplikácie</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Prepnúť vzhľad aplikácie</p>
                 </div>
               </div>
               <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${resolvedTheme === 'dark' ? 'bg-coral-500' : 'bg-gray-300 dark:bg-gray-700'}`}>

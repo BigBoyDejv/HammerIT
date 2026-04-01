@@ -79,6 +79,7 @@ export const messageService = {
                 type: 'message',
                 title: sender?.full_name || 'Nová správa',
                 message: content.length > 50 ? content.substring(0, 50) + '...' : content,
+                data: { sender_name: sender?.full_name, conversation_id: conversationId, sender_id: senderId },
                 link: `/messages?user=${senderId}`
             });
         }

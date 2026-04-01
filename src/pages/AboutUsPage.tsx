@@ -5,7 +5,7 @@ export function AboutUsPage() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm text-gray-700 dark:text-gray-300 space-y-4">
                 <p>
                     Vítajte na <strong>HammerIt</strong> – na platforme, ktorá vznikla s cieľom zmeniť spôsob, akým si domácnosti na Slovensku
-                    hľadajú spoľahlivých remeselníkov. Vieme, aké náročné býva zohnať kvalitného elektrikára, vodára či maliara vtedy,
+                    hľadajú spoľahlivých remeselníkov rýchlo a jednoducho. Vieme, aké náročné býva zohnať kvalitného elektrikára, vodára či maliara vtedy,
                     keď ich naozaj potrebujete. Preto sme vytvorili miesto, kde sa dopyt a ponuka rýchlo a férovo stretávajú.
                 </p>
                 <p>

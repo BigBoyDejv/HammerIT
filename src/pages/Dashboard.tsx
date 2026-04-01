@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { jobService, contractService } from '../services';
-import { Briefcase, TrendingUp, CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
+import { Briefcase, TrendingUp, CheckCircle, Sparkles, ArrowRight, MessageSquare, Plus, Search } from 'lucide-react';
 import { JobCardModern } from '../components/JobCardModern';
+import { motion } from 'framer-motion';
 
 export function Dashboard() {
   const { user, profile } = useAuth();
@@ -20,10 +21,10 @@ export function Dashboard() {
         const jobs = await jobService.getMyJobs(user!.id);
         setStats({
           total: jobs?.length || 0,
-          active: jobs?.filter((j: any) => j.status === 'in_progress').length || 0,
+          active: jobs?.filter((j: any) => j.status === 'in_progress' || j.status === 'open').length || 0,
           completed: jobs?.filter((j: any) => j.status === 'completed').length || 0,
         });
-        setRecentJobs(jobs?.slice(0, 2) || []);
+        setRecentJobs(jobs?.slice(0, 3) || []);
       } else {
         const contracts = await contractService.getMyContractsAsCraftsman(user!.id);
         setStats({
@@ -32,7 +33,7 @@ export function Dashboard() {
           completed: contracts?.filter((c: any) => c.status === 'completed').length || 0,
         });
         
-        const formattedContracts = contracts?.slice(0, 2).map((c: any) => {
+        const formattedContracts = contracts?.slice(0, 3).map((c: any) => {
             const jobData = Array.isArray(c.job) ? c.job[0] : c.job;
             const clientData = Array.isArray(c.client) ? c.client[0] : c.client;
             return {
@@ -41,6 +42,7 @@ export function Dashboard() {
                 client: clientData,
                 budget_min: c.final_price || jobData?.budget_min,
                 budget_max: c.final_price || jobData?.budget_max,
+                status: c.status === 'active' ? 'in_progress' : c.status
             };
         }) || [];
         setRecentJobs(formattedContracts);
@@ -54,134 +56,202 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="spinner" />
+      <div className="max-w-7xl mx-auto space-y-8 animate-pulse">
+        <div className="h-40 bg-gray-200 dark:bg-gray-800 rounded-3xl" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[1,2,3].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-gray-800 rounded-2xl" />)}
+        </div>
+        <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded-3xl" />
       </div>
     );
   }
 
+
   const statsCards = [
     {
       icon: Briefcase,
-      label: profile?.role === 'client' ? 'Moje práce' : 'Aktívne',
+      label: profile?.role === 'client' ? 'Aktualné práce' : 'Aktívne zákazky',
       value: stats.active,
-      gradient: 'from-coral-500 to-coral-600',
-      bg: 'bg-coral-50 dark:bg-coral-500/10',
-      text: 'text-coral-600 dark:text-coral-400',
-      iconBg: 'bg-coral-100 dark:bg-coral-500/20',
-      hoverBorder: 'hover:border-coral-200 dark:hover:border-coral-500/30',
+      color: 'coral',
     },
     {
       icon: CheckCircle,
       label: 'Dokončené',
       value: stats.completed,
-      gradient: 'from-emerald-500 to-teal-600',
-      bg: 'bg-emerald-50 dark:bg-emerald-500/10',
-      text: 'text-emerald-600 dark:text-emerald-400',
-      iconBg: 'bg-emerald-100 dark:bg-emerald-500/20',
-      hoverBorder: 'hover:border-emerald-200 dark:hover:border-emerald-500/30',
+      color: 'emerald',
     },
     {
       icon: TrendingUp,
-      label: 'Celkom',
+      label: 'Celkový počet',
       value: stats.total,
-      gradient: 'from-navy-500 to-navy-600',
-      bg: 'bg-navy-50 dark:bg-navy-500/10',
-      text: 'text-navy-600 dark:text-navy-400',
-      iconBg: 'bg-navy-100 dark:bg-navy-500/20',
-      hoverBorder: 'hover:border-navy-200 dark:hover:border-navy-500/30',
+      color: 'blue',
     },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 px-4 sm:px-0">
-      {/* Welcome banner - unchanged, already has dark mode support via gradient */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-navy-600 to-navy-700 p-6 text-white">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-coral-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-1 flex items-center gap-2">
-              Vitajte, {profile?.full_name?.split(' ')[0]}!
-              <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+    <div className="max-w-7xl mx-auto space-y-8 px-4 sm:px-0">
+      {/* Welcome banner */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-navy-800 via-navy-900 to-black p-8 sm:p-12 text-white shadow-2xl shadow-navy-900/20"
+      >
+        <div className="absolute top-0 right-0 w-80 h-80 bg-coral-500/10 rounded-full blur-[100px] -mr-40 -mt-40" />
+        <div className="absolute bottom-0 left-0 w-60 h-60 bg-blue-500/10 rounded-full blur-[80px] -ml-20 -mb-20" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold tracking-wider uppercase text-coral-300">
+              <Sparkles className="w-3 h-3" /> Dashboard
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight">
+              Vitajte späť,<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral-400 to-coral-600">
+                {profile?.full_name?.split(' ')[0]}
+              </span>!
             </h1>
-            <p className="text-white/70 text-sm sm:text-base">
-              Máte{' '}
-              <span className="text-coral-300 font-semibold">{stats.active}</span>
-              {' '}aktívnych {stats.active === 1 ? 'prácu' : 'prác'}
+            <p className="text-white/60 text-lg max-w-md font-medium">
+              Dnes je skvelý deň na {profile?.role === 'client' ? 'nájdenie špičkového remeselníka' : 'získanie novej zákazky'}.
             </p>
           </div>
-          <div className="hidden sm:flex flex-col items-end gap-1 text-right">
-            <span className="text-xs text-white/50 uppercase tracking-wider">Celkovo dokončené</span>
-            <span className="text-3xl font-black text-emerald-300">{stats.completed}</span>
-          </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {statsCards.map((card, idx) => (
-          <div
+          <motion.div
             key={idx}
-            className={`${card.bg} rounded-xl shadow-sm hover:shadow-md transition-all p-5 border border-transparent dark:border-white/5 ${card.hoverBorder}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 * idx }}
+            className={`group relative overflow-hidden bg-white dark:bg-slate-900 rounded-[2rem] p-5 sm:p-6 shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 dark:border-white/5 hover:-translate-y-1`}
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-10 h-10 ${card.iconBg} rounded-xl flex items-center justify-center`}>
-                <card.icon className={`w-5 h-5 ${card.text}`} />
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="flex flex-row sm:flex-col justify-between items-center sm:items-start">
+                <div className={`p-3 sm:p-4 rounded-2xl bg-${card.color}-500/10 dark:bg-${card.color}-500/20 group-hover:scale-110 transition-transform duration-500`}>
+                  <card.icon className={`w-5 h-5 sm:w-6 sm:h-6 text-${card.color}-500`} />
+                </div>
+                <div className="text-right sm:text-left mt-0 sm:mt-4">
+                  <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block">{card.label}</span>
+                  <p className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mt-0.5 leading-none">{card.value}</p>
+                </div>
               </div>
-              <span className={`text-sm font-medium ${card.text} opacity-80`}>{card.label}</span>
             </div>
-            <div className={`text-3xl font-bold ${card.text}`}>{card.value}</div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      {/* Quick Actions - original light mode + dark mode added */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-        <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          Rýchle akcie
-        </h2>
-        <div className="flex flex-col sm:flex-row gap-3">
-          {profile?.role === 'client' ? (
-            <Link to="/jobs/new" className="flex-1 btn-gradient text-center py-3 text-sm rounded-xl">
-              + Nová práca
-            </Link>
-          ) : (
-            <Link to="/jobs" className="flex-1 btn-gradient text-center py-3 text-sm rounded-xl">
-              🔍 Prehliadať práce
-            </Link>
-          )}
-          <Link
-            to="/messages"
-            className="flex-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-center py-3 rounded-xl text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600"
-          >
-            💬 Správy
-          </Link>
-        </div>
-      </div>
-
-      {/* Recent Jobs - original light mode + dark mode added */}
-      {recentJobs.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-coral-500 animate-pulse" />
-              {profile?.role === 'client' ? 'Najnovšie práce' : 'Aktívne zákazky'}
+      {/* Main Content Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Jobs */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+              <span className="w-1.5 h-8 bg-coral-500 rounded-full" />
+              {profile?.role === 'client' ? 'Vaše najnovšie práce' : 'Aktuálne zákazky'}
             </h2>
             <Link
               to={profile?.role === 'client' ? '/jobs' : '/contracts'}
-              className="text-sm text-coral-500 hover:text-coral-600 dark:text-coral-400 dark:hover:text-coral-300 font-medium flex items-center gap-1 transition-colors"
+              className="group text-sm font-bold text-coral-500 flex items-center gap-2 hover:gap-3 transition-all"
             >
-              Všetky <ArrowRight className="w-3 h-3" />
+              Všetky <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4">
-            {recentJobs.map((job: any) => (
-              <JobCardModern key={job.id || job.contract_id} job={job} variant="active" />
-            ))}
+
+          {recentJobs.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4">
+              {recentJobs.map((job: any, i) => (
+                <motion.div
+                  key={job.id || job.contract_id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + (0.1 * i) }}
+                >
+                  <JobCardModern job={job} variant="active" />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-gray-50 dark:bg-slate-900/50 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-white/5 p-12 text-center">
+               <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Briefcase className="w-8 h-8 text-gray-400" />
+               </div>
+               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Zatiaľ tu nič nie je</h3>
+               <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto mb-6">
+                  {profile?.role === 'client' 
+                    ? 'Vytvorte svoju prvú prácu a nájdite spoľahlivého remeselníka hneď teraz.'
+                    : 'Prehliadajte dostupné práce v okolí a získajte svoju prvú zákazku.'}
+               </p>
+               <Link 
+                to={profile?.role === 'client' ? '/jobs/new' : '/jobs'}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-coral-500 hover:bg-coral-600 text-white font-bold rounded-2xl transition-all active:scale-95"
+               >
+                  {profile?.role === 'client' ? <Plus className="w-4 h-4" /> : <Search className="w-4 h-4" />}
+                  {profile?.role === 'client' ? 'Nová práca' : 'Hľadať zákazky'}
+               </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar / Quick Actions - Hidden on mobile */}
+        <div className="hidden lg:block space-y-6">
+          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-gray-100 dark:border-white/5">
+            <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6">Rýchle akcie</h2>
+            <div className="grid gap-4">
+              {profile?.role === 'client' ? (
+                <Link 
+                  to="/jobs/new" 
+                  className="flex items-center gap-4 p-4 bg-gradient-to-br from-coral-500 to-coral-700 text-white rounded-2xl hover:shadow-lg hover:shadow-coral-500/30 transition-all active:scale-[0.98] group"
+                >
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Plus className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="font-bold">Nová práca</p>
+                    <p className="text-[10px] text-white/70 uppercase tracking-widest font-bold">Vytvoriť inzerát</p>
+                  </div>
+                </Link>
+              ) : (
+                <Link 
+                  to="/jobs" 
+                  className="flex items-center gap-4 p-4 bg-gradient-to-br from-coral-500 to-coral-700 text-white rounded-2xl hover:shadow-lg hover:shadow-coral-500/30 transition-all active:scale-[0.98] group"
+                >
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Search className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="font-bold">Hľadať práce</p>
+                    <p className="text-[10px] text-white/70 uppercase tracking-widest font-bold">Nové príležitosti</p>
+                  </div>
+                </Link>
+              )}
+              
+              <Link 
+                to="/messages" 
+                className="flex items-center gap-4 p-4 border-2 border-gray-50 dark:border-white/5 bg-gray-50/50 dark:bg-gray-800/30 text-gray-900 dark:text-white rounded-2xl hover:bg-white dark:hover:bg-gray-800 transition-all active:scale-[0.98] group"
+              >
+                <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <MessageSquare className="w-6 h-6 text-coral-500" />
+                </div>
+                <div>
+                  <p className="font-bold">Správy</p>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-bold">Komunikácia</p>
+                </div>
+              </Link>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-white/5">
+              <div className="flex items-center gap-4 p-4 bg-navy-500/5 dark:bg-blue-500/10 rounded-2xl">
+                 <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
+                 <p className="text-xs font-bold text-navy-600 dark:text-blue-400 uppercase tracking-wider">
+                    Dnes bolo pridaných 12 nových prác
+                 </p>
+              </div>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

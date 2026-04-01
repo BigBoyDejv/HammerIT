@@ -1,9 +1,13 @@
-import { LoadingSpinner } from '../components/LoadingSpinner';
-// src/pages/ContractsPage.tsx
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import { 
+    Search, MessageCircle, MapPin, Euro, Calendar, 
+    Clock, ArrowRight, CheckCircle, AlertCircle, 
+    XCircle, ShieldCheck, Info
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Contract {
   id: string;
@@ -38,12 +42,30 @@ const fetchContracts = async (role: 'client' | 'craftsman', userId: string): Pro
   return (data ?? []) as Contract[];
 };
 
+const SkeletonCard = () => (
+    <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-gray-100 dark:border-white/5 animate-pulse space-y-6">
+        <div className="flex justify-between items-start">
+            <div className="h-6 w-2/3 bg-gray-100 dark:bg-slate-800 rounded-lg"></div>
+            <div className="h-6 w-20 bg-gray-100 dark:bg-slate-800 rounded-full"></div>
+        </div>
+        <div className="h-4 w-full bg-gray-50 dark:bg-slate-800/50 rounded-lg"></div>
+        <div className="h-4 w-5/6 bg-gray-50 dark:bg-slate-800/50 rounded-lg"></div>
+        <div className="grid grid-cols-3 gap-4 pt-4">
+            <div className="h-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg"></div>
+            <div className="h-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg"></div>
+            <div className="h-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg"></div>
+        </div>
+    </div>
+);
+
 export function ContractsPage() {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (user && profile) loadContracts();
@@ -64,137 +86,245 @@ export function ContractsPage() {
     }
   };
 
-  const filteredContracts = contracts.filter(c =>
-    activeTab === 'active' ? c.status === 'active' : c.status === 'completed'
-  );
+  const filteredContracts = useMemo(() => {
+    return contracts.filter(c => {
+      const matchesTab = activeTab === 'active' ? c.status === 'active' : c.status === 'completed';
+      const matchesSearch = 
+        c.job?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.craftsman?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.client?.full_name?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTab && matchesSearch;
+    });
+  }, [contracts, activeTab, searchQuery]);
 
-  const statusBadge = (status: Contract['status']) => {
-    const map: Record<Contract['status'], { label: string; cls: string }> = {
-      active: { label: 'Prebieha', cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' },
-      completed: { label: 'Dokončená', cls: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' },
-      cancelled: { label: 'Zrušená', cls: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' },
-      disputed: { label: 'Spor', cls: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300' },
-    };
-    const { label, cls } = map[status];
-    return <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${cls}`}>{label}</span>;
+  const counts = {
+    active: contracts.filter(c => c.status === 'active').length,
+    completed: contracts.filter(c => c.status === 'completed').length
   };
 
-  const paymentBadge = (ps: Contract['payment_status']) => {
-    const map: Record<Contract['payment_status'], { label: string; cls: string }> = {
-      paid: { label: 'Zaplatené', cls: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' },
-      pending: { label: 'Čaká na platbu', cls: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' },
-      refunded: { label: 'Vrátené', cls: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
+  const getStatusBadge = (status: Contract['status']) => {
+    const map = {
+      active: { label: 'Prebieha', icon: Clock, classes: 'bg-amber-500 text-white shadow-amber-500/20' },
+      completed: { label: 'Dokončená', icon: CheckCircle, classes: 'bg-emerald-500 text-white shadow-emerald-500/20' },
+      cancelled: { label: 'Zrušená', icon: XCircle, classes: 'bg-red-500 text-white shadow-red-500/20' },
+      disputed: { label: 'Spor', icon: AlertCircle, classes: 'bg-orange-500 text-white shadow-orange-500/20' },
     };
-    const { label, cls } = map[ps];
-    return <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${cls}`}>{label}</span>;
+    const { label, icon: Icon, classes } = map[status] || map.active;
+    return (
+        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 ${classes} shadow-lg`}>
+            <Icon className="w-3 h-3" />
+            {label}
+        </span>
+    );
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-64">
-      <LoadingSpinner />
-    </div>
-  );
+  const getPaymentBadge = (ps: Contract['payment_status']) => {
+    const map = {
+      paid: { label: 'Zaplatené', icon: ShieldCheck, classes: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
+      pending: { label: 'Čaká na platbu', icon: Clock, classes: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
+      refunded: { label: 'Vrátené', icon: Info, classes: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
+    };
+    const { label, icon: Icon, classes } = map[ps] || map.pending;
+    return (
+        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 ${classes}`}>
+            <Icon className="w-3 h-3" />
+            {label}
+        </span>
+    );
+  };
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Moje zmluvy</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+      {/* Header */}
+      <header className="mb-12 py-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight mb-2">Moje zmluvy</h1>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">Spravujte svoje aktívne projekty a históriu prác.</p>
+        </div>
+
+        <div className="relative w-full md:w-80 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-coral-500 transition-colors" />
+          <input 
+            type="text"
+            placeholder="Hľadať zmluvu alebo meno..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 pl-12 pr-4 py-4 rounded-2xl text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-coral-500 transition-all shadow-xl shadow-navy-900/5 placeholder:text-gray-400"
+          />
+        </div>
+      </header>
 
       {error && (
-        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+        <motion.div 
+            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-2xl text-red-600 flex items-center gap-3 font-bold text-sm"
+        >
+          <AlertCircle className="w-5 h-5" />
           {error}
-        </div>
+        </motion.div>
       )}
 
-      <div className="flex gap-4 mb-6 border-b border-gray-200 dark:border-gray-700">
-        {(['active', 'completed'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-2 px-4 text-sm font-medium transition-colors ${activeTab === tab
-                ? 'border-b-2 border-[#191970] dark:border-coral-500 text-[#191970] dark:text-coral-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
-          >
-            {tab === 'active' ? 'Aktívne' : 'Dokončené'}{' '}
-            ({contracts.filter(c => tab === 'active' ? c.status === 'active' : c.status === 'completed').length})
-          </button>
-        ))}
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-3 mb-10">
+        {(['active', 'completed'] as const).map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+                <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`relative px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all overflow-hidden ${
+                        isActive 
+                        ? 'text-white' 
+                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800'
+                    }`}
+                >
+                        {isActive && (
+                            <motion.div 
+                                layoutId="activeTab"
+                                className="absolute inset-0 bg-gradient-to-tr from-coral-500 to-coral-600"
+                                transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                            />
+                        )}
+                    <span className="relative z-10 flex items-center gap-2">
+                        {tab === 'active' ? 'Aktívne' : 'Dokončené'}
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] ${isActive ? 'bg-white/20' : 'bg-gray-100 dark:bg-slate-700'}`}>
+                            {counts[tab]}
+                        </span>
+                    </span>
+                </button>
+            );
+        })}
       </div>
 
-      {filteredContracts.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-          <svg className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">Žiadne zmluvy</h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            {activeTab === 'active'
-              ? 'Momentálne nemáte žiadne aktívne zmluvy.'
-              : 'Momentálne nemáte žiadne dokončené zmluvy.'}
+      {loading ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {[1, 2, 3, 4].map(i => <SkeletonCard key={i} />)}
+        </div>
+      ) : filteredContracts.length === 0 ? (
+        <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center justify-center py-32 bg-white dark:bg-slate-900 rounded-[3rem] border border-gray-50 dark:border-white/5 shadow-2xl text-center px-12"
+        >
+          <div className="w-24 h-24 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-8 text-4xl">
+            {activeTab === 'active' ? '📂' : '🏆'}
+          </div>
+          <h3 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-3">
+            {searchQuery ? 'Nenašli sme žiadne zhody' : (activeTab === 'active' ? 'Zatiaľ žiadne aktívne zmluvy' : 'Zatiaľ žiadne dokončené zmluvy')}
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 font-medium max-w-md mx-auto">
+            {searchQuery 
+                ? 'Skúste upraviť vyhľadávanie alebo zmeňte filtre.' 
+                : (activeTab === 'active' 
+                    ? 'Vaše aktívne projekty sa zobrazia tu po prijatí ponuky a podpísaní zmluvy.' 
+                    : 'História vašich úspešných spoluprác sa bude nachádzať na tomto mieste.')
+            }
           </p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="space-y-4">
-          {filteredContracts.map((contract) => (
-            <div key={contract.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center flex-wrap gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {contract.job?.title ?? 'Neznáma práca'}
-                    </h3>
-                    {statusBadge(contract.status)}
-                    {paymentBadge(contract.payment_status)}
-                  </div>
+        <motion.div 
+            key={activeTab}
+            initial={{ opacity: 0, x: activeTab === 'active' ? -20 : 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", damping: 20, stiffness: 100 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredContracts.map((contract) => (
+                <motion.div 
+                    key={contract.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-gray-50 dark:border-white/5 shadow-2xl shadow-navy-900/5 hover:shadow-coral-500/10 transition-all group overflow-hidden flex flex-col justify-between"
+                >
+                    <div className="space-y-6">
+                        {/* Header Row */}
+                        <div className="flex justify-between items-start gap-4">
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-black text-gray-900 dark:text-white leading-tight group-hover:text-coral-500 transition-colors">
+                                    {contract.job?.title ?? 'Neznáma práca'}
+                                </h3>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    {getStatusBadge(contract.status)}
+                                    {getPaymentBadge(contract.payment_status)}
+                                </div>
+                            </div>
+                            <div className="hidden sm:flex items-center gap-2">
+                                <button 
+                                    onClick={() => navigate(`/messages?user=${profile?.role === 'client' ? contract.craftsman_id : contract.client_id}`)}
+                                    className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-coral-500 bg-gray-50 dark:bg-slate-800 rounded-xl hover:scale-110 active:scale-95 transition-all"
+                                    title="Poslať správu"
+                                >
+                                    <MessageCircle className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
 
-                  {contract.job?.description && (
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                      {contract.job.description}
-                    </p>
-                  )}
+                        {/* Description */}
+                        {contract.job?.description && (
+                            <p className="text-gray-600 dark:text-gray-400 text-sm font-medium line-clamp-2 md:line-clamp-3">
+                                {contract.job.description}
+                            </p>
+                        )}
 
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      {contract.job?.location ?? 'Neznáma lokalita'}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {contract.final_price}€
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      {new Date(contract.created_at).toLocaleDateString('sk-SK')}
-                    </span>
-                  </div>
+                        {/* Details Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-gray-50 dark:border-white/5">
+                            {[
+                                { icon: MapPin, label: 'Lokalita', value: contract.job?.location.split(',')[0] ?? '?' },
+                                { icon: Euro, label: 'Cena', value: `${contract.final_price}€` },
+                                { icon: Calendar, label: 'Založené', value: new Date(contract.created_at).toLocaleDateString('sk-SK') },
+                            ].map((item, idx) => (
+                                <div key={idx} className="space-y-1">
+                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                        <item.icon className="w-3 h-3" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest leading-none">{item.label}</span>
+                                    </div>
+                                    <p className="text-xs font-black text-gray-900 dark:text-white">{item.value}</p>
+                                </div>
+                            ))}
+                        </div>
 
-                  <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-                    {profile?.role === 'client' ? (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Remeselník: <span className="font-medium text-gray-900 dark:text-white">{contract.craftsman?.full_name ?? '–'}</span>
-                      </p>
-                    ) : (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Klient: <span className="font-medium text-gray-900 dark:text-white">{contract.client?.full_name ?? '–'}</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
+                        {/* Profiles Row */}
+                        <div className="flex items-center justify-between pt-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-navy-900 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg">
+                                    {(profile?.role === 'client' ? contract.craftsman?.full_name : contract.client?.full_name)?.charAt(0) ?? '?'}
+                                </div>
+                                <div className="space-y-0.5">
+                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                                        {profile?.role === 'client' ? 'Remeselník' : 'Klient'}
+                                    </p>
+                                    <p className="text-sm font-black text-gray-900 dark:text-white">
+                                        {profile?.role === 'client' ? contract.craftsman?.full_name : contract.client?.full_name}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <Link to={`/contracts/${contract.id}`} className="btn-outline shrink-0 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:border-gray-500">
-                  Detail
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+                    {/* Action Button */}
+                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                        <Link 
+                            to={`/contracts/${contract.id}`} 
+                            className="flex-1 bg-gray-50 dark:bg-slate-800 hover:bg-coral-500 hover:text-white dark:hover:bg-coral-500 dark:hover:text-white border border-transparent dark:border-white/5 p-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest transition-all"
+                        >
+                            Detail zmluvy
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                        <button 
+                            onClick={() => navigate(`/messages?user=${profile?.role === 'client' ? contract.craftsman_id : contract.client_id}`)}
+                            className="sm:hidden w-full bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 p-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest text-gray-600 dark:text-white"
+                        >
+                            <MessageCircle className="w-4 h-4" />
+                            Poslať správu
+                        </button>
+                    </div>
+                </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
     </div>
   );

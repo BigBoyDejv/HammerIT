@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { messageService } from '../services';
 import { supabase } from '../lib/supabase';
 import { Search, Send, ArrowLeft, MoreVertical, Check, CheckCheck } from 'lucide-react';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 interface Conversation {
     id: string;
@@ -323,7 +324,7 @@ export function MessagesPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-coral-500"></div>
+                <LoadingSpinner />
             </div>
         );
     }

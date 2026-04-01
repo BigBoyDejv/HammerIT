@@ -1,3 +1,4 @@
+import { LoadingSpinner } from '../components/LoadingSpinner';
 // src/pages/JobsPage.tsx (pridaj craftsmanId do volania)
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
@@ -70,7 +71,7 @@ export function JobsPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-navy-500 dark:border-coral-500"></div>
+                <LoadingSpinner />
             </div>
         );
     }

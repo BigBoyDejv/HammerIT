@@ -1,3 +1,4 @@
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { craftsmanService } from '../services';
@@ -76,7 +77,7 @@ export function CraftsmenPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#191970] dark:border-coral-500"></div>
+                <LoadingSpinner />
             </div>
         );
     }

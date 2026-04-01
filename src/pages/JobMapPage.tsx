@@ -7,6 +7,7 @@ import { MapPin, List, Map as MapIcon, Filter, Navigation, MessageCircle, Chevro
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 // Fix default marker icons in Leaflet + bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -178,7 +179,7 @@ export function JobMapPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-coral-500"></div>
+                <LoadingSpinner />
             </div>
         );
     }

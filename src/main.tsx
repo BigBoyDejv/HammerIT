@@ -2,6 +2,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
+import { HelmetProvider } from 'react-helmet-async';
 import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
@@ -23,11 +24,13 @@ console.log('SUPABASE_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ SET' 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
       <AuthProvider>
         <App />
         
       </AuthProvider>
     </ThemeProvider>
+    </HelmetProvider>
   </StrictMode>
 );

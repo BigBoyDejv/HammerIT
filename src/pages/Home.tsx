@@ -1,6 +1,7 @@
 // src/pages/Home.tsx
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { SEO } from '../components/SEO';
 import { Wrench, Search, MessageSquare, Star, Shield, Zap, ChevronRight, ArrowRight } from 'lucide-react';
 
 const STATS = [
@@ -81,6 +82,7 @@ export function Home() {
 
   return (
     <div className="overflow-hidden">
+      <SEO />
 
       {/* ── HERO ── */}
       <section className="hero-bg min-h-[80vh] md:min-h-screen flex flex-col justify-center relative">

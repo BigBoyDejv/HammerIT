@@ -1,0 +1,12 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /messages
+Disallow: /contracts
+Disallow: /notifications
+Disallow: /auth/
+
+# Sitemap location
+Sitemap: https://hammerit.sk/sitemap.xml

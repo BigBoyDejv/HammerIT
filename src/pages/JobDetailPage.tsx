@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Database } from '../lib/database.types';
 import { offerService } from '../services/offerService';
+import { SEO } from '../components/SEO';
 
 type JobRow = Database['public']['Tables']['job_requests']['Row'];
 type OfferRow = Database['public']['Tables']['job_offers']['Row'];
@@ -171,6 +172,12 @@ export function JobDetailPage() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+            <SEO 
+                title={job.title} 
+                description={job.description} 
+                ogType="job" 
+                canonical={`/jobs/${job.id}`}
+            />
             {/* Header / Navigation */}
             <header className="mb-12 py-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>

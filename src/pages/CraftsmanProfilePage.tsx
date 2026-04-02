@@ -8,6 +8,7 @@ import {
     ChevronRight, Calendar, Plus
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { SEO } from '../components/SEO';
 
 export function CraftsmanProfilePage() {
     const { id } = useParams<{ id: string }>();
@@ -127,6 +128,13 @@ export function CraftsmanProfilePage() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+            <SEO 
+                title={`${craftsman.user?.full_name} | Profesionálny remeselník`} 
+                description={craftsman.user?.bio || `Profil remeselníka ${craftsman.user?.full_name} na HammerIT. Pozrite si recenzie a realizované práce.`} 
+                ogType="profile" 
+                canonical={`/craftsmen/${id}`}
+                keywords={craftsman.specialization?.join(', ')}
+            />
             {/* Back Button */}
             <Link to="/craftsmen" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-coral-500 font-bold transition-all mb-8 mt-4">
                 <ArrowLeft className="w-4 h-4" /> Späť na remeselníkov

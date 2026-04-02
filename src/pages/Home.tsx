@@ -83,8 +83,8 @@ export function Home() {
     <div className="overflow-hidden">
 
       {/* ── HERO ── */}
-      <section className="hero-bg min-h-screen flex flex-col justify-center relative pt-20">
-        <div className="container-wide relative z-10 py-24">
+      <section className="hero-bg min-h-[80vh] md:min-h-screen flex flex-col justify-center relative">
+        <div className="container-wide relative z-10 py-4 md:py-24">
           <div className="max-w-4xl mx-auto text-center">
 
             <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-emerald-200/60 dark:border-emerald-500/20 rounded-full px-4 py-1.5 mb-8 shadow-sm animate-fade-up">
@@ -122,7 +122,7 @@ export function Home() {
               </div>
             )}
 
-            <div className="flex justify-center mt-20 animate-fade-up delay-500">
+            <div className="hidden md:flex justify-center mt-20 animate-fade-up delay-500">
               <div className="scroll-indicator" />
             </div>
           </div>

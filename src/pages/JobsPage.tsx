@@ -102,14 +102,10 @@ export function JobsPage() {
     return (
         <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900/50 pb-20">
             {/* Header Section */}
-            <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 pt-28 pb-12">
+            <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 pt-12 md:pt-20 pb-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-coral-50 dark:bg-coral-500/10 border border-coral-100 dark:border-coral-500/20 text-coral-600 dark:text-coral-400 text-xs font-bold uppercase tracking-wider mb-3">
-                                <Briefcase className="w-3 h-3" />
-                                <span>Voľné zákazky</span>
-                            </div>
                             <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
                                 Nájdite svoju <span className="gradient-text">ďalšiu prácu</span>
                             </h1>
@@ -187,20 +183,23 @@ export function JobsPage() {
                         {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonCard key={i} />)}
                     </div>
                 ) : jobs.length === 0 ? (
-                    <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm animate-fade-in ring-1 ring-black/5 dark:ring-white/5">
-                        <div className="w-24 h-24 bg-gray-50 dark:bg-gray-700/50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-gray-300 dark:text-gray-600">
-                            <Search className="w-12 h-12" />
-                        </div>
-                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Nič sme nenašli</h3>
-                        <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-10 font-medium">
-                            Skúste upraviť filtre alebo zmeniť lokalitu vyhľadávania, aby ste našli viac ponúk.
+                    <div className="bg-white dark:bg-gray-800 rounded-[3rem] border border-gray-100 dark:border-gray-700 shadow-sm animate-fade-in ring-1 ring-black/5 dark:ring-white/5 p-8 md:p-12 flex flex-col items-start text-left overflow-hidden relative">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-coral-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
+                        
+                        <h3 className="text-2xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 relative z-10 tracking-tight">
+                            Nenašli sme žiadne <br className="hidden md:block" /> ponuky podľa vašich filtrov
+                        </h3>
+                        
+                        <p className="text-gray-500 dark:text-gray-400 max-w-xl mb-10 font-medium relative z-10 leading-relaxed text-lg">
+                            Skúste zmeniť kategóriu, rozšíriť lokalitu alebo resetovať všetky filtre. Nové zákazky pribúdajú každý deň, možno stačí ubrať na prísnosti vyhľadávania.
                         </p>
+
                         <button 
                             onClick={resetFilters}
-                            className="btn-secondary inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold shadow-sm"
+                            className="btn-primary inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-black shadow-xl shadow-coral-500/30 active:scale-95 transition-all text-xs uppercase tracking-widest relative z-10"
                         >
                             <RotateCcw className="w-5 h-5" />
-                            Resetovať filtre
+                            Resetovať všetky filtre
                         </button>
                     </div>
                 ) : (

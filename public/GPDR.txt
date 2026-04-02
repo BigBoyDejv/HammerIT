@@ -1,0 +1,185 @@
+
+HammerIT
+Online marketplace pre remeselníkov
+
+
+VŠEOBECNÉ OBCHODNÉ PODMIENKY
+a
+ZÁSADY OCHRANY OSOBNİCH ÚDAJOV (GDPR)
+
+Platnos od: 1. apríla 2026
+Verzia: 1.0
+
+Prevádzkovate¾ platformy:
+HammerIT s.r.o.
+[Adresa sídla spoloènosti]
+IÈO: [Doplni]  |  DIÈ: [Doplni]
+E-mail: info@hammerit.sk
+
+ÈAS I – VŠEOBECNÉ OBCHODNÉ PODMIENKY
+
+Èlánok 1 – Úvodné ustanovenia a definície
+Tieto Všeobecné obchodné podmienky (ïalej len "VOP") upravujú práva a povinnosti všetkıch strán pri vyuívaní online platformy HammerIT, dostupnej na webovej stránke a v mobilnej aplikácii (ïalej len "Platforma"). Pred registráciou a pouívaním Platformy si tieto VOP pozorne preèítajte. Registráciou potvrdzujete, e ste si tieto podmienky preèítali, porozumeli ste im a súhlasíte s nimi.
+
+Na úèely tıchto VOP sa pouívajú nasledujúce pojmy:
+• Prevádzkovate¾ – spoloènos HammerIT s.r.o., ktorá prevádzkuje Platformu ako sprostredkovate¾ medzi Klientmi a Remeselníkmi.
+• Platforma – online systém HammerIT umoòujúci zverejòovanie dopytov a zasielanie cenovıch ponúk.
+• Klient – fyzická alebo právnická osoba, ktorá prostredníctvom Platformy zverejòuje dopyt na vykonanie remeselnıch alebo stavebnıch prác.
+• Remeselník – fyzická alebo právnická osoba oprávnená vykonáva remeselnú alebo inú odbornú èinnos, ktorá prostredníctvom Platformy zasiela Klientom cenové ponuky.
+• Dopyt – inzerát zverejnenı Klientom popisujúci poadované práce, miesto plnenia, rozsah a prípadnı rozpoèet.
+• Ponuka – cenová ponuka zaslaná Remeselníkom Klientovi v reakcii na Dopyt.
+• Zmluva o dielo – záväzkovı vzah uzatvorenı priamo medzi Klientom a Remeselníkom; Prevádzkovate¾ nie je zmluvnou stranou.
+Èlánok 2 – Postavenie Prevádzkovate¾a
+Prevádzkovate¾ vystupuje vıluène ako technickı sprostredkovate¾, ktorı poskytuje prostredie na stretnutie ponuky a dopytu. Platforma nie je stranou Zmluvy o dielo, nie je zamestnávate¾om Remeselníkov ani dodávate¾om pracovnıch vısledkov.
+Prevádzkovate¾ nezodpovedá za:
+• kvalitu, bezpeènos ani vısledok vykonanıch prác;
+• nedokonèenie prác alebo nedodranie dohodnutého termínu Remeselníkom;
+• škody na majetku alebo zdraví Klienta alebo tretích osôb spôsobené Remeselníkom;
+• solventnos, odbornú spôsobilos ani spo¾ahlivos ktoréhoko¾vek Pouívate¾a nad rámec overovacieho procesu opísaného v èlánku 5.
+Všetky spory vyplıvajúce zo Zmluvy o dielo riešia Klient a Remeselník priamo medzi sebou, prípadne prostredníctvom príslušnıch súdnych alebo mimosúdnych orgánov.
+Èlánok 3 – Registrácia a uívate¾skı úèet
+Pouívanie Platformy vyaduje vytvorenie uívate¾ského úètu. Registrova sa môe fyzická osoba staršia ako 18 rokov alebo právnická osoba zastúpená oprávnenou osobou.
+Pouívate¾ sa zaväzuje:
+• uvies pravdivé, úplné a aktuálne registraèné údaje;
+• chráni prístupové heslo k svojmu úètu a neposkytnú ho tretím osobám;
+• bezodkladne informova Prevádzkovate¾a o akomko¾vek neoprávnenom pouití svojho úètu;
+• udriava profil aktuálny a opravi nesprávne údaje bez zbytoèného odkladu.
+Jeden Pouívate¾ je oprávnenı ma iba jeden aktívny úèet kadého typu (Klient, Remeselník). Platforma si vyhradzuje právo odmietnu registráciu bez udania dôvodu.
+Èlánok 4 – Zverejòovanie dopytov a zasielanie ponúk
+Klient zverejòuje Dopyt prostredníctvom príslušného formulára na Platforme. Dopyt musí obsahova jasnı popis poadovanıch prác, lokalitu a predpokladanı termín realizácie. Zavádzajúce, nepravdivé alebo diskriminaèné Dopyty sú zakázané.
+Remeselník zasiela Ponuku Klientovi prostredníctvom správy v rámci Platformy. Ponuka musí by jasná, zrozumite¾ná a nesmie obsahova klamlivé informácie o cene, skúsenostiach ani referencii.
+Klient a Remeselník sa dohodujú na podmienkach spolupráce priamo medzi sebou. Uzatvorením Zmluvy o dielo mimo Platformy sa Prevádzkovate¾ vzdáva akejko¾vek zodpovednosti za jej obsah alebo plnenie.
+Èlánok 5 – Overenie identity Remeselníka
+Remeselník je povinnı pred prvım zverejnením Ponuky absolvova overenie identity. Overenie prebieha nahraním fotografickej kópie platného dokladu totonosti (obèiansky preukaz alebo cestovnı pas) prostredníctvom zabezpeèeného rozhrania Platformy.
+Prevádzkovate¾ nakladá s dokladmi totonosti vıluène za úèelom overenia a bezpeènosti v súlade so Zásadami ochrany osobnıch údajov uvedenımi v Èasti II. Neoverenı Remeselník nie je oprávnenı zasiela Ponuky ani zobrazova sa vo vısledkoch vyh¾adávania Klientov.
+Overenie identity nie je zárukou odbornej kvalifikácie, ivnostenského oprávnenia ani inej spôsobilosti Remeselníka. Klient je povinnı si tieto skutoènosti overi samostatne.
+Èlánok 6 – Platby a poplatky
+V aktuálnej verzii Platformy si Prevádzkovate¾ nevyberá poplatok za sprostredkovanie. Platby za vykonanú prácu prebiehajú priamo medzi Klientom a Remeselníkom mimo Platformy, na základe ich vzájomnej dohody.
+Prevádzkovate¾ si vyhradzuje právo v budúcnosti zavies sprostredkovate¾skı poplatok (províziu) za úspešne sprostredkované zákazky. O zavedení poplatkov budú Pouívatelia informovaní prostredníctvom e-mailu a oznámenia na Platforme najmenej 30 dní vopred. Pokraèovaním v pouívaní Platformy po nadobudnutí úèinnosti zmeny Pouívate¾ s novımi podmienkami súhlasí.
+Èlánok 7 – Systém hodnotení a recenzií
+Platforma umoòuje Klientom hodnoti Remeselníkov po dokonèení zákazky formou èíselného hodnotenia a textovej recenzie. Remeselník môe rovnako hodnoti Klienta.
+Pri písaní recenzií platia nasledujúce pravidlá:
+• Recenzie musia by pravdivé a opiera sa o skutoènú skúsenos z konkrétnej zákazky.
+• Je zakázané uverejòova falošné, zavádzajúce alebo platené recenzie, ako aj hodnoti samého seba prostredníctvom fiktívnych úètov.
+• Recenzie nesmú obsahova hanlivé vırazy, vulgarizmy, osobné útoky, diskriminaèné prejavy ani inı obsah porušujúci dobré mravy.
+• Je zakázané ponúka alebo prijíma odmenu vımenou za pozitívne hodnotenie.
+Prevádzkovate¾ je oprávnenı recenziu odstráni, ak porušuje tieto pravidlá. Opakované porušovanie môe vies k zrušeniu úètu.
+Èlánok 8 – Zakázanı obsah a správanie
+Na Platforme je zakázané najmä:
+• uverejòovanie nepravdivıch, zavádzajúcich alebo klamlivıch informácií;
+• obchádzanie Platformy za úèelom uzatvorenia zákazky priamo bez registrácie (po prvom kontakte prostredníctvom Platformy);
+• vytvorenie viacerıch úètov za úèelom manipulácie s hodnoteniami alebo obídenia sankcií;
+• akéko¾vek formy podvodu, nátlaku alebo zastrašovania inıch Pouívate¾ov;
+• uverejòovanie obsahu porušujúceho autorské práva alebo iné práva duševného vlastníctva tretích osôb;
+• šírenie spamu, nevyiadanej reklamy alebo iného nepovolného komerèného obsahu;
+• akéko¾vek technické útoky na infraštruktúru Platformy.
+Èlánok 9 – Pozastavenie a zrušenie úètu
+Prevádzkovate¾ je oprávnenı bez predchádzajúceho upozornenia pozastavi alebo natrvalo zruši úèet Pouívate¾a, ak:
+• Pouívate¾ poruší tieto VOP alebo príslušné právne predpisy;
+• sa Pouívate¾ dopustí podvodného konania, vrátane falšovania dokladov totonosti alebo falošnıch recenzií;
+• Pouívate¾ opakovaní nereaguje na oprávnené sanosti iného Pouívate¾a;
+• správanie Pouívate¾a poškodzuje dobré meno Platformy alebo inıch Pouívate¾ov;
+• existuje dôvodné podozrenie z trestnej èinnosti.
+O zrušení úètu bude Pouívate¾ informovanı e-mailom. Prevádzkovate¾ nie je povinnı uchováva obsah zrušeného úètu. Opodstatnené sanosti je moné zasla na info@hammerit.sk.
+Èlánok 10 – Duševné vlastníctvo
+Všetky práva k Platforme, jej dizajnu, softvéru, ochrannım známkam a obsahu vytvorenému Prevádzkovate¾om patria vıluène spoloènosti HammerIT s.r.o. Pouívate¾ovi sa ude¾uje nevıhradná, neprenosná licencia na pouívanie Platformy vıluène na úèely uvedené v tıchto VOP.
+Obsah uverejnenı Pouívate¾mi (fotografie prác, popis profilu a pod.) zostáva vo vlastníctve Pouívate¾a. Uverejnením na Platforme ude¾uje Prevádzkovate¾ovi bezodplatnú licenciu zobrazova tento obsah v rámci Platformy na dobu neurèitú, prípadne kratšiu, ak si ho Pouívate¾ vymae.
+Èlánok 11 – Obmedzenie zodpovednosti
+Prevádzkovate¾ nezaruèuje nepretritú dostupnos Platformy a nenesie zodpovednos za škody spôsobené vıpadkom, chybou systému alebo kybernetickım útokom. Platforma je poskytovaná 'tak, ako je' (as-is).
+Celková zodpovednos Prevádzkovate¾a voèi akémuko¾vek Pouívate¾ovi je obmedzená na sumu prípadne zaplatenú Prevádzkovate¾ovi za sprostredkovate¾ské sluby v poslednıch 12 mesiacoch. V prípade bezplatného pouívania je zodpovednos Prevádzkovate¾a vylúèená v najširšom rozsahu povolenom príslušnımi právnymi predpismi.
+Èlánok 12 – Zmeny VOP
+Prevádzkovate¾ je oprávnenı tieto VOP kedyko¾vek zmeni. O zmenách bude Pouívate¾ informovanı e-mailom na adresu registrovanú v profile alebo upozornením pri prihlásení, najmenej 14 dní pred nadobudnutím ich úèinnosti. Pokraèovanie v pouívaní Platformy po úèinnosti zmeny sa povauje za súhlas s novımi VOP.
+Èlánok 13 – Rozhodné právo a riešenie sporov
+Tieto VOP sa riadia právom Slovenskej republiky, najmä zákonom è. 40/1964 Zb. Obèiansky zákonník, zákonom è. 513/1991 Zb. Obchodnı zákonník a zákonom è. 22/2004 Z. z. o elektronickom obchode.
+Spory medzi Prevádzkovate¾om a Pouívate¾mi budú riešené prednostne zmierèou cestou. Ak nedôjde k dohode, spor bude predloenı príslušnému súdu v Slovenskej republike.
+Spotrebitelia majú právo obráti sa na Slovenskú obchodnú inšpekciu (SOI) alebo vyui platformu alternatívneho riešenia sporov dostupnú na https://ec.europa.eu/consumers/odr.
+
+ÈAS II – ZÁSADY OCHRANY OSOBNİCH ÚDAJOV (GDPR)
+
+Èlánok 14 – Totonos prevádzkovate¾a a kontaktné údaje
+Prevádzkovate¾om osobnıch údajov v zmysle nariadenia Európskeho parlamentu a Rady (EÚ) 2016/679 (GDPR) a zákona è. 18/' Z. z. o ochrane osobnıch údajov je:
+• Obchodné meno: HammerIT s.r.o.
+• Sídlo: [Doplni adresu]
+• IÈO: [Doplni]
+• E-mail pre ochranu údajov: gdpr@hammerit.sk
+Prevádzkovate¾ nemenoval zodpovednú osobu (DPO), nako¾ko táto povinnos pod¾a èl. 37 GDPR v súèasnosti nevzniká. V prípade zmeny bude táto informácia aktualizovaná.
+Èlánok 15 – Aké osobné údaje spracúvame
+Platforma spracúva nasledujúce kategórie osobnıch údajov:
+
+15.1 Údaje Klientov
+• Meno a priezvisko
+• E-mailová adresa
+• Telefónne èíslo
+• Lokalita (GPS poloha alebo mesto)
+• Obsah zverejnenıch Dopytov vrátane fotografií a popisov
+
+15.2 Údaje Remeselníkov
+• Meno a priezvisko (alebo obchodné meno)
+• E-mailová adresa
+• Telefónne èíslo
+• Lokalita (GPS poloha alebo mesto pôsobenia)
+• Profesijná biografia a popis poskytovanıch sluieb
+• Fotografie realizovanıch prác (portfólio)
+• Fotografická kópia dokladu totonosti (obèiansky preukaz alebo cestovnı pas) – vıluène na úèely overenia identity
+
+15.3 Prevádzkové údaje
+• IP adresa a technické údaje zariadenia
+• Dátum a èas prihlásenia a aktivity na Platforme
+• Správy zasielané medzi Pouívate¾mi v rámci Platformy
+• Hodnotenia a recenzie
+Èlánok 16 – Úèely a právne základy spracúvania
+Vaše osobné údaje spracúvame na nasledujúce úèely a na základe príslušnıch právnych základov pod¾a èl. 6 GDPR:
+• Poskytovanie sluieb Platformy a spájanie Klientov s Remeselníkmi – právny základ: plnenie zmluvy (èl. 6 ods. 1 písm. b) GDPR).
+• Overenie identity Remeselníkov za úèelom bezpeènosti – právny základ: oprávnenı záujem Prevádzkovate¾a (èl. 6 ods. 1 písm. f) GDPR) spoèívajúci v ochrane Klientov pred podvodom.
+• Zasielanie notifikácií o novıch Dopytoch alebo správach – právny základ: plnenie zmluvy (èl. 6 ods. 1 písm. b) GDPR), prípadne súhlas dotknutej osoby.
+• Zasielanie marketingovıch oznámení o novinkách Platformy – právny základ: súhlas dotknutej osoby (èl. 6 ods. 1 písm. a) GDPR). Súhlas mono kedyko¾vek odvola.
+• Vedenie evidencie a plnenie zákonnıch povinností – právny základ: zákonná povinnos (èl. 6 ods. 1 písm. c) GDPR).
+Èlánok 17 – Príjemcovia osobnıch údajov
+Vaše osobné údaje môu by sprístupnené nasledujúcim kategóriám príjemcov:
+• Supabase Inc. – poskytovate¾ cloudovej databázy a autentifikácie (PostgreSQL). Dáta sú uloené na serveroch v rámci EÚ. Supabase vystupuje ako sprostredkovate¾ v zmysle èl. 28 GDPR.
+• Stripe Inc. – platobná brána (v prípade, ak bude zavedená platba cez Platformu). Spracúva platobné údaje za podmienok vlastnej politiky ochrany súkromia.
+• Iní Pouívatelia Platformy – vaše meno, lokalita a obsah profilov sú vidite¾né pre ostatnıch registrovanıch Pouívate¾ov v rozsahu nevyhnutnom na sprostredkovanie zákazky.
+• Orgány verejnej moci – ak to vyadujú platné právne predpisy (napr. orgány èinné v trestnom konaní).
+Prevádzkovate¾ nepredáva osobné údaje tretím stranám na marketingové úèely.
+Èlánok 18 – Prenos osobnıch údajov mimo EÚ/EHP
+Vaše údaje sú v zásade spracúvané v rámci Európskeho hospodárskeho priestoru (EHP). Ak dochádza k prenosu mimo EHP (napr. v súvislosti so Supabase alebo Stripe), uskutoèòuje sa na základe primeranıch záruk v súlade s èl. 46 GDPR, predovšetkım štandardnıch zmluvnıch doloiek schválenıch Európskou komisiou.
+Èlánok 19 – Doba uchovávania osobnıch údajov
+• Údaje úètu: po dobu trvania registrácie a 3 roky po jej ukonèení (z dôvodu prípadnıch reklamácií a sporov).
+• Fotokópie dokladov totonosti Remeselníkov: maximálne 30 dní po úspešnom overení, resp. po odmietnutí registrácie, naèo sú bezpeène vymazané.
+• Správy medzi Pouívate¾mi: 2 roky od poslednej aktivity v konverzácii.
+• Záznamy o aktivite (logy): 12 mesiacov.
+• Daòové a úètovné záznamy: 10 rokov pod¾a zákona è. 431/2002 Z. z. o úètovníctve.
+Èlánok 20 – Práva dotknutıch osôb
+Ako dotknutá osoba máte pod¾a GDPR nasledujúce práva, ktoré môete uplatni zaslaním e-mailu na gdpr@hammerit.sk:
+• Právo na prístup (èl. 15 GDPR) – máte právo vedie, aké osobné údaje o vás spracúvame.
+• Právo na opravu (èl. 16 GDPR) – máte právo poiada o opravu nesprávnych alebo doplnenie neúplnıch údajov.
+• Právo na vymazanie / právo na zabudnutie (èl. 17 GDPR) – máte právo poiada o vymazanie vašich údajov, ak nie sú ïalej potrebné na úèel, na ktorı boli zhromadené, alebo ak odvoláte súhlas.
+• Právo na obmedzenie spracúvania (èl. 18 GDPR) – máte právo poiada o obmedzenie spracúvania, napríklad poèas preverovania námietky voèi spracúvaniu.
+• Právo na prenosnos (èl. 20 GDPR) – máte právo získa svoje údaje v štruktúrovanom, bene pouívanom a strojovo èitate¾nom formáte.
+• Právo namieta (èl. 21 GDPR) – máte právo namieta voèi spracúvaniu na základe oprávneného záujmu alebo na priame marketingové úèely.
+• Právo odvola súhlas (èl. 7 ods. 3 GDPR) – ak je spracúvanie zaloené na súhlase, môete ho kedyko¾vek odvola bez vplyvu na zákonnos predchádzajúceho spracúvania.
+Na vašu iados odpovieme do 30 dní. V prípade zloitejších iadostí môe by táto lehota predåená o ïalšie 2 mesiace, o èom vás informujeme.
+Èlánok 21 – Právo poda sanos na dozornı orgán
+Máte právo poda sanos na Úrad na ochranu osobnıch údajov Slovenskej republiky:
+• Adresa: Hranièná 12, 820 07 Bratislava
+• Web: https://dataprotection.gov.sk
+• E-mail: statny.dozor@pdp.gov.sk
+Odporúèame vám však najskôr kontaktova nás priamo, aby sme mohli prípadné pochybenia rıchlo napravi.
+Èlánok 22 – Súbory cookies
+Platforma pouíva technické cookies nevyhnutné pre správne fungovanie webovej stránky a aplikácie. Analytické a marketingové cookies sú pouívané len na základe vášho súhlasu udeleného prostredníctvom cookie lišty pri prvom návšteve Platformy. Detailné informácie nájdete v Zásadách pouívania cookies dostupnıch na Platforme.
+Èlánok 23 – Zmeny Zásad ochrany osobnıch údajov
+Tieto Zásady môeme z dôvodu zmien v legislatíve alebo technológiách aktualizova. O podstatnıch zmenách vás budeme informova e-mailom alebo upozornením na Platforme. Aktuálna verzia je vdy dostupná na Platforme.
+
+ÈAS III – ZÁVEREÈNÉ USTANOVENIA
+
+Tieto Všeobecné obchodné podmienky a Zásady ochrany osobnıch údajov nadobúdajú platnos a úèinnos dòom 1. apríla 2026.
+Ak sa akéko¾vek ustanovenie tıchto dokumentov stane neplatnım alebo nevymáhate¾nım, ostatné ustanovenia zostávajú v platnosti a úèinnosti. Neplatné ustanovenie bude nahradené platnım, ktoré sa èo najblišie blíi pôvodnému ekonomickému a právnemu zmyslu.
+Tieto dokumenty sú vyhotovené v slovenskom jazyku. V prípade rozporu medzi rôznymi jazykovımi verziami má prednos slovenská verzia.
+
+— HammerIT s.r.o. —
+Bratislava, 1. apríla 2026
+info@hammerit.sk  |  gdpr@hammerit.sk
+HammerIT – Právne dokumenty	1. apríla 2026
+
+Strana 1 z 2
+

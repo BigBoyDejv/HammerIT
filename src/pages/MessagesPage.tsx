@@ -218,7 +218,7 @@ export function MessagesPage() {
     };
 
     return (
-        <div className="h-[calc(100vh- theme(spacing.24))] max-w-7xl mx-auto flex flex-col md:px-4 lg:px-8">
+        <div className="min-h-[calc(100vh-theme(spacing.40))] md:h-[calc(100vh-theme(spacing.24))] max-w-7xl mx-auto flex flex-col md:px-4 lg:px-8 pb-4">
             <div className="flex-1 flex overflow-hidden bg-white dark:bg-slate-900 md:rounded-[2.5rem] md:shadow-2xl md:border md:border-gray-100 dark:md:border-white/5 relative">
                 
                 {/* Conversation List Sidebar */}

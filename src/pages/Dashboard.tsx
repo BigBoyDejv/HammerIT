@@ -193,23 +193,37 @@ export function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-50 dark:bg-slate-900/50 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-white/5 p-12 text-center">
-               <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Briefcase className="w-8 h-8 text-gray-400" />
-               </div>
-               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Zatiaľ tu nič nie je</h3>
-               <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto mb-6">
+            <div className="bg-gray-50 dark:bg-slate-900/50 rounded-[3rem] border-2 border-dashed border-gray-200 dark:border-white/5 p-8 md:p-12 flex flex-col items-start text-left overflow-hidden relative">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-coral-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
+               
+               <h3 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mb-4 relative z-10">
+                  {profile?.role === 'client' ? 'Vytvorte svoj prvý inzerát' : 'Nájdite svoju ďalšiu prácu'}
+               </h3>
+               
+               <p className="text-gray-500 dark:text-gray-400 text-base max-w-lg mb-8 font-medium relative z-10 leading-relaxed">
                   {profile?.role === 'client' 
-                    ? 'Vytvorte svoju prvú prácu a nájdite spoľahlivého remeselníka hneď teraz.'
-                    : 'Prehliadajte dostupné práce v okolí a získajte svoju prvú zákazku.'}
+                    ? 'Popíšte čo potrebujete urobiť, pridajte fotky a získajte cenové ponuky od overených remeselníkov vo vašom okolí.'
+                    : 'Momentálne nemáte žiadne aktívne zákazky. Prehliadajte dostupné dopyty, posielajte ponuky a začnite zarábať ešte dnes.'}
                </p>
-               <Link 
-                to={profile?.role === 'client' ? '/jobs/new' : '/jobs'}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-coral-500 hover:bg-coral-600 text-white font-bold rounded-2xl transition-all active:scale-95"
-               >
-                  {profile?.role === 'client' ? <Plus className="w-4 h-4" /> : <Search className="w-4 h-4" />}
-                  {profile?.role === 'client' ? 'Nová práca' : 'Hľadať zákazky'}
-               </Link>
+
+               <div className="flex flex-col sm:flex-row gap-4 relative z-10">
+                  <Link 
+                    to={profile?.role === 'client' ? '/jobs/new' : '/jobs'}
+                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-coral-500 hover:bg-coral-600 text-white font-black rounded-2xl transition-all active:scale-95 shadow-xl shadow-coral-500/20 uppercase tracking-widest text-xs"
+                  >
+                    {profile?.role === 'client' ? <Plus className="w-5 h-5" /> : <Search className="w-5 h-5" />}
+                    {profile?.role === 'client' ? 'Pridať prácu' : 'Prehliadať dopyty'}
+                  </Link>
+                  
+                  {profile?.role === 'craftsman' && (
+                    <Link 
+                      to="/map"
+                      className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-slate-800 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 font-black rounded-2xl transition-all hover:bg-gray-50 dark:hover:bg-slate-700 active:scale-95 uppercase tracking-widest text-xs"
+                    >
+                      Zobraziť na mape
+                    </Link>
+                  )}
+               </div>
             </div>
           )}
         </div>

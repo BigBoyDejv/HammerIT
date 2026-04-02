@@ -58,7 +58,7 @@ const Footer = () => {
                                 <li key={s}>
                                     <Link to="/jobs" className="text-sm md:text-base font-semibold hover:text-coral-500 transition-colors flex items-center justify-center md:justify-start gap-2 group">
                                         <div className="w-1 h-1 bg-coral-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {s} prácas
+                                        {s} práca
                                     </Link>
                                 </li>
                             ))}

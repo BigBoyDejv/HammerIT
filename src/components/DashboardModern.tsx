@@ -3,11 +3,11 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { jobService, contractService } from '../services';
-import { Briefcase, TrendingUp, CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
+import { Briefcase, TrendingUp, CheckCircle, Sparkles, ArrowRight, Clock } from 'lucide-react';
 import { JobCardModern } from './JobCardModern';
 
 export function DashboardModern() {
-    const { user, profile } = useAuth();
+    const { user, profile, subscription } = useAuth();
     const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
     const [recentJobs, setRecentJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -71,6 +71,26 @@ export function DashboardModern() {
                     <p className="text-white/80 text-sm">Máte {stats.active} aktívnych {stats.active === 1 ? 'prácu' : 'prác'}</p>
                 </div>
             </div>
+
+            {/* Subscription Banner */}
+            {profile?.role === 'craftsman' && subscription?.status === 'trialing' && (
+                <div className="bg-coral-50 dark:bg-coral-500/10 border border-coral-200 dark:border-coral-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-coral-500/5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white dark:bg-coral-500/20 rounded-xl flex items-center justify-center text-coral-500 shadow-sm">
+                            <Clock className="w-5 h-5" />
+                        </div>
+                        <div className="text-center sm:text-left">
+                            <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">Váš bezplatný trial prebieha</p>
+                            <p className="text-xs text-gray-500 dark:text-coral-200/60 font-medium tracking-tight">
+                                Zostáva vám {Math.max(0, Math.ceil((new Date(subscription.trial_end).getTime() - new Date().getTime()) / (1000 * 3600 * 24)))} dní plného prístupu.
+                            </p>
+                        </div>
+                    </div>
+                    <Link to="/billing" className="w-full sm:w-auto px-6 py-2 bg-coral-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg shadow-coral-500/20 hover:scale-105 transition-all text-center">
+                        Aktivovať Premium
+                    </Link>
+                </div>
+            )}
 
             {/* Stats Cards */}
             <div className="grid grid-cols-3 gap-3">

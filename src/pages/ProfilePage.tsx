@@ -309,6 +309,13 @@ export function ProfilePage() {
                                 active={activeTab === 'payments'}
                                 onClick={() => setActiveTab('payments')}
                             />
+                            {profile?.role === 'craftsman' && (
+                                <SidebarItem 
+                                    icon={CreditCard} 
+                                    label="Predplatné" 
+                                    onClick={() => navigate('/billing')} 
+                                />
+                            )}
                             <SidebarItem icon={HelpCircle} label="Podpora" onClick={() => navigate('/contact')} />
                         </nav>
                         <div className="hidden lg:block p-4 border-t border-gray-50 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">

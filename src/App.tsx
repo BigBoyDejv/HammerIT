@@ -23,6 +23,7 @@ import { AboutUsPage } from './pages/AboutUsPage';
 import { HowItWorksPage } from './pages/HowItWorksPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { ContactPage } from './pages/ContactPage';
+import { BillingPage } from './pages/BillingPage';
 import { CookiesPage } from './pages/CookiesPage';
 import { TermsPage } from './pages/TermsPage';
 import { RealtimeProvider } from './contexts/RealtimeContext';
@@ -76,6 +77,7 @@ function App() {
                 <Route path="/contracts/:id" element={user ? <ContractDetailPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/map" element={user ? <JobMapPage /> : <Navigate to="/auth/login" />} />
                 <Route path="/notifications" element={user ? <NotificationsPage /> : <Navigate to="/auth/login" />} />
+                <Route path="/billing" element={user ? <BillingPage /> : <Navigate to="/auth/login" />} />
 
                 {/* Moje aktivity */}
                 <Route path="/my-offers" element={user && profile && profile.role === 'craftsman' ? <MyOffersPage /> : <Navigate to="/dashboard" />} />

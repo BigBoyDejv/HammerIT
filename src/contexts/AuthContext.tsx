@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { subscriptionService, Subscription } from '../services/subscriptionService';
 
 type Profile = {
   id: string;
@@ -19,11 +20,13 @@ type Profile = {
 interface AuthContextType {
   user: User | null;
   profile: Profile | null;
+  subscription: Subscription | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, role: 'client' | 'craftsman') => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
+  refreshSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +34,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUser(user);
-          await loadProfile(user.id);
+          await Promise.all([
+            loadProfile(user.id),
+            loadSubscription(user.id)
+          ]);
         }
       } catch (error) {
         console.error('Auth error:', error);
@@ -138,12 +145,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loadSubscription = async (userId: string) => {
+    try {
+      const sub = await subscriptionService.getSubscription(userId);
+      setSubscription(sub);
+    } catch (error) {
+      console.error('Error loading subscription:', error);
+    }
+  };
+
+  const refreshSubscription = async () => {
+    if (user) {
+      await loadSubscription(user.id);
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     if (data.user) {
       setUser(data.user);
-      await loadProfile(data.user.id);
+      await Promise.all([
+        loadProfile(data.user.id),
+        loadSubscription(data.user.id)
+      ]);
     }
   };
 
@@ -177,7 +202,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   console.log('AuthProvider: user =', user);
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signUp, signIn, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      profile, 
+      subscription, 
+      loading, 
+      signUp, 
+      signIn, 
+      signOut, 
+      updateProfile,
+      refreshSubscription
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -5,11 +5,12 @@ import { supabase } from '../lib/supabase';
 import { 
     CheckCircle, Clock, Send, MessageCircle, ArrowLeft, 
     MapPin, Euro, Calendar, 
-    AlertCircle, Sparkles, TrendingUp, ShieldCheck, Tag, Loader2, XCircle
+    AlertCircle, Sparkles, TrendingUp, ShieldCheck, Tag, Loader2, XCircle, Rocket
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Database } from '../lib/database.types';
 import { offerService } from '../services/offerService';
+import { subscriptionService } from '../services/subscriptionService';
 import { SEO } from '../components/SEO';
 
 type JobRow = Database['public']['Tables']['job_requests']['Row'];
@@ -45,7 +46,7 @@ const fetchJob = async (id: string): Promise<Job | null> => {
 
 export function JobDetailPage() {
     const { id } = useParams<{ id: string }>();
-    const { user, profile: currentUserProfile } = useAuth();
+    const { user, profile: currentUserProfile, subscription } = useAuth();
     const navigate = useNavigate();
     const [job, setJob] = useState<Job | null>(null);
     const [loading, setLoading] = useState(true);
@@ -79,6 +80,15 @@ export function JobDetailPage() {
 
         const activeOffer = job.job_offers?.find(o => o.craftsman_id === user.id && (o.status === 'pending' || o.status === 'accepted'));
         if (activeOffer) return;
+
+        // Subscription Guard
+        if (currentUserProfile?.role === 'craftsman') {
+            const hasAccess = subscriptionService.checkAccess(subscription);
+            if (!hasAccess) {
+                navigate('/billing');
+                return;
+            }
+        }
 
         setSubmitting(true);
         try {
@@ -154,10 +164,10 @@ export function JobDetailPage() {
     const isMyJob = job.client_id === user?.id;
     const existingOffer = job.job_offers?.find(o => o.craftsman_id === user?.id);
     
-    // Ponuka sa považuje za "existujúcu" len ak je čakajúca alebo prijatá. 
-    // Ak je zamietnutá, remeselník môže poslať novú.
     const isOfferActive = existingOffer && (existingOffer.status === 'pending' || existingOffer.status === 'accepted');
-    const canSubmitOffer = currentUserProfile?.role === 'craftsman' && !isMyJob && job.status === 'open' && !isOfferActive;
+    const hasAccess = subscriptionService.checkAccess(subscription);
+    const canSubmitOffer = currentUserProfile?.role === 'craftsman' && !isMyJob && job.status === 'open' && !isOfferActive && hasAccess;
+    const showPaywall = currentUserProfile?.role === 'craftsman' && !isMyJob && job.status === 'open' && !isOfferActive && !hasAccess;
 
     const getStatusInfo = () => {
         const statusMap = {
@@ -253,7 +263,16 @@ export function JobDetailPage() {
                                 </div>
                                 {!isMyJob && (
                                     <button 
-                                        onClick={() => navigate(`/messages?user=${job.client_id}`)}
+                                        onClick={() => {
+                                            if (currentUserProfile?.role === 'craftsman') {
+                                                const hasAccess = subscriptionService.checkAccess(subscription);
+                                                if (!hasAccess) {
+                                                    navigate('/billing');
+                                                    return;
+                                                }
+                                            }
+                                            navigate(`/messages?user=${job.client_id}`);
+                                        }}
                                         className="w-12 h-12 flex items-center justify-center text-coral-500 bg-coral-50 dark:bg-coral-900/20 rounded-2xl hover:scale-110 active:scale-95 transition-all"
                                     >
                                         <MessageCircle className="w-6 h-6" />
@@ -441,6 +460,26 @@ export function JobDetailPage() {
                                             Odoslať dopyt
                                         </button>
                                     </form>
+                                </motion.div>
+                            )}
+
+                            {showPaywall && (
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                                    className="bg-navy-950 rounded-[3rem] p-10 text-white space-y-6 relative overflow-hidden border-2 border-coral-500/20 shadow-2xl shadow-coral-500/5 rotate-[-1deg]"
+                                >
+                                    <Rocket className="absolute -top-4 -right-4 w-32 h-32 text-white/5 rotate-12" />
+                                    <h3 className="text-xl font-black tracking-tight leading-tight">Chcete reagovať na túto zákazku?</h3>
+                                    <p className="text-white/60 text-sm font-medium leading-relaxed">
+                                        Váš bezplatný prístup vypršal. Aktivujte si predplatné a získajte okamžitý prístup k tejto a stovkám ďalších ponukám.
+                                    </p>
+                                    <button 
+                                        onClick={() => navigate('/billing')}
+                                        className="w-full bg-gradient-to-tr from-coral-500 to-coral-600 text-white font-black py-5 rounded-[2rem] shadow-xl shadow-coral-500/20 flex items-center justify-center gap-3 active:scale-95 transition-all text-[10px] uppercase tracking-[0.2em]"
+                                    >
+                                        Aktivovať Premium za 10€
+                                    </button>
+                                    <p className="text-[10px] text-white/40 text-center font-bold uppercase tracking-widest">Žiadne provízie zo zisku</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>

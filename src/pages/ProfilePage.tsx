@@ -1,5 +1,6 @@
 // src/pages/ProfilePage.tsx
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { verificationService } from '../services/verificationService';
@@ -31,6 +32,7 @@ import {
 
 export function ProfilePage() {
     const { user, profile, updateProfile } = useAuth();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications' | 'payments' | 'verification'>('profile');
@@ -307,7 +309,7 @@ export function ProfilePage() {
                                 active={activeTab === 'payments'}
                                 onClick={() => setActiveTab('payments')}
                             />
-                            <SidebarItem icon={HelpCircle} label="Podpora" onClick={() => { }} />
+                            <SidebarItem icon={HelpCircle} label="Podpora" onClick={() => navigate('/contact')} />
                         </nav>
                         <div className="hidden lg:block p-4 border-t border-gray-50 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                             <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-widest pl-2 mb-2">Verzia</p>

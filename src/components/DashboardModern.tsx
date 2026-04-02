@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { LoadingSpinner } from './LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { jobService, contractService } from '../services';
@@ -48,11 +49,7 @@ export function DashboardModern() {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="spinner"></div>
-            </div>
-        );
+        return <LoadingSpinner className="h-64" />;
     }
 
     const statsCards = [

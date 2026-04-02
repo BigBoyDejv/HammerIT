@@ -7,6 +7,7 @@ import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { GlobalErrorBoundary } from './components/GlobalErrorBoundary';
  
 // Register SW
 registerSW({
@@ -24,13 +25,14 @@ console.log('SUPABASE_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ SET' 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <HelmetProvider>
-      <ThemeProvider>
-      <AuthProvider>
-        <App />
-        
-      </AuthProvider>
-    </ThemeProvider>
-    </HelmetProvider>
+    <GlobalErrorBoundary>
+      <HelmetProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ThemeProvider>
+      </HelmetProvider>
+    </GlobalErrorBoundary>
   </StrictMode>
 );

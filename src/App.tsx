@@ -27,6 +27,7 @@ import { CookiesPage } from './pages/CookiesPage';
 import { TermsPage } from './pages/TermsPage';
 import { RealtimeProvider } from './contexts/RealtimeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { LoadingSpinner } from './components/LoadingSpinner';
 import Footer from './components/Footer';
 import { CookieConsent } from './components/CookieConsent';
 import { NotificationsPage } from './pages/NotificationsPage';
@@ -36,8 +37,8 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <LoadingSpinner />
       </div>
     );
   }

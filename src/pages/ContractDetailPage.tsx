@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { MapPin, Calendar, ArrowLeft, CheckCircle, Clock, MessageCircle, Star, AlertCircle, ShieldAlert } from 'lucide-react';
@@ -110,7 +111,7 @@ export function ContractDetailPage() {
         }
     };
 
-    if (loading) return <div className="flex justify-center items-center h-64"><div className="spinner"></div></div>;
+    if (loading) return <LoadingSpinner className="h-64" />;
 
     if (!contract) return (
         <div className="glass-card p-12 text-center bg-card dark:bg-slate-800/40 border border-gray-100 dark:border-gray-700/50">

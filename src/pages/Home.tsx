@@ -2,55 +2,55 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { SEO } from '../components/SEO';
-import { Wrench, Search, MessageSquare, Star, Shield, Zap, ChevronRight, ArrowRight } from 'lucide-react';
+import { Search, MessageSquare, Star, Shield, Zap, ArrowRight, Hammer, Palette, Droplets, Layers, HardHat, Leaf, Mountain, CheckCircle2, TrendingUp, Sparkles, ShieldCheck, Wallet } from 'lucide-react';
 
 const STATS = [
-  { value: '2,400+', label: 'Remeselníkov' },
-  { value: '18,000+', label: 'Dokončených prác' },
-  { value: '4.9★', label: 'Priemerné hodnotenie' },
-  { value: '98%', label: 'Spokojných klientov' },
+  { value: '2.4k+', label: 'Remeselníkov', icon: <Hammer className="w-4 h-4" /> },
+  { value: '18k+', label: 'Prác', icon: <CheckCircle2 className="w-4 h-4" /> },
+  { value: '4.91', label: 'Hodnotenie', icon: <Star className="w-4 h-4" /> },
+  { value: '99%', label: 'Spokojnosť', icon: <Sparkles className="w-4 h-4" /> },
 ];
 
 const FEATURES = [
   {
-    icon: <Search className="h-7 w-7" />,
+    icon: <Search className="h-8 w-8" />,
     title: 'Nájdite remeselníka',
-    desc: 'Vyhľadajte overených remeselníkov podľa kategórie a lokality za pár sekúnd.',
-    color: 'bg-navy-500/10 text-navy-600 dark:text-navy-400 border border-navy-200/40 dark:border-navy-500/20',
-    hover: 'group-hover:bg-navy-500 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
+    desc: 'Vyhľadajte overených odborníkov podľa kategórie a lokality okamžite.',
+    color: 'text-navy-500',
+    bg: 'bg-navy-500/10',
   },
   {
-    icon: <MessageSquare className="h-7 w-7" />,
+    icon: <MessageSquare className="h-8 w-8" />,
     title: 'Komunikujte priamo',
-    desc: 'Chatujte s remeselníkmi, porovnajte ponuky a dohodnite detaily práce.',
-    color: 'bg-coral-500/10 text-coral-600 dark:text-coral-400 border border-coral-200/40 dark:border-coral-500/20',
-    hover: 'group-hover:bg-coral-500 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
+    desc: 'Chatujte, porovnajte ponuky a dohodnite si detaily v bezpečnom prostredí.',
+    color: 'text-coral-500',
+    bg: 'bg-coral-500/10',
   },
   {
-    icon: <Wrench className="h-7 w-7" />,
-    title: 'Práca hotová',
-    desc: 'Sledujte priebeh práce v reálnom čase. Plaťte až po dokončení.',
-    color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/40 dark:border-emerald-500/20',
-    hover: 'group-hover:bg-emerald-500 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
+    icon: <ShieldCheck className="h-8 w-8" />,
+    title: 'Bezpečná dohoda',
+    desc: 'Vaša spokojnosť je prioritou. Sledujte priebeh a kontrolujte kvalitu.',
+    color: 'text-emerald-500',
+    bg: 'bg-emerald-500/10',
   },
   {
-    icon: <Star className="h-7 w-7" />,
-    title: 'Ohodnoťte',
-    desc: 'Zanechajte recenziu a pomôžte komunite nájsť tých najlepších.',
-    color: 'bg-amber-400/10 text-amber-600 dark:text-amber-400 border border-amber-200/40 dark:border-amber-500/20',
-    hover: 'group-hover:bg-amber-400 group-hover:text-white dark:group-hover:text-white group-hover:border-transparent',
+    icon: <Wallet className="h-8 w-8" />,
+    title: 'Platba po práci',
+    desc: 'Pohodlný systém platieb. Remeselník dostane odmenu až po vašom schválení.',
+    color: 'text-amber-500',
+    bg: 'bg-amber-500/10',
   },
 ];
 
 const CATEGORIES = [
-  { emoji: '⚡', name: 'Elektrikár', accent: 'hover:border-amber-300 dark:hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/10' },
-  { emoji: '🧱', name: 'Murár', accent: 'hover:border-orange-300 dark:hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/10' },
-  { emoji: '🎨', name: 'Maliar', accent: 'hover:border-pink-300 dark:hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/10' },
-  { emoji: '🔧', name: 'Inštalatér', accent: 'hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10' },
-  { emoji: '🪵', name: 'Podlahár', accent: 'hover:border-yellow-300 dark:hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/10' },
-  { emoji: '🏗️', name: 'Stavebné práce', accent: 'hover:border-navy-300 dark:hover:border-navy-500 hover:bg-navy-50 dark:hover:bg-navy-900/10' },
-  { emoji: '🌿', name: 'Záhradník', accent: 'hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/10' },
-  { emoji: '🏠', name: 'Strechár', accent: 'hover:border-coral-300 dark:hover:border-coral-500 hover:bg-coral-50 dark:hover:bg-coral-900/10' },
+  { icon: <Zap className="h-6 w-6" />, name: 'Elektrikár', color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'hover:border-amber-500/50' },
+  { icon: <Hammer className="h-6 w-6" />, name: 'Murár', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'hover:border-orange-500/50' },
+  { icon: <Palette className="h-6 w-6" />, name: 'Maliar', color: 'text-pink-500', bg: 'bg-pink-500/10', border: 'hover:border-pink-500/50' },
+  { icon: <Droplets className="h-6 w-6" />, name: 'Inštalatér', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'hover:border-blue-500/50' },
+  { icon: <Layers className="h-6 w-6" />, name: 'Podlahár', color: 'text-yellow-600', bg: 'bg-yellow-500/10', border: 'hover:border-yellow-500/50' },
+  { icon: <HardHat className="h-6 w-6" />, name: 'Stavebné práce', color: 'text-navy-500', bg: 'bg-navy-500/10', border: 'hover:border-navy-500/50' },
+  { icon: <Leaf className="h-6 w-6" />, name: 'Záhradník', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'hover:border-emerald-500/50' },
+  { icon: <Mountain className="h-6 w-6" />, name: 'Strechár', color: 'text-coral-500', bg: 'bg-coral-500/10', border: 'hover:border-coral-500/50' },
 ];
 
 const TRUST = [
@@ -132,26 +132,42 @@ export function Home() {
 
         {/* Floating cards */}
         <div className="absolute top-1/4 left-8 animate-float delay-100 hidden lg:block">
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-white/50 dark:border-white/10 w-48">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-full bg-navy-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">J</div>
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2rem] p-5 shadow-2xl border border-white/50 dark:border-white/10 w-56 transform hover:scale-105 transition-transform cursor-default">
+            <div className="flex items-center gap-4 mb-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-navy-500 to-navy-700 flex items-center justify-center text-white text-sm font-black shadow-lg">J</div>
               <div>
-                <div className="text-xs font-semibold text-gray-900 dark:text-white">Jozo Murár</div>
-                <div className="stars text-xs flex gap-0.5 text-amber-400">★★★★★</div>
+                <div className="text-sm font-bold text-gray-900 dark:text-white">Jozo Murár</div>
+                <div className="stars text-xs flex gap-0.5 text-amber-400 mt-0.5">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-current" />)}
+                </div>
               </div>
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Práca dokončená ✓</div>
+            <div className="flex items-center gap-2 text-xs text-emerald-500 font-black uppercase tracking-wider">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Práca dokončená</span>
+            </div>
           </div>
         </div>
  
-        <div className="absolute top-1/3 right-8 animate-float delay-300 hidden lg:block">
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-white/50 dark:border-white/10 w-52">
-            <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">Nová ponuka</div>
-            <div className="text-sm font-bold text-navy-600 dark:text-coral-400">Oprava strechy</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium italic">500€ – 800€ · Košice</div>
-            <div className="mt-2 text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 rounded-full px-2 py-0.5 inline-block font-bold">
-              3 PONUKY
+        <div className="absolute bottom-1/4 right-8 animate-float delay-300 hidden lg:block">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-2xl border border-white/50 dark:border-white/10 w-64 transform hover:scale-105 transition-transform cursor-default">
+            <div className="flex items-center gap-2 text-[10px] font-black text-coral-500 uppercase tracking-[0.2em] mb-3">
+              <TrendingUp className="w-4 h-4" />
+              <span>Nová dopyt</span>
             </div>
+            <div className="text-lg font-black text-navy-900 dark:text-white mb-1 leading-tight">Oprava strechy</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium italic">500€ – 800€ · Košice</div>
+            <div className="flex -space-x-3 overflow-hidden">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="inline-block h-8 w-8 rounded-full ring-4 ring-white dark:ring-slate-800 bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600 border border-white/20">
+                   {String.fromCharCode(64 + i)}
+                </div>
+              ))}
+              <div className="flex items-center justify-center h-8 w-8 rounded-full bg-coral-500 ring-4 ring-white dark:ring-slate-800 text-[10px] font-black text-white">
+                +3
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-3 font-bold uppercase tracking-widest">3 Ponuky od remeselníkov</p>
           </div>
         </div>
       </section>
@@ -161,10 +177,13 @@ export function Home() {
         <div className="container-wide relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {STATS.map((stat, i) => (
-              <div key={stat.label} className="text-center animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="stat-number">{stat.value}</div>
-                <div className="text-sm text-blue-200 font-medium mt-2 uppercase tracking-widest">
-                  {stat.label}
+              <div key={stat.label} className="relative group animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-2 bg-white/10 px-3 py-1 rounded-full border border-white/10 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+                    <span className="text-blue-200">{stat.icon}</span>
+                    <span className="text-[10px] text-blue-100 font-black uppercase tracking-[0.2em]">{stat.label}</span>
+                  </div>
+                  <div className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none">{stat.value}</div>
                 </div>
               </div>
             ))}
@@ -185,17 +204,18 @@ export function Home() {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-4 gap-12">
             {FEATURES.map((f, i) => (
-              <div key={f.title} className={`text-center group animate-fade-up delay-${i * 100}`}>
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-all duration-300 ${f.color} ${f.hover}`}>
+              <div key={f.title} className="relative group animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className={`w-20 h-20 rounded-[2rem] ${f.bg} ${f.color} flex items-center justify-center mb-8 relative z-10 transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500`}>
                   {f.icon}
+                  <div className="absolute top-0 right-0 -mr-2 -mt-2 w-8 h-8 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-xs font-black text-gray-900 dark:text-white shadow-lg border border-gray-100 dark:border-white/5">
+                    {i + 1}
+                  </div>
                 </div>
-                <div className="text-xs font-bold text-gray-300 mb-2 tracking-widest uppercase">
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{f.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 tracking-tight leading-tight">{f.title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed font-medium">{f.desc}</p>
+                <div className="mt-6 w-12 h-1 bg-gray-100 dark:bg-slate-800 rounded-full group-hover:w-full group-hover:bg-coral-500 transition-all duration-500" />
               </div>
             ))}
           </div>
@@ -212,19 +232,21 @@ export function Home() {
             <p className="text-gray-500 dark:text-gray-400 text-lg">Nájdite odborníka pre každú potrebu</p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {CATEGORIES.map((cat, i) => (
               <Link
                 key={cat.name}
                 to={user ? `/craftsmen?spec=${cat.name}` : '/auth/register'}
-                className={`card p-6 text-center group cursor-pointer animate-fade-up border transition-all duration-300 ${cat.accent} delay-${i * 50}`}
+                className={`group relative p-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-gray-100 dark:border-white/5 transition-all duration-500 hover:shadow-2xl hover:shadow-navy-900/10 hover:-translate-y-2 animate-fade-up ${cat.border}`}
+                style={{ animationDelay: `${i * 0.05}s` }}
               >
-                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                  {cat.emoji}
+                <div className={`w-14 h-14 rounded-2xl ${cat.bg} ${cat.color} flex items-center justify-center mb-6 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-sm`}>
+                  {cat.icon}
                 </div>
-                <div className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{cat.name}</div>
-                <div className="mt-2 flex items-center justify-center gap-1 text-xs text-coral-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Zobraziť <ChevronRight className="h-3 w-3" />
+                <h3 className="font-black text-gray-900 dark:text-white text-lg mb-2 tracking-tight">{cat.name}</h3>
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-400 group-hover:text-coral-500 transition-colors uppercase tracking-widest">
+                  <span>Prezrieť</span>
+                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
             ))}
